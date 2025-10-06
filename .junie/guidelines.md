@@ -1,104 +1,258 @@
-Project Development Guidelines (CrossGym SaaS)
+# Project Development Guidelines (CrossGym SaaS)
 
-Scope
-These notes capture project-specific practices that speed up local setup, testing, and day-to-day development for this Laravel 12 + Livewire/Volt + Flux UI app. They assume familiarity with Laravel and PHP ecosystems and focus on what is unique or easy to miss in this codebase.
+## Scope
+These notes capture project-specific practices that speed up local setup, testing, and day-to-day development for this Laravel 12 + Livewire/Volt + Flux UI app.  
+They assume familiarity with Laravel and PHP ecosystems and focus on what is unique or easy to miss in this codebase.
 
-Build and Configuration
-- PHP/Composer
-  - PHP 8.2 is required (composer.json: "php": "^8.2").
-  - Install dependencies: composer install
-  - Post-install scripts will copy .env if needed and run package discovery. No DB migrations are run automatically on composer install; see below.
+---
 
-- Environment
-  - Base env: .env is present in repo context; adjust APP_URL and others as needed.
-  - For local keys: php artisan key:generate
-  - Queues: Local dev typically uses sync; tests override to sync via phpunit.xml.
-  - Email: Use array mailer in tests (phpunit.xml) and any local mailer in .env for dev.
+## Build and Configuration
+- **PHP/Composer**
+    - PHP 8.2 is required (`composer.json: "php": "^8.2"`).
+    - Install dependencies: `composer install`
+    - Post-install scripts will copy `.env` if needed and run package discovery.  
+      No DB migrations are run automatically on `composer install`; see below.
 
-- Database
-  - App dev DB is defined in .env. Use sqlite/mysql as preferred in dev.
-  - Tests are configured to use sqlite in-memory by default, via phpunit.xml:
-    - DB_CONNECTION=sqlite, DB_DATABASE=:memory:
-  - Migrations: php artisan migrate. If using sqlite file locally, ensure the file exists (see composer post-create-project-cmd for the pattern).
+- **Environment**
+    - Base env: `.env` is present in repo context; adjust `APP_URL` and others as needed.
+    - For local keys: `php artisan key:generate`
+    - Queues: Local dev typically uses `sync`; tests override to `sync` via `phpunit.xml`.
+    - Email: Use `array` mailer in tests (`phpunit.xml`) and any local mailer in `.env` for dev.
 
-- Frontend/Vite/Tailwind
-  - Tailwind v4 is used; don’t use removed utilities. Import syntax is @import "tailwindcss".
-  - Run Vite in dev: npm run dev (or use the dev script below). If assets don’t appear, rebuild.
+- **Database**
+    - App dev DB is defined in `.env`. Use sqlite/mysql as preferred in dev.
+    - Tests are configured to use sqlite in-memory by default, via `phpunit.xml`:
+        - `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`
+    - Migrations: `php artisan migrate`.  
+      If using sqlite file locally, ensure the file exists (see composer `post-create-project-cmd` for the pattern).
 
-- One-command Dev Workflow (concurrently)
-  - composer run dev launches:
-    - php artisan serve
-    - php artisan queue:listen --tries=1
-    - npm run dev
-  - Useful during full-stack development; otherwise, run processes individually.
+- **Frontend/Vite/Tailwind**
+    - Tailwind v4 is used; don’t use removed utilities. Import syntax is `@import "tailwindcss"`.
+    - Run Vite in dev: `npm run dev` (or use the dev script below). If assets don’t appear, rebuild.
 
-Testing
-- Framework
-  - Test runner is Pest v3 with pest-plugin-laravel.
-  - phpunit.xml config sets a clean test environment (array cache, array mailer, sync queue, sqlite :memory: database). No external services should be needed for unit/feature tests.
+- **One-command Dev Workflow (concurrently)**
+    - `composer run dev` launches:
+        - `php artisan serve`
+        - `php artisan queue:listen --tries=1`
+        - `npm run dev`
+    - Useful during full-stack development; otherwise, run processes individually.
 
-- Running tests
-  - All tests: php artisan test
-  - Single file: php artisan test tests/Feature/SomeTest.php
-  - Filter by name: php artisan test --filter="users can logout"
-  - Composer script also available: composer test (clears config then runs tests)
+---
 
-- Livewire/Volt and HTTP testing
-  - Use Livewire::test(Component::class) (see tests/Feature/Auth/AuthenticationTest.php for examples).
-  - Prefer route() with named routes; this app defines auth routes in routes/auth.php and web routes in routes/web.php.
-  - Authentication helpers are available (actingAs, assertAuthenticated, assertGuest).
+## Testing
+- **Framework**
+    - Test runner is Pest v3 with `pest-plugin-laravel`.
+    - `phpunit.xml` config sets a clean test environment (array cache, array mailer, sync queue, sqlite :memory: database).  
+      No external services should be needed for unit/feature tests.
 
-- Database behavior in tests
-  - Transactions are not globally wrapped. If a test needs persistence across multiple requests, rely on the in-memory sqlite and model factories. Use DatabaseTransactions if you add stateful integration tests against a file-based database.
+- **Running tests**
+    - All tests: `php artisan test`
+    - Single file: `php artisan test tests/Feature/SomeTest.php`
+    - Filter by name: `php artisan test --filter="users can logout"`
+    - Composer script also available: `composer test` (clears config then runs tests)
 
-- Example minimal test
-  - A passing sanity test was verified locally:
-    - File (temporary): tests/Feature/SanityTest.php
-    - Content:
-      it('project sanity check passes', function () {
-          expect(true)->toBeTrue();
-      });
-    - Run: php artisan test tests/Feature/SanityTest.php
-    - Result: PASS (1 assertion). The file was removed after verification to keep the repo clean.
+- **Livewire/Volt and HTTP testing**
+    - Use `Livewire::test(Component::class)` (see `tests/Feature/Auth/AuthenticationTest.php` for examples).
+    - Prefer `route()` with named routes; this app defines auth routes in `routes/auth.php` and web routes in `routes/web.php`.
+    - Authentication helpers are available (`actingAs`, `assertAuthenticated`, `assertGuest`).
 
-Adding New Tests
-- Use Pest style by default: php artisan make:test --pest Feature/UserCanXyzTest
+- **Database behavior in tests**
+    - Transactions are not globally wrapped.  
+      If a test needs persistence across multiple requests, rely on the in-memory sqlite and model factories.  
+      Use `DatabaseTransactions` if you add stateful integration tests against a file-based database.
+
+- **Example minimal test**
+    - A passing sanity test was verified locally:
+        - File (temporary): `tests/Feature/SanityTest.php`
+        - Content:
+          ```php
+          it('project sanity check passes', function () {
+              expect(true)->toBeTrue();
+          });
+          ```
+        - Run: `php artisan test tests/Feature/SanityTest.php`
+        - Result: PASS (1 assertion). The file was removed after verification to keep the repo clean.
+
+---
+
+## Adding New Tests
+- Use Pest style by default:  
+  `php artisan make:test --pest Feature/UserCanXyzTest`
 - Prefer Feature tests for HTTP and Livewire flows; Unit tests for pure PHP logic.
-- Data setup
-  - Use Model factories; check Database\Factories for existing patterns.
-  - Avoid hitting external APIs; mock where necessary (Pest mocking helpers are available via pest-plugin-laravel).
-- Livewire tips
-  - For Livewire v3: state updates are deferred by default; use wire:model.live in Blade when you need real-time updates. In tests, set() mirrors server-side property updates.
-  - Dispatch events with $this->dispatch() (not emit/dispatchBrowserEvent).
+- **Data setup**
+    - Use Model factories; check `Database\Factories` for existing patterns.
+    - Avoid hitting external APIs; mock where necessary (`pest-plugin-laravel` mocking helpers are available).
+- **Livewire tips**
+    - For Livewire v3: state updates are deferred by default; use `wire:model.live` in Blade when you need real-time updates.  
+      In tests, `set()` mirrors server-side property updates.
+    - Dispatch events with `$this->dispatch()` (not `emit` / `dispatchBrowserEvent`).
 
-Code Style & Tooling
-- Formatting: Run Pint (PSR-12) before committing. For staged changes only: vendor/bin/pint --dirty
-- Naming: Use descriptive methods and properties (see conventions in app/ and tests/).
-- Enums: TitleCase for enum keys if/when used.
-- Configuration access: Use config() helpers; do not call env() outside config files.
+---
 
-Auth and Routing Notes
-- Auth routes are split in routes/auth.php with Fortify-backed flows and Livewire screens:
-  - Login, Register, ForgotPassword, ResetPassword, VerifyEmail
-  - A small admin route group exists under /admin; adjust policies/guards as needed.
-- If you add routes, prefer named routes and keep new auth-related routes in routes/auth.php to match current structure.
+## Code Style & Tooling
+- **Formatting:** Run Pint (PSR-12) before committing.  
+  For staged changes only: `vendor/bin/pint --dirty`
+- **Naming:** Use descriptive methods and properties (see conventions in `app/` and `tests/`).
+- **Enums:** TitleCase for enum keys if/when used.
+- **Configuration access:** Use `config()` helpers; do not call `env()` outside config files.
 
-Flux UI + Tailwind Conventions
-- Prefer Flux UI components (free edition) for Livewire UIs: e.g., <flux:button variant="primary" />.
-- Tailwind v4 utility replacements apply (e.g., bg-black/50 instead of bg-opacity-50).
+---
+
+## Auth and Routing Notes
+- Auth routes are split in `routes/auth.php` with Fortify-backed flows and Livewire screens:
+    - Login, Register, ForgotPassword, ResetPassword, VerifyEmail
+    - A small admin route group exists under `/admin`; adjust policies/guards as needed.
+- If you add routes, prefer named routes and keep new auth-related routes in `routes/auth.php` to match current structure.
+
+---
+
+## Flux UI + Tailwind Conventions
+- Prefer Flux UI components (free edition) for Livewire UIs:  
+  Example: `<flux:button variant="primary" />`.
+- Tailwind v4 utility replacements apply (e.g., `bg-black/50` instead of `bg-opacity-50`).
 - Keep dark mode parity with existing pages if you add new UI.
 
-Performance/Queues
-- Use queued jobs for time-consuming tasks. In local dev, queue:listen runs in the dev script; in tests, queue is sync per phpunit.xml.
+---
 
-Debug/Dev Aids
+## Index View Guidelines
+- All “Index” views (lists) must use a **Flux table component**.
+- The **last column must always contain action buttons**, right-aligned.
+- Each row should include edit, view, and delete buttons as icon-only (`variant="ghost"`).
+- Filtering, search input, and pagination should be placed above the table.
+- Example:
+
+```blade
+<div>
+    <div class="flex justify-between items-center mb-4">
+        <flux:input placeholder="{{ __('Search...') }}" wire:model.live="search" />
+        <flux:button wire:click="create" variant="primary">
+            {{ __('New User') }}
+        </flux:button>
+    </div>
+
+    <flux:table>
+        <x-slot name="head">
+            <flux:th>{{ __('Name') }}</flux:th>
+            <flux:th>{{ __('Email') }}</flux:th>
+            <flux:th>{{ __('Created') }}</flux:th>
+            <flux:th class="text-right">{{ __('Actions') }}</flux:th>
+        </x-slot>
+
+        @foreach ($users as $user)
+            <flux:tr>
+                <flux:td>{{ $user->name }}</flux:td>
+                <flux:td>{{ $user->email }}</flux:td>
+                <flux:td>{{ $user->created_at->format('d/m/Y') }}</flux:td>
+                <flux:td class="text-right space-x-2">
+                    <flux:button icon="eye" wire:click="show({{ $user->id }})" variant="ghost" />
+                    <flux:button icon="edit" wire:click="edit({{ $user->id }})" variant="ghost" />
+                    <flux:button icon="trash" wire:click="delete({{ $user->id }})" variant="ghost" />
+                </flux:td>
+            </flux:tr>
+        @endforeach
+    </flux:table>
+</div>
+```
+- **Export button:**
+    - Place a Flux button above the table, next to "New" or search input.
+    - The button should trigger a Livewire method that calls a `Maatwebsite\Excel` export class.
+    - Example:
+      ```blade
+      <flux:button wire:click="export" variant="secondary">
+          {{ __('Export') }}
+      </flux:button>
+      ```
+    - In the Livewire component:
+      ```php
+      use Maatwebsite\Excel\Facades\Excel;
+      use App\Exports\UsersExport;
+  
+      public function export()
+      {
+          return Excel::download(new UsersExport, 'users.xlsx');
+      }
+      ```
+      
+## Design rules
+- Use `variant="ghost"` for inline buttons.
+- Use `text-right` for the actions column.
+- No clickable rows — only explicit action buttons.
+- Consistent padding (`px-4 py-3`).
+- Avoid modals or dropdowns for simple actions unless multiple contextual options exist.
+
+## Behavior
+- Clicking a row should not navigate automatically – keep explicit buttons for clarity.
+- Optional: Add search, filter, or pagination above the table in a standard layout:
+
+```blade
+<div class="flex justify-between items-center mb-4">
+    <flux:input placeholder="{{ __('Search...') }}" wire:model.live="search" />
+    <flux:button wire:click="create" variant="primary">{{ __('New') }} {{ $modelLabel }}</flux:button>
+</div>
+```
+
+## Translation Guidelines
+- **Default language:** da
+- Always wrap display text in `{{ __('...') }}` — in Blade, Livewire, and PHP.
+- Add new strings to `resources/lang/da.json` automatically when new UI text is introduced.
+- **Model fields:**  
+  All fields like `name`, `description`, `title`, `content`, etc. must be translatable using a JSON or table-based translation system (e.g., `spatie/laravel-translatable`).
+
+## Performance/Queues
+- Use queued jobs for time-consuming tasks.
+- In local dev, `queue:listen` runs in the dev script; in tests, queue is `sync` per `phpunit.xml`.
+
+## Debug/Dev Aids
 - Laravel Boost is available as a dev dependency; use its tools where appropriate during interactive sessions.
-- Browser/live reload issues typically resolve with npm run dev restart; Vite manifest errors usually mean a missing build.
+- Browser/live reload issues typically resolve with `npm run dev` restart; Vite manifest errors usually mean a missing build.
 
-CI and Misc
-- A GitHub workflow exists for tests (.github/workflows/tests.yml). Match its PHP and dependency matrix if you add jobs.
+## CI and Misc
+- GitHub workflows: see `.github/workflows/lint.yml` for code style checks.  
+  If you add a tests workflow, create `.github/workflows/tests.yml` and match its PHP and dependency matrix accordingly.
 
-Operational Notes for Contributors
-- Keep to the existing directory conventions and the streamlined Laravel 12 structure (no app/Http/Middleware/, commands auto-discover, bootstrap/app.php wiring).
-- When creating new models, consider adding factories and seeders as needed for tests.
+## Operational Notes for Contributors
+- Follow the streamlined Laravel 12 structure:
+    - Middleware lives in `app/Http/Middleware` and is registered in `bootstrap/app.php`
+    - Commands auto-discover
+    - Bootstrapping via `bootstrap/app.php`
+- When creating new models, always:
+    - Add `tenant_id` and `belongsTo(Tenant::class)`
+    - Add factories and seeders for testing
+    - Ensure translatable fields are defined if applicable
 - Prefer Eloquent relationships and resources over raw queries or manual JSON shaping.
+
+## Junie Implementation Checklist
+When creating a new CRUD component, ensure:
+
+1. **Index View**
+    - Uses `flux:table`.
+    - Actions column is last and right-aligned.
+    - Edit/View/Delete buttons use `variant="ghost"`.
+    - Search, filters, and pagination placed above table.
+    - **Export button** is present above the table and calls a Maatwebsite Excel export class.
+
+2. **Create/Edit Views**
+    - All labels, buttons, and texts wrapped in `{{ __('...') }}`.
+    - Flux UI components used consistently.
+    - Save and Cancel buttons placed at bottom-right.
+
+3. **Model Conventions**
+    - `tenant_id` field exists.
+    - `belongsTo(Tenant::class)` relationship.
+    - Fields like `name`, `description`, etc. marked as translatable.
+
+4. **Translations**
+    - Add new strings to `lang/da.json`.
+    - Default language is `da`.
+    - Wrap all Blade, Livewire, and PHP output with `{{ __('...') }}`.
+
+5. **Code Style**
+    - Follows Laravel Pint formatting.
+    - Strict typing enabled (`declare(strict_types=1);`).
+    - No inline JS in Blade; Alpine.js used for interactivity.
+
+6. **Testing**
+    - Feature tests for Livewire/HTTP flows.
+    - Unit tests for pure PHP logic.
+    - Use factories for test data.
+    - Avoid hitting external APIs; mock if needed.
