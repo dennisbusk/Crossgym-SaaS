@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Models\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Translatable\HasTranslations;
+
+class GymClass extends Model
+{
+    use HasFactory;
+    use BelongsToTenant;
+    use HasTranslations;
+
+    protected $table = 'classes';
+
+    protected array $translatable = ['name', 'description'];
+
+    protected $fillable = [
+        'tenant_id',
+        'name',
+        'description',
+        'trainer_id',
+        'class_type_id',
+        'max_participants',
+        'class_start',
+        'class_end',
+        'recurring_id',
+    ];
+
+    protected $casts = [
+        'name' => AsArrayObject::class,
+        'description' => AsArrayObject::class,
+        'class_start' => 'datetime',
+        'class_end' => 'datetime',
+    ];
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function classType(): BelongsTo
+    {
+        return $this->belongsTo(ClassType::class, 'class_type_id');
+    }
+
+    public function trainer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'trainer_id');
+    }
+
+    /**
+     * Participants enrolled in this class.
+     */
+    public function participants(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'gym_class_user', 'gym_class_id', 'user_id')->withTimestamps();
+    }
+}

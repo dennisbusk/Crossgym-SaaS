@@ -21,12 +21,6 @@
         </div>
         <x-flowbite.table>
         <x-flowbite.table.head>
-            <x-flowbite.table.head.cell class="p-4">
-                <div class="flex items-center">
-                    <input id="checkbox-all-search" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <label for="checkbox-all-search" class="sr-only">checkbox</label>
-                </div>
-            </x-flowbite.table.head.cell>
             <x-flowbite.table.head.cell>{{ __('ID') }}</x-flowbite.table.head.cell>
             <x-flowbite.table.head.cell>{{ __('Name') }}</x-flowbite.table.head.cell>
             <x-flowbite.table.head.cell>{{ __('Domain') }}</x-flowbite.table.head.cell>
@@ -36,12 +30,6 @@
         <x-flowbite.table.body>
             @forelse ($tenants as $tenant)
                 <x-flowbite.table.body.row>
-                    <x-flowbite.table.body.cell class="w-4 p-4">
-                        <div class="flex items-center">
-                            <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
-                        </div>
-                    </x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $tenant->id }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $tenant->name }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $tenant->domain }}</x-flowbite.table.body.cell>

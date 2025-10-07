@@ -30,19 +30,35 @@
                 @endcan
             </flux:navlist.group>
             @endcan
+            @can('viewAny', \App\Models\GymClass::class)
+                <flux:navlist.group :heading="__('Classes')" class="grid" expandable>
+                    <flux:navlist.item :href="route('classes.index')" :current="request()->routeIs('classes.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
+                    @can('create', \App\Models\GymClass::class)
+                        <flux:navlist.item :href="route('classes.create')" :current="request()->routeIs('classes.create')" wire:navigate>{{__('Create Class')}}</flux:navlist.item>
+                    @endcan
+                </flux:navlist.group>
+            @endcan
+            @can('viewAny', \App\Models\ClassType::class)
+                <flux:navlist.group :heading="__('Class Types')" class="grid" expandable>
+                    <flux:navlist.item :href="route('class-types.index')" :current="request()->routeIs('class-types.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
+                    @can('create', \App\Models\ClassType::class)
+                    <flux:navlist.item :href="route('class-types.create')" :current="request()->routeIs('class-types.create')" wire:navigate>{{__('Create Class Type')}}</flux:navlist.item>
+                    @endcan
+                </flux:navlist.group>
+            @endcan
             @can('viewAny', \App\Models\Role::class)
-            <flux:navlist.group :heading="__('Roles')" class="grid" expandable>
-                <flux:navlist.item :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
-                @can('create', \App\Models\Role::class)
-                <flux:navlist.item :href="route('roles.create')" :current="request()->routeIs('roles.create')" wire:navigate>{{__('Create Role')}}</flux:navlist.item>
-                @endcan
-            </flux:navlist.group>
+                <flux:navlist.group :heading="__('Roles')" class="grid" expandable>
+                    <flux:navlist.item :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
+                    @can('create', \App\Models\Role::class)
+                        <flux:navlist.item :href="route('roles.create')" :current="request()->routeIs('roles.create')" wire:navigate>{{__('Create Role')}}</flux:navlist.item>
+                    @endcan
+                </flux:navlist.group>
             @endcan
             @can('viewAny', \App\Models\Tenant::class)
                 <flux:navlist.group :heading="__('Tenants')" class="grid" expandable>
                     <flux:navlist.item :href="route('tenants.index')" :current="request()->routeIs('tenants.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @can('create', \App\Models\Tenant::class)
-                    <flux:navlist.item :href="route('tenants.create')" :current="request()->routeIs('tenants.create')" wire:navigate>{{__('Create Tenant')}}</flux:navlist.item>
+                        <flux:navlist.item :href="route('tenants.create')" :current="request()->routeIs('tenants.create')" wire:navigate>{{__('Create Tenant')}}</flux:navlist.item>
                     @endcan
                 </flux:navlist.group>
             @endcan

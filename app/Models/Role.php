@@ -7,17 +7,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 class Role extends Model
 {
     use HasFactory, BelongsToTenant;
-
+    use HasTranslations;
     protected $fillable = [
         'name',
         'permissions',
         'tenant_id',
     ];
-
+protected array $translatable = [ 'name'];
     protected function casts(): array
     {
         return [

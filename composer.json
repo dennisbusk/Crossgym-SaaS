@@ -18,6 +18,7 @@
         "livewire/volt": "^1.7",
         "maatwebsite/excel": "^3.1",
         "spatie/laravel-permission": "^6.21",
+        "spatie/laravel-translatable": "^6.11",
         "stripe/stripe-php": "^18.0"
     },
     "require-dev": {

@@ -22,11 +22,11 @@
             @enderror
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex gap-2 justify-end">
             <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
                 {{ $tenant?->exists ? 'Update' : 'Create' }}
             </button>
-            <a href="{{ route('tenants.index') }}" class="inline-flex items-center rounded-md bg-gray-100 px-3 py-2 hover:bg-gray-200">Cancel</a>
+            <a href="{{ route('tenants.index') }}" class="inline-flex items-center rounded-md bg-yellow-600 px-3 py-2 hover:bg-yellow-800">Cancel</a>
         </div>
     </form>
 </div>

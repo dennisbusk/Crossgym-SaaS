@@ -13,6 +13,12 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Livewire\Admin\ClassTypes\ClassTypeForm;
+use App\Livewire\Admin\ClassTypes\ClassTypeIndex;
+use App\Livewire\Admin\ClassTypes\ClassTypeShow;
+use App\Livewire\Admin\Classes\ClassForm;
+use App\Livewire\Admin\Classes\ClassIndex;
+use App\Livewire\Admin\Classes\ClassShow;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -62,6 +68,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users/create', UserForm::class)->name('users.create')->can('create', App\Models\User::class);
         Route::get('/users/{user}', UserShow::class)->name('users.show')->can('view', 'user');
         Route::get('/users/{user}/edit', UserForm::class)->name('users.edit')->can('update', 'user');
+    });
+// Class Types CRUD
+    Route::middleware('can:viewAny,App\\Models\\ClassType')->group(function () {
+        Route::get('/class-types', ClassTypeIndex::class)->name('class-types.index');
+        Route::get('/class-types/create', ClassTypeForm::class)->name('class-types.create')->can('create', App\Models\ClassType::class);
+        Route::get('/class-types/{classType}', ClassTypeShow::class)->name('class-types.show')->can('view', 'classType');
+        Route::get('/class-types/{classType}/edit', ClassTypeForm::class)->name('class-types.edit')->can('update', 'classType');
+    });
+// Classes CRUD
+    Route::middleware('can:viewAny,App\\Models\\GymClass')->group(function () {
+        Route::get('/classes', ClassIndex::class)->name('classes.index');
+        Route::get('/classes/create', ClassForm::class)->name('classes.create')->can('create', App\Models\GymClass::class);
+        Route::get('/classes/{gymClass}', ClassShow::class)->name('classes.show')->can('view', 'gymClass');
+        Route::get('/classes/{gymClass}/edit', ClassForm::class)->name('classes.edit')->can('update', 'gymClass');
     });
 
 });

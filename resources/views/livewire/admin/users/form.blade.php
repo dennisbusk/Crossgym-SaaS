@@ -63,7 +63,7 @@
             <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
                 {{ $user?->exists ? __('Update') : __('Create') }}
             </button>
-            <a href="{{ route('users.index') }}" class="inline-flex items-center rounded-md bg-gray-100 px-3 py-2 hover:bg-gray-200">{{ __('Cancel') }}</a>
+            <a href="{{ route('users.index') }}" class="inline-flex items-center rounded-md bg-yellow-600 px-3 py-2 hover:bg-yellow-800">{{ __('Cancel') }}</a>
         </div>
     </form>
 </div>

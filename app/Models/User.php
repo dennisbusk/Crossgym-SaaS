@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -66,6 +67,14 @@ class User extends Authenticatable
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    /**
+     * Classes this user participates in.
+     */
+    public function attendingClasses(): BelongsToMany
+    {
+        return $this->belongsToMany(GymClass::class, 'gym_class_user', 'user_id', 'gym_class_id')->withTimestamps();
     }
 
     /**

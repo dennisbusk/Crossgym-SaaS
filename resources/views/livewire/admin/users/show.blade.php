@@ -11,6 +11,6 @@
 
     <div class="flex gap-2">
         <a href="{{ route('users.edit', $user) }}" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">{{ __('Edit') }}</a>
-        <a href="{{ route('users.index') }}" class="inline-flex items-center rounded-md bg-gray-100 px-3 py-2 hover:bg-gray-200">{{ __('Back to list') }}</a>
+        <a href="{{ route('users.index') }}" class="inline-flex items-center rounded-md bg-yellow-600 px-3 py-2 hover:bg-yellow-800">{{ __('Back to list') }}</a>
     </div>
 </div>
