@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ __('View Role') }}</h1>
         <div class="space-x-2">
-            <flux:button tag="a" href="{{ route('roles.index') }}" variant="secondary">{{ __('Back') }}</flux:button>
+            <flux:button tag="a" href="{{ route('roles.index') }}" variant="primary">{{ __('Back') }}</flux:button>
             <flux:button tag="a" href="{{ route('roles.edit', $role) }}" variant="primary">{{ __('Edit') }}</flux:button>
         </div>
     </div>

@@ -6,6 +6,9 @@ use App\Livewire\Admin\Roles\RoleShow;
 use App\Livewire\Admin\Tenants\TenantForm;
 use App\Livewire\Admin\Tenants\TenantIndex;
 use App\Livewire\Admin\Tenants\TenantShow;
+use App\Livewire\Admin\Users\UserForm;
+use App\Livewire\Admin\Users\UserIndex;
+use App\Livewire\Admin\Users\UserShow;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -52,6 +55,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tenants/create', TenantForm::class)->name('tenants.create')->can('create', App\Models\Tenant::class);
         Route::get('/tenants/{tenant}', TenantShow::class)->name('tenants.show')->can('view', App\Models\Tenant::class);
         Route::get('/tenants/{tenant}/edit', TenantForm::class)->name('tenants.edit')->can('update', App\Models\Tenant::class);
+    });
+// Users CRUD
+    Route::middleware('can:viewAny,App\\Models\\User')->group(function () {
+        Route::get('/users', UserIndex::class)->name('users.index');
+        Route::get('/users/create', UserForm::class)->name('users.create')->can('create', App\Models\User::class);
+        Route::get('/users/{user}', UserShow::class)->name('users.show')->can('view', 'user');
+        Route::get('/users/{user}/edit', UserForm::class)->name('users.edit')->can('update', 'user');
     });
 
 });

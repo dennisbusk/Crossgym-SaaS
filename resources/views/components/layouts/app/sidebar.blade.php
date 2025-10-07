@@ -22,6 +22,14 @@
 {{--                <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>--}}
 {{--                <flux:navlist.item :href="route('users.create')" :current="request()->routeIs('users.create')" wire:navigate>{{__('Create User')}}</flux:navlist.item>--}}
 {{--            </flux:navlist.group>--}}
+            @can('viewAny', \App\Models\User::class)
+            <flux:navlist.group :heading="__('Users')" class="grid" expandable>
+                <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
+                @can('create', \App\Models\User::class)
+                <flux:navlist.item :href="route('users.create')" :current="request()->routeIs('users.create')" wire:navigate>{{__('Create User')}}</flux:navlist.item>
+                @endcan
+            </flux:navlist.group>
+            @endcan
             @can('viewAny', \App\Models\Role::class)
             <flux:navlist.group :heading="__('Roles')" class="grid" expandable>
                 <flux:navlist.item :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
@@ -140,5 +148,7 @@
         {{ $slot }}
 
         @fluxScripts
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    @stack('scripts')
     </body>
 </html>

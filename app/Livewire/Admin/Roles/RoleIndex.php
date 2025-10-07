@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Admin\Roles;
 
+use App\Exports\RolesExport;
 use App\Models\Role;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RoleIndex extends Component
 {
@@ -31,7 +35,14 @@ class RoleIndex extends Component
         $role = Role::findOrFail($id);
         $this->authorize('delete', $role);
         $role->delete();
-        session()->flash('status', 'Role deleted.');
+        session()->flash('status', __('Role deleted.'));
+    }
+
+    public function export()
+    {
+        $this->authorize('viewAny', Role::class);
+
+        return Excel::download(new RolesExport(), 'roles.xlsx');
     }
 
     public function render()
