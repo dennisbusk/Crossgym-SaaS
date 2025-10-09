@@ -9,11 +9,19 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Models\GymClass;
 use App\Models\ClassType;
+use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\Payment;
+use App\Models\StripeWebhookLog;
 use App\Policies\RolePolicy;
 use App\Policies\TenantPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\GymClassPolicy;
 use App\Policies\ClassTypePolicy;
+use App\Policies\PlanPolicy;
+use App\Policies\SubscriptionPolicy;
+use App\Policies\PaymentPolicy;
+use App\Policies\StripeWebhookLogPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,6 +45,10 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(GymClass::class, GymClassPolicy::class);
         Gate::policy(ClassType::class, ClassTypePolicy::class);
+        Gate::policy(Plan::class, PlanPolicy::class);
+        Gate::policy(Subscription::class, SubscriptionPolicy::class);
+        Gate::policy(Payment::class, PaymentPolicy::class);
+        Gate::policy(StripeWebhookLog::class, StripeWebhookLogPolicy::class);
 
         // Global before hook to honor dynamic permissions
         Gate::before(function (User $user, string $ability, ?array $arguments = null) {

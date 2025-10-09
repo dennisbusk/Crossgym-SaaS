@@ -101,6 +101,21 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('can:viewAny,App\\Models\\Plan')->group(function () {
         Route::get('/plans', PlanIndex::class)->name('plans.index');
     });
+// Subscriptions Index
+    Route::middleware('can:viewAny,App\\Models\\Subscription')->group(function () {
+        \App\Livewire\Admin\Subscriptions\SubscriptionIndex::class; // ensure autoload
+        Route::get('/subscriptions', \App\Livewire\Admin\Subscriptions\SubscriptionIndex::class)->name('subscriptions.index');
+    });
+// Payments Index
+    Route::middleware('can:viewAny,App\\Models\\Payment')->group(function () {
+        \App\Livewire\Admin\Payments\PaymentIndex::class; // ensure autoload
+        Route::get('/payments', \App\Livewire\Admin\Payments\PaymentIndex::class)->name('payments.index');
+    });
+// Stripe Webhook Logs Index
+    Route::middleware('can:viewAny,App\\Models\\StripeWebhookLog')->group(function () {
+        \App\Livewire\Admin\StripeWebhookLogs\StripeWebhookLogIndex::class; // ensure autoload
+        Route::get('/stripe-webhook-logs', \App\Livewire\Admin\StripeWebhookLogs\StripeWebhookLogIndex::class)->name('stripe-webhook-logs.index');
+    });
 
 });
 Route::impersonate();

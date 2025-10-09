@@ -43,4 +43,9 @@ class UserPolicy
     {
         return $user->hasPermission('User', 'delete');
     }
+
+    public function view_admin_dashboard(AuthUser $user, User $model): bool
+    {
+        return $user->hasPermission('User', 'view_admin_dashboard');
+    }
 }
