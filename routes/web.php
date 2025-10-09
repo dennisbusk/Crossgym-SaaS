@@ -1,27 +1,28 @@
 <?php
 
-use App\Http\Controllers\StripeWebhookController;
-use App\Livewire\Admin\Classes\ClassForm;
-use App\Livewire\Admin\Classes\ClassIndex;
-use App\Livewire\Admin\Classes\ClassShow;
-use App\Livewire\Admin\ClassTypes\ClassTypeForm;
-use App\Livewire\Admin\ClassTypes\ClassTypeIndex;
-use App\Livewire\Admin\ClassTypes\ClassTypeShow;
-use App\Livewire\Admin\Roles\ManagePermissions as RoleManagePermissions;
+use App\Http\Controllers\Stripe\StripeConnectController;
+use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Livewire\Admin\Roles\RoleForm;
 use App\Livewire\Admin\Roles\RoleIndex;
 use App\Livewire\Admin\Roles\RoleShow;
+use App\Livewire\Admin\Roles\ManagePermissions as RoleManagePermissions;
 use App\Livewire\Admin\Tenants\TenantForm;
 use App\Livewire\Admin\Tenants\TenantIndex;
 use App\Livewire\Admin\Tenants\TenantShow;
-use App\Livewire\Admin\Users\ManagePermissions as UserManagePermissions;
 use App\Livewire\Admin\Users\UserForm;
 use App\Livewire\Admin\Users\UserIndex;
 use App\Livewire\Admin\Users\UserShow;
+use App\Livewire\Admin\Users\ManagePermissions as UserManagePermissions;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Livewire\Admin\ClassTypes\ClassTypeForm;
+use App\Livewire\Admin\ClassTypes\ClassTypeIndex;
+use App\Livewire\Admin\ClassTypes\ClassTypeShow;
+use App\Livewire\Admin\Classes\ClassForm;
+use App\Livewire\Admin\Classes\ClassIndex;
+use App\Livewire\Admin\Classes\ClassShow;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -33,7 +34,14 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// Stripe webhook endpoint (public)
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
+
 Route::middleware(['auth'])->group(function () {
+    Route::view('/admin', 'admin.dashboard')->name('admin.dashboard');
+    // Stripe Connect flow
+    Route::get('/admin/stripe/connect', [StripeConnectController::class, 'connect'])->name('stripe.connect');
+    Route::get('/admin/stripe/connect/callback', [StripeConnectController::class, 'callback'])->name('stripe.connect.callback');
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
@@ -90,8 +98,5 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
-// Stripe webhook (signature verified inside controller per-tenant)
-Route::post('/stripe/webhook', [ StripeWebhookController::class, 'handle' ])->name('stripe.webhook');
-
 Route::impersonate();
 require __DIR__.'/auth.php';

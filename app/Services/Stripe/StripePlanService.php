@@ -1,93 +1,43 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 namespace App\Services\Stripe;
 
-use App\Helpers\StripeHelper;
 use App\Models\Plan;
-use App\Models\Tenant;
+use Illuminate\Support\Arr;
 
-class StripePlanService {
+class StripePlanService
+{
+    public function __construct(
+        protected StripeService $stripe
+    ) {}
 
-    public function getPlans( ?Tenant $tenant = null ): array {
-        $tenant = $tenant ?? ( app()->has('tenant') ? app('tenant') : null );
-        $client = StripeHelper::getStripeClient($tenant);
-        $prices = $client->prices->all([ 'active' => true, 'expand' => [ 'data.product' ] ]);
-
-        $result = [];
-        foreach ( $prices->data as $price ) {
-            if ( $price->type !== 'recurring' ) {
-                continue;
-            }
-            $result[] = [
-                'stripe_price_id' => $price->id,
-                'name'            => $price->product->name ?? 'Plan',
-                'amount'          => $price->unit_amount,
-                'currency'        => $price->currency,
-                'interval'        => $price->recurring->interval,
-                'metadata'        => (array) ( $price->metadata ?? [] ),
-            ];
-        }
-
-        // Cache locally in plans table (upsert)
-        foreach ( $result as $planData ) {
-            Plan::updateOrCreate(
-                [ 'tenant_id' => $tenant?->id, 'stripe_price_id' => $planData['stripe_price_id'] ],
-                [
-                    'name'     => $planData['name'],
-                    'amount'   => $planData['amount'],
-                    'currency' => $planData['currency'],
-                    'interval' => $planData['interval'],
-                    'metadata' => $planData['metadata'],
-                ]
-            );
-        }
-
-        return $result;
+    public static function make(): self
+    {
+        return new self(StripeService::forTenant());
     }
 
-    public function createPlan( string $name, int $amount, string $interval, ?Tenant $tenant = null ): array {
-        $tenant = $tenant ?? ( app()->has('tenant') ? app('tenant') : null );
-        $client = StripeHelper::getStripeClient($tenant);
+    public function getPlans(): array
+    {
+        return $this->stripe->getPlans();
+    }
 
-        // Create product
-        $product = $client->products->create([
-            'name'     => $name,
-            'metadata' => [
-                'tenant_id' => $tenant?->id,
-            ],
-        ]);
+    public function createPlan(string $name, int $amount, string $interval = 'month', string $currency = 'dkk'): Plan
+    {
+        $created = $this->stripe->createPlan($name, $amount, $currency, $interval);
+        $price = $created['price'];
+        $product = $created['product'];
 
-        // Create price
-        $price = $client->prices->create([
-            'unit_amount' => $amount,
-            'currency'    => 'usd',
-            'recurring'   => [ 'interval' => $interval ],
-            'product'     => $product->id,
-            'metadata'    => [
-                'tenant_id' => $tenant?->id,
-            ],
-        ]);
-
-        Plan::updateOrCreate(
-            [ 'tenant_id' => $tenant?->id, 'stripe_price_id' => $price->id ],
+        return Plan::query()->updateOrCreate(
+            ['tenant_id' => tenant()?->id, 'stripe_price_id' => $price['id']],
             [
-                'name'     => $name,
-                'amount'   => $amount,
-                'currency' => $price->currency,
-                'interval' => $interval,
-                'metadata' => [],
+                'name' => $product['name'] ?? $name,
+                'amount' => (int)($price['unit_amount'] ?? $amount),
+                'currency' => strtoupper($price['currency'] ?? $currency),
+                'interval' => Arr::get($price, 'recurring.interval', $interval),
+                'metadata' => $product['metadata'] ?? [],
             ]
         );
-
-        return [
-            'stripe_price_id' => $price->id,
-            'name'            => $name,
-            'amount'          => $amount,
-            'currency'        => $price->currency,
-            'interval'        => $interval,
-            'metadata'        => [],
-        ];
     }
 }

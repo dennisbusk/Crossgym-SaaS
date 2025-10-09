@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +18,9 @@ class Tenant extends Model
         'stripe_public_key',
         'stripe_secret_key',
         'stripe_webhook_secret',
+        'stripe_connect_account_id',
+        'stripe_connect_refresh_token',
+        'stripe_connect_access_token',
     ];
 
     /**
