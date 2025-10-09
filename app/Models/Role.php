@@ -1,11 +1,14 @@
 <?php
 
+declare( strict_types=1 );
+
 namespace App\Models;
 
 use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
@@ -13,18 +16,14 @@ class Role extends Model
 {
     use HasFactory, BelongsToTenant;
     use HasTranslations;
+
     protected $fillable = [
         'name',
-        'permissions',
         'tenant_id',
     ];
-protected array $translatable = [ 'name'];
-    protected function casts(): array
-    {
-        return [
-            'permissions' => 'array',
-        ];
-    }
+
+    protected array $translatable = [ 'name' ];
+
 
     /**
      * A role has many users.
@@ -32,6 +31,23 @@ protected array $translatable = [ 'name'];
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    /**
+     * Many-to-many relation to permissions (new system).
+     */
+    public function permissions(): BelongsToMany {
+        return $this->belongsToMany(Permission::class)->withTimestamps();
+    }
+
+    /**
+     * Check if role has a specific permission.
+     */
+    public function hasPermission( string $model, string $ability ): bool {
+        return $this->permissions()
+                    ->where('model', $model)
+                    ->where('ability', $ability)
+                    ->exists();
     }
 
     /**

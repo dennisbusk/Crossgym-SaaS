@@ -1,11 +1,20 @@
 <?php
 
+use App\Http\Controllers\StripeWebhookController;
+use App\Livewire\Admin\Classes\ClassForm;
+use App\Livewire\Admin\Classes\ClassIndex;
+use App\Livewire\Admin\Classes\ClassShow;
+use App\Livewire\Admin\ClassTypes\ClassTypeForm;
+use App\Livewire\Admin\ClassTypes\ClassTypeIndex;
+use App\Livewire\Admin\ClassTypes\ClassTypeShow;
+use App\Livewire\Admin\Roles\ManagePermissions as RoleManagePermissions;
 use App\Livewire\Admin\Roles\RoleForm;
 use App\Livewire\Admin\Roles\RoleIndex;
 use App\Livewire\Admin\Roles\RoleShow;
 use App\Livewire\Admin\Tenants\TenantForm;
 use App\Livewire\Admin\Tenants\TenantIndex;
 use App\Livewire\Admin\Tenants\TenantShow;
+use App\Livewire\Admin\Users\ManagePermissions as UserManagePermissions;
 use App\Livewire\Admin\Users\UserForm;
 use App\Livewire\Admin\Users\UserIndex;
 use App\Livewire\Admin\Users\UserShow;
@@ -13,12 +22,6 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
-use App\Livewire\Admin\ClassTypes\ClassTypeForm;
-use App\Livewire\Admin\ClassTypes\ClassTypeIndex;
-use App\Livewire\Admin\ClassTypes\ClassTypeShow;
-use App\Livewire\Admin\Classes\ClassForm;
-use App\Livewire\Admin\Classes\ClassIndex;
-use App\Livewire\Admin\Classes\ClassShow;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -54,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('roles/create', RoleForm::class)->name('roles.create')->can('create', 'App\\Models\\Role');
         Route::get('roles/{role}', RoleShow::class)->name('roles.show')->can('view', 'role');
         Route::get('roles/{role}/edit', RoleForm::class)->name('roles.edit')->can('update', 'role');
+        Route::get('roles/{role}/permissions', RoleManagePermissions::class)->name('roles.permissions')->can('update', 'role');
     });
 // Tenants CRUD
     Route::middleware('can:viewAny,App\\Models\\Tenant')->group(function () {
@@ -68,6 +72,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users/create', UserForm::class)->name('users.create')->can('create', App\Models\User::class);
         Route::get('/users/{user}', UserShow::class)->name('users.show')->can('view', 'user');
         Route::get('/users/{user}/edit', UserForm::class)->name('users.edit')->can('update', 'user');
+        Route::get('/users/{user}/permissions', UserManagePermissions::class)->name('users.permissions')->can('update', 'user');
     });
 // Class Types CRUD
     Route::middleware('can:viewAny,App\\Models\\ClassType')->group(function () {
@@ -85,5 +90,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
+// Stripe webhook (signature verified inside controller per-tenant)
+Route::post('/stripe/webhook', [ StripeWebhookController::class, 'handle' ])->name('stripe.webhook');
+
 Route::impersonate();
 require __DIR__.'/auth.php';

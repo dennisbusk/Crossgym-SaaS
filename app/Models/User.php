@@ -1,9 +1,12 @@
 <?php
 
+declare( strict_types=1 );
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Traits\BelongsToTenant;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,7 +17,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable, BelongsToTenant;
 
     /**
@@ -75,6 +78,41 @@ class User extends Authenticatable
     public function attendingClasses(): BelongsToMany
     {
         return $this->belongsToMany(GymClass::class, 'gym_class_user', 'user_id', 'gym_class_id')->withTimestamps();
+    }
+
+    /**
+     * Direct user-specific permissions with granted flag.
+     */
+    public function permissions(): BelongsToMany {
+        return $this->belongsToMany(Permission::class)
+                    ->withPivot('granted')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Aggregate of role permissions and user overrides.
+     */
+    public function allPermissions() {
+        $rolePermissions = $this->role ? $this->role->permissions?->pluck('id')->toArray() : [];
+
+        $userOverrides = $this->permissions
+            ->mapWithKeys(fn( $p ) => [ $p->id => (bool) $p->pivot->granted ])
+            ->toArray();
+
+        $final = collect($rolePermissions)
+            ->mapWithKeys(fn( $id ) => [ $id => true ])
+            ->merge($userOverrides)
+            ->filter(fn( $granted ) => $granted)
+            ->keys();
+
+        return Permission::whereIn('id', $final)->get();
+    }
+
+    public function hasPermission( string $model, string $ability ): bool {
+        return $this->allPermissions()
+                    ->where('model', $model)
+                    ->where('ability', $ability)
+                    ->isNotEmpty();
     }
 
     /**

@@ -34,6 +34,7 @@
                 <x-flowbite.table.body.cell>{{ $role->users()->count() }}</x-flowbite.table.body.cell>
                 <x-flowbite.table.body.cell class="text-right space-x-2">
                     <flux:button icon="eye" tag="a" href="{{ route('roles.show', $role) }}" variant="ghost" />
+                    <flux:button icon="lock-closed" tag="a" href="{{ route('roles.permissions', $role) }}" variant="ghost"/>
                     <flux:button icon="pencil-square" tag="a" href="{{ route('roles.edit', $role) }}" variant="ghost" />
                     <flux:button icon="trash" wire:click="delete({{ $role->id }})" variant="ghost" />
                 </x-flowbite.table.body.cell>

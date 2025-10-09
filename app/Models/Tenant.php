@@ -13,6 +13,9 @@ class Tenant extends Model
     protected $fillable = [
         'name',
         'domain',
+        'stripe_public_key',
+        'stripe_secret_key',
+        'stripe_webhook_secret',
     ];
 
     /**
