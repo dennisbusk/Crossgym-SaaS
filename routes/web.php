@@ -23,6 +23,7 @@ use App\Livewire\Admin\ClassTypes\ClassTypeShow;
 use App\Livewire\Admin\Classes\ClassForm;
 use App\Livewire\Admin\Classes\ClassIndex;
 use App\Livewire\Admin\Classes\ClassShow;
+use App\Livewire\Admin\Plans\PlanIndex;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -95,6 +96,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/classes/create', ClassForm::class)->name('classes.create')->can('create', App\Models\GymClass::class);
         Route::get('/classes/{gymClass}', ClassShow::class)->name('classes.show')->can('view', 'gymClass');
         Route::get('/classes/{gymClass}/edit', ClassForm::class)->name('classes.edit')->can('update', 'gymClass');
+    });
+// Plans Index
+    Route::middleware('can:viewAny,App\\Models\\Plan')->group(function () {
+        Route::get('/plans', PlanIndex::class)->name('plans.index');
     });
 
 });

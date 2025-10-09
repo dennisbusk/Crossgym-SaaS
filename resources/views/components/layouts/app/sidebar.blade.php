@@ -63,6 +63,53 @@
                 </flux:navlist.group>
             @endcan
 
+            @can('viewAny', \App\Models\Plan::class)
+                <flux:navlist.group :heading="__('Plans')" class="grid" expandable>
+                    @if(\Illuminate\Support\Facades\Route::has('plans.index'))
+                        <flux:navlist.item :href="route('plans.index')" :current="request()->routeIs('plans.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
+                    @endif
+                    @can('create', \App\Models\Plan::class)
+                        @if(\Illuminate\Support\Facades\Route::has('plans.create'))
+                            <flux:navlist.item :href="route('plans.create')" :current="request()->routeIs('plans.create')" wire:navigate>{{__('Create Plan')}}</flux:navlist.item>
+                        @endif
+                    @endcan
+                </flux:navlist.group>
+            @endcan
+
+            @can('viewAny', \App\Models\Subscription::class)
+                <flux:navlist.group :heading="__('Subscriptions')" class="grid" expandable>
+                    @if(\Illuminate\Support\Facades\Route::has('subscriptions.index'))
+                        <flux:navlist.item :href="route('subscriptions.index')" :current="request()->routeIs('subscriptions.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
+                    @endif
+                    @can('create', \App\Models\Subscription::class)
+                        @if(\Illuminate\Support\Facades\Route::has('subscriptions.create'))
+                            <flux:navlist.item :href="route('subscriptions.create')" :current="request()->routeIs('subscriptions.create')" wire:navigate>{{__('Create Subscription')}}</flux:navlist.item>
+                        @endif
+                    @endcan
+                </flux:navlist.group>
+            @endcan
+
+            @can('viewAny', \App\Models\Payment::class)
+                <flux:navlist.group :heading="__('Payments')" class="grid" expandable>
+                    @if(\Illuminate\Support\Facades\Route::has('payments.index'))
+                        <flux:navlist.item :href="route('payments.index')" :current="request()->routeIs('payments.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
+                    @endif
+                    @can('create', \App\Models\Payment::class)
+                        @if(\Illuminate\Support\Facades\Route::has('payments.create'))
+                            <flux:navlist.item :href="route('payments.create')" :current="request()->routeIs('payments.create')" wire:navigate>{{__('Create Payment')}}</flux:navlist.item>
+                        @endif
+                    @endcan
+                </flux:navlist.group>
+            @endcan
+
+            @can('viewAny', \App\Models\StripeWebhookLog::class)
+                <flux:navlist.group :heading="__('Stripe Webhooks')" class="grid" expandable>
+                    @if(\Illuminate\Support\Facades\Route::has('stripe-webhook-logs.index'))
+                        <flux:navlist.item :href="route('stripe-webhook-logs.index')" :current="request()->routeIs('stripe-webhook-logs.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
+                    @endif
+                </flux:navlist.group>
+            @endcan
+
             <flux:spacer />
 
             <!-- Desktop User Menu -->

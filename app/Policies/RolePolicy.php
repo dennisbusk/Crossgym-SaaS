@@ -7,20 +7,20 @@ use App\Models\User;
 
 class RolePolicy
 {
-    public function before(User $user, string $ability)
+    public function before(User $user, string $ability): ?bool
     {
         if ($user->role && $user->role->slug === 'superadmin') {
             return true;
         }
 
-        return false;
+        return null;
     }
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return true; // Allow all for now
+        return $user->hasPermission('Role', 'viewAny');
     }
 
     /**
@@ -28,7 +28,7 @@ class RolePolicy
      */
     public function view(User $user, Role $role): bool
     {
-        return true; // Adjust with real logic later
+        return $user->hasPermission('Role', 'view');
     }
 
     /**
@@ -36,7 +36,7 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        return true; // Adjust with admin/permission checks later
+        return $user->hasPermission('Role', 'create');
     }
 
     /**
@@ -44,7 +44,7 @@ class RolePolicy
      */
     public function update(User $user, Role $role): bool
     {
-        return true; // Adjust with real logic later
+        return $user->hasPermission('Role', 'update');
     }
 
     /**
@@ -52,6 +52,6 @@ class RolePolicy
      */
     public function delete(User $user, Role $role): bool
     {
-        return true; // Adjust with real logic later
+        return $user->hasPermission('Role', 'delete');
     }
 }

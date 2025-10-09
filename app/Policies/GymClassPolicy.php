@@ -11,7 +11,6 @@ class GymClassPolicy
 {
     public function before(User $user, string $ability): ?bool
     {
-        // Admins can do anything
         if ($user->role && $user->role->slug === 'superadmin') {
             return true;
         }
@@ -21,29 +20,26 @@ class GymClassPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->tenant_id !== null; // any authenticated tenant user can list
+        return $user->hasPermission('GymClass', 'viewAny');
     }
 
     public function view(User $user, GymClass $class): bool
     {
-        return $user->tenant_id === $class->tenant_id;
+        return $user->hasPermission('GymClass', 'view');
     }
 
     public function create(User $user): bool
     {
-        // Trainers and Admin (handled in before) can create
-        return $user->role && $user->role->name === 'Trainer';
+        return $user->hasPermission('GymClass', 'create');
     }
 
     public function update(User $user, GymClass $class): bool
     {
-        // Only the trainer who created the class (or Admin via before)
-        return $user->id === $class->trainer_id;
+        return $user->hasPermission('GymClass', 'update');
     }
 
     public function delete(User $user, GymClass $class): bool
     {
-        // Only the trainer who created the class (or Admin via before)
-        return $user->id === $class->trainer_id;
+        return $user->hasPermission('GymClass', 'delete');
     }
 }

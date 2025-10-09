@@ -11,7 +11,6 @@ class ClassTypePolicy
 {
     public function before(User $user, string $ability): ?bool
     {
-        // Admins can do anything
         if ($user->role && $user->role->slug === 'superadmin') {
             return true;
         }
@@ -21,29 +20,26 @@ class ClassTypePolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->tenant_id !== null;
+        return $user->hasPermission('ClassType', 'viewAny');
     }
 
     public function view(User $user, ClassType $classType): bool
     {
-        return $user->tenant_id === $classType->tenant_id;
+        return $user->hasPermission('ClassType', 'view');
     }
 
     public function create(User $user): bool
     {
-        // Trainers can manage class types for their tenant
-        return $user->role && in_array($user->role->name, ['Trainer'], true);
+        return $user->hasPermission('ClassType', 'create');
     }
 
     public function update(User $user, ClassType $classType): bool
     {
-        return $user->tenant_id === $classType->tenant_id
-            && ($user->role && in_array($user->role->name, ['Trainer'], true));
+        return $user->hasPermission('ClassType', 'update');
     }
 
     public function delete(User $user, ClassType $classType): bool
     {
-        return $user->tenant_id === $classType->tenant_id
-            && ($user->role && in_array($user->role->name, ['Trainer'], true));
+        return $user->hasPermission('ClassType', 'delete');
     }
 }
