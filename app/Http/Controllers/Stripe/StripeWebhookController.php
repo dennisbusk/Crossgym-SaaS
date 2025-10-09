@@ -21,8 +21,16 @@ class StripeWebhookController extends Controller
     {
         $payload = $request->getContent();
         $sig = $request->header('Stripe-Signature', '');
+        $connected = $request->header('Stripe-Account');
+        $tenant = $connected ? \App\Models\Tenant::where('stripe_connect_account_id', $connected)->first() : null;
 
-        $tenantClient = new StripeTenantClient();
+        $tenantClient = new StripeTenantClient($tenant);
+        // Bind tenant context for downstream model scoping and logging
+        if ($tenant) {
+            session(['tenant_id' => $tenant->id]);
+            app()->instance('tenant', $tenant);
+        }
+
         $secret = $tenantClient->webhookSecret();
         if (!$secret) {
             return response(['message' => 'Missing webhook secret'], 400);

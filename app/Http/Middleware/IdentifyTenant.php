@@ -16,6 +16,11 @@ class IdentifyTenant
             return $next($request);
         }
 
+        // Exempt Stripe webhook endpoint from tenant enforcement (Stripe may call a central domain)
+        if ($request->is('stripe/webhook')) {
+            return $next($request);
+        }
+
         $host = $request->getHost();
         $tenant = Tenant::where('domain', $host)->first();
 
