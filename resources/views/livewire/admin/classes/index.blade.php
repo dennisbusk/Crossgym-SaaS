@@ -1,13 +1,13 @@
 <div class="space-y-6">
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-semibold">{{ __('Classes') }}</h1>
-        <flux:input placeholder="{{ __('Search...') }}" wire:model.live="search" />
+    
     </div>
-
+    
     @if (session('status'))
         <div class="rounded-md bg-green-50 p-3 text-green-700">{{ __(session('status')) }}</div>
     @endif
-
+    
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
         <div class="p-4 flex w-full justify-end items-center">
             <div class="flex items-center gap-2 justify-self-end">

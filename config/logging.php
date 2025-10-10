@@ -118,6 +118,12 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'stripe' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/stripe.log'),
+            'level' => 'info',
+        ],
+
         'null' => [
             'driver' => 'monolog',
             'handler' => NullHandler::class,

@@ -7,9 +7,16 @@
         <h1 class="text-2xl font-semibold">{{ __('Dashboard') }}</h1>
         <div class="flex items-center gap-2">
             <flux:button wire:click="export" variant="primary">{{ __('Export') }}</flux:button>
-            <a href="{{ route('stripe.connect') }}" class="inline-flex items-center px-3 py-2 rounded-md bg-neutral-900 text-white hover:bg-neutral-800">
-                {{ __('Connect with Stripe') }}
-            </a>
+            @php($tenant = tenant())
+            @if(auth()->check() && $tenant && !($tenant->stripe_connect_onboarded))
+                <a href="{{ route('stripe.connect.start') }}" class="inline-flex items-center px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/80 transition">
+                    {{ __('Forbind med Stripe') }}
+                </a>
+            @elseif($tenant && $tenant->stripe_connect_onboarded)
+                <div class="text-green-500 font-semibold">
+                    {{ __('Stripe er forbundet!') }}
+                </div>
+            @endif
         </div>
     </div>
 

@@ -196,4 +196,26 @@ class StripeService
             'price' => $price->toArray(),
         ];
     }
+
+    // 10. Create PaymentIntent using Destination Charges model (platform handles payments)
+    public function createDestinationChargeIntent(Tenant $tenant, int $amount, string $currency = 'dkk', array $params = []): array
+    {
+        // Use platform secret
+        $client = new \Stripe\StripeClient(config('services.stripe.secret'));
+
+        $pi = $client->paymentIntents->create(array_merge([
+            'amount' => $amount,
+            'currency' => strtolower($currency),
+            'payment_method_types' => ['card'],
+            'transfer_data' => [
+                'destination' => (string)$tenant->stripe_connect_account_id,
+            ],
+            'metadata' => array_merge([
+                'tenant_id' => $tenant->id,
+                'user_id' => auth()->id(),
+            ], $params['metadata'] ?? []),
+        ], $params));
+
+        return $pi->toArray();
+    }
 }

@@ -21,6 +21,10 @@ class Tenant extends Model
         'stripe_connect_account_id',
         'stripe_connect_refresh_token',
         'stripe_connect_access_token',
+        'stripe_connect_email',
+        'stripe_connect_onboarded',
+        'stripe_connect_charges_enabled',
+        'stripe_connect_payouts_enabled',
     ];
 
     /**

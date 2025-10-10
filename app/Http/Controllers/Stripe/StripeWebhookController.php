@@ -49,6 +49,7 @@ class StripeWebhookController extends Controller
 
         try {
             match ($type) {
+                'account.updated' => $this->onAccountUpdated($data),
                 'checkout.session.completed' => $this->onCheckoutSessionCompleted($data),
                 'payment_intent.succeeded' => $this->onPaymentIntentSucceeded($data),
                 'payment_intent.payment_failed' => $this->onPaymentIntentFailed($data),
@@ -183,6 +184,25 @@ class StripeWebhookController extends Controller
     {
         Subscription::query()->where('stripe_subscription_id', $sub->id)
             ->update(['status' => 'canceled']);
+    }
+
+    protected function onAccountUpdated($account): void
+    {
+        $tenant = \App\Models\Tenant::where('stripe_connect_account_id', $account->id)->first();
+        if ($tenant) {
+            $tenant->update([
+                'stripe_connect_charges_enabled' => (bool)($account->charges_enabled ?? false),
+                'stripe_connect_payouts_enabled' => (bool)($account->payouts_enabled ?? false),
+                'stripe_connect_onboarded' => (bool)($account->details_submitted ?? false),
+            ]);
+            Log::channel('stripe')->info('account.updated handled', [
+                'tenant_id' => $tenant->id,
+                'account_id' => $account->id,
+                'charges_enabled' => $account->charges_enabled ?? null,
+                'payouts_enabled' => $account->payouts_enabled ?? null,
+                'details_submitted' => $account->details_submitted ?? null,
+            ]);
+        }
     }
 
     protected function logEvent(string $type, string $payload, ?string $status = 'received', ?string $error = null): void

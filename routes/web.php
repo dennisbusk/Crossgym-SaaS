@@ -35,8 +35,20 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Stripe webhook endpoint (public)
+// Stripe webhook endpoints (public)
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
+Route::post('/webhook/stripe', [StripeWebhookController::class, 'handle'])->name('stripe.webhook.alt');
+
+// Stripe Connect Hosted Onboarding
+Route::middleware(['auth'])
+    ->prefix('stripe/connect')
+    ->name('stripe.connect.')
+    ->group(function () {
+        Route::get('/start', [StripeConnectController::class, 'start'])->name('start');
+        Route::get('/callback', [StripeConnectController::class, 'callback'])->name('callback');
+        Route::get('/refresh', [StripeConnectController::class, 'refresh'])->name('refresh');
+        Route::get('/return', [StripeConnectController::class, 'return'])->name('return');
+    });
 
 Route::middleware(['auth'])->group(function () {
     Route::view('/admin', 'admin.dashboard')->name('admin.dashboard');

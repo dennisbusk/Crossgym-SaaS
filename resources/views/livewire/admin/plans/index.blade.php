@@ -1,24 +1,24 @@
 <div class="space-y-6">
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-semibold">{{ __('Plans') }}</h1>
-        <div class="flex items-center gap-2">
-            <flux:input placeholder="{{ __('Search...') }}" wire:model.live="search" />
-            <flux:button wire:click="export" variant="primary">
-                {{ __('Export') }}
-            </flux:button>
-            @if(\Illuminate\Support\Facades\Route::has('plans.create'))
-                <flux:button tag="a" href="{{ route('plans.create') }}" variant="primary">
-                    {{ __('New Plan') }}
-                </flux:button>
-            @endif
-        </div>
+    
     </div>
-
+    
     @if (session('status'))
         <div class="rounded-md bg-green-50 p-3 text-green-700">{{ __(session('status')) }}</div>
     @endif
-
+    
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div class="p-4 flex w-full justify-end items-center">
+            <div class="flex items-center gap-2 justify-self-end">
+                <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="primary">
+                    {{ __('Export') }}
+                </x-flowbite.button>
+                <x-flowbite.button tag="a" href="{{ route('plans.create') }}" variant="primary">
+                    {{ __('New Plan') }}
+                </x-flowbite.button>
+            </div>
+        </div>
         <x-flowbite.table>
             <x-flowbite.table.head class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <x-flowbite.table.head.row>
