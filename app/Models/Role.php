@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
+use Str;
 
 class Role extends Model
 {
@@ -21,6 +22,14 @@ class Role extends Model
         'name',
         'tenant_id',
     ];
+
+    protected static function boot() {
+        parent::boot();
+
+        static::creating(function (Role $role ) {
+            $role->slug = Str::slug($role->name);
+        });
+    }
 
     protected array $translatable = [ 'name' ];
 

@@ -16,14 +16,14 @@ return new class extends Migration {
             $table->unique([ 'model', 'ability' ]);
             $table->timestamps();
         });
-        Schema::create('roles', function ( Blueprint $table ) {
+        Schema::table('roles', function ( Blueprint $table ) {
             $table->dropColumn('permissions');
         });
     }
 
     public function down(): void {
         Schema::dropIfExists('permissions');
-        Schema::create('roles', function ( Blueprint $table ) {
+        Schema::table('roles', function ( Blueprint $table ) {
             $table->json('permissions')->nullable();
         });
     }

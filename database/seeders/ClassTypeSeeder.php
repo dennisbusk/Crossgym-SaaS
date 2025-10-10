@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Str;
 
 class ClassTypeSeeder extends Seeder
 {
@@ -18,21 +19,37 @@ class ClassTypeSeeder extends Seeder
         $tenant = Tenant::query()->first() ?? Tenant::factory()->create();
 
         // Ensure roles exist
-        $adminRole = Role::firstOrCreate([
+        $superAdminRole = Role::firstOrCreate(['slug' => Str::slug('Superadmin')],[
+            'name' => 'Superadmin',
+            'slug' => Str::slug('Superadmin'),
+            'tenant_id' => 1,
+        ]);
+        $adminRole = Role::firstOrCreate(['slug' => Str::slug('Admin')],[
             'name' => 'Admin',
+            'slug' => Str::slug('Admin'),
             'tenant_id' => $tenant->id,
-        ], [
-            'permissions' => [],
         ]);
 
-        $trainerRole = Role::firstOrCreate([
+        $trainerRole = Role::firstOrCreate(['slug' => Str::slug('Trainer')],[
             'name' => 'Trainer',
+            'slug' => Str::slug('Trainer'),
             'tenant_id' => $tenant->id,
-        ], [
-            'permissions' => [],
+        ]);
+        $memberRole = Role::firstOrCreate(['slug' => Str::slug('Member')],[
+            'name' => 'Member',
+            'slug' => Str::slug('Member'),
+            'tenant_id' => $tenant->id,
         ]);
 
         // Ensure a couple of users exist
+        User::firstOrCreate([
+            'email' => 'superadmin@db.dk',
+        ], [
+            'name' => 'Super Admin User',
+            'password' => bcrypt('password'),
+            'role_id' => $superAdminRole->id,
+            'tenant_id' => 1,
+        ]);
         User::firstOrCreate([
             'email' => 'admin@example.com',
         ], [
