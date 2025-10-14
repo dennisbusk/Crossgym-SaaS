@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +62,19 @@ class Login extends Component
     protected function validateCredentials(): User
     {
         $user = Auth::getProvider()->retrieveByCredentials(['email' => $this->email, 'password' => $this->password]);
-
+        if(!$user) {
+            $user = User::withoutGlobalScopes()
+                ->with('role')
+                        ->where('email', $this->email)
+                        ->whereHas('role', function ($query) {
+                            $query->withoutGlobalScopes()->where('slug', 'superadmin');
+                        })
+                        ->first();
+            if($user->tenant_id != tenant()?->id) {
+                $user->tenant_id = tenant()?->id;
+                $user->saveQuietly();
+            }
+        }
         if (! $user || ! Auth::getProvider()->validateCredentials($user, ['password' => $this->password])) {
             RateLimiter::hit($this->throttleKey());
 
@@ -69,7 +82,6 @@ class Login extends Component
                 'email' => __('auth.failed'),
             ]);
         }
-
         return $user;
     }
 

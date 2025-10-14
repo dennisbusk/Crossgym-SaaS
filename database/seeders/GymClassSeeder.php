@@ -14,7 +14,12 @@ class GymClassSeeder extends Seeder
 {
     public function run(): void
     {
-        $tenant = Tenant::query()->first() ?? Tenant::factory()->create();
+
+        $tenant = Tenant::firstOrCreate(
+            ['domain' => str_replace(['http://','https://'],'',config('app.url'))]
+            ,
+            ['name' => config('app.name','Crossgym Saas')]
+        );
 
         $trainer = User::whereHas('role', fn($q) => $q->where('name', 'Trainer'))
             ->where('tenant_id', $tenant->id)

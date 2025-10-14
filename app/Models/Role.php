@@ -5,6 +5,8 @@ declare( strict_types=1 );
 namespace App\Models;
 
 use App\Models\Traits\BelongsToTenant;
+use App\Observers\RoleObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,23 +15,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use Str;
 
-class Role extends Model
-{
+#[ObservedBy([RoleObserver::class])]
+class Role extends Model {
+
     use HasFactory, BelongsToTenant;
     use HasTranslations;
 
-    protected $fillable = [
-        'name',
-        'tenant_id',
-    ];
-
-    protected static function boot() {
-        parent::boot();
-
-        static::creating(function (Role $role ) {
-            $role->slug = Str::slug($role->name);
-        });
-    }
+    protected $fillable
+        = [
+            'name',
+            'slug',
+            'tenant_id',
+        ];
 
     protected array $translatable = [ 'name' ];
 
@@ -37,8 +34,7 @@ class Role extends Model
     /**
      * A role has many users.
      */
-    public function users(): HasMany
-    {
+    public function users(): HasMany {
         return $this->hasMany(User::class);
     }
 
@@ -62,8 +58,7 @@ class Role extends Model
     /**
      * The tenant this role belongs to.
      */
-    public function tenant(): BelongsTo
-    {
+    public function tenant(): BelongsTo {
         return $this->belongsTo(Tenant::class);
     }
 }

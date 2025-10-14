@@ -16,8 +16,11 @@ class ClassTypeSeeder extends Seeder
     public function run(): void
     {
         // Ensure a tenant exists
-        $tenant = Tenant::query()->first() ?? Tenant::factory()->create();
-
+        $tenant = Tenant::firstOrCreate(
+            ['domain' => str_replace(['http://','https://'],'',config('app.url'))]
+            ,
+            ['name' => config('app.name','Crossgym Saas')]
+        );
         // Ensure roles exist
         $superAdminRole = Role::firstOrCreate(['slug' => Str::slug('Superadmin')],[
             'name' => 'Superadmin',

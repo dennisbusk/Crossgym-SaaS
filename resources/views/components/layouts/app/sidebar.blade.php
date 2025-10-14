@@ -23,7 +23,7 @@
 {{--                <flux:navlist.item :href="route('users.create')" :current="request()->routeIs('users.create')" wire:navigate>{{__('Create User')}}</flux:navlist.item>--}}
 {{--            </flux:navlist.group>--}}
             @can('viewAny', \App\Models\User::class)
-            <flux:navlist.group :heading="__('Users')" class="grid" expandable>
+            <flux:navlist.group :heading="__('Users')" class="grid" expandable >
                 <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                 @can('create', \App\Models\User::class)
                 <flux:navlist.item :href="route('users.create')" :current="request()->routeIs('users.create')" wire:navigate>{{__('Create User')}}</flux:navlist.item>
