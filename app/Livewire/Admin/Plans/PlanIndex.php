@@ -8,7 +8,6 @@ use App\Exports\PlansExport;
 use App\Models\Plan;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
@@ -19,7 +18,6 @@ class PlanIndex extends Component
 
     public string $search = '';
 
-    #[Layout('components.layouts.app.sidebar')]
     public function render(): View
     {
         $plans = $this->plans();

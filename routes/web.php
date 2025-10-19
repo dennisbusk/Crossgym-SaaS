@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Stripe\StripeConnectController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
+use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\Roles\RoleForm;
 use App\Livewire\Admin\Roles\RoleIndex;
 use App\Livewire\Admin\Roles\RoleShow;
@@ -31,7 +32,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+Route::get('dashboard', Dashboard::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -51,10 +52,12 @@ Route::middleware(['auth'])
     });
 
 Route::middleware(['auth'])->group(function () {
-    Route::view('/admin', 'admin.dashboard')->name('admin.dashboard');
-    // Stripe Connect flow
-    Route::get('/admin/stripe/connect', [StripeConnectController::class, 'connect'])->name('stripe.connect');
-    Route::get('/admin/stripe/connect/callback', [StripeConnectController::class, 'callback'])->name('stripe.connect.callback');
+
+
+    Route::get('calendar', \App\Livewire\Admin\Calendar::class)->name('calendar');
+
+    Route::get('auth/stripe/connect', [StripeConnectController::class, 'connect'])->name('stripe.connect');
+    Route::get('auth/stripe/connect/callback', [StripeConnectController::class, 'callback'])->name('stripe.connect.callback');
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
@@ -115,17 +118,14 @@ Route::middleware(['auth'])->group(function () {
     });
 // Subscriptions Index
     Route::middleware('can:viewAny,App\\Models\\Subscription')->group(function () {
-        \App\Livewire\Admin\Subscriptions\SubscriptionIndex::class; // ensure autoload
         Route::get('/subscriptions', \App\Livewire\Admin\Subscriptions\SubscriptionIndex::class)->name('subscriptions.index');
     });
 // Payments Index
     Route::middleware('can:viewAny,App\\Models\\Payment')->group(function () {
-        \App\Livewire\Admin\Payments\PaymentIndex::class; // ensure autoload
         Route::get('/payments', \App\Livewire\Admin\Payments\PaymentIndex::class)->name('payments.index');
     });
 // Stripe Webhook Logs Index
     Route::middleware('can:viewAny,App\\Models\\StripeWebhookLog')->group(function () {
-        \App\Livewire\Admin\StripeWebhookLogs\StripeWebhookLogIndex::class; // ensure autoload
         Route::get('/stripe-webhook-logs', \App\Livewire\Admin\StripeWebhookLogs\StripeWebhookLogIndex::class)->name('stripe-webhook-logs.index');
     });
 

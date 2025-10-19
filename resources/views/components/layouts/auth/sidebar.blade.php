@@ -11,19 +11,18 @@
                 <x-app-logo />
             </a>
 
-            <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:navlist.item>
-                </flux:navlist.group>
-            </flux:navlist>
-{{--            <flux:navlist.group :heading="__('Users')" class="grid" expandable>--}}
+                    <flux:navlist.item icon="home" :href="route('calendar')" :current="request()->routeIs('calendar')" wire:navigate>
+                        {{ __('Calendar') }}
+                    </flux:navlist.item>
+{{--            <flux:navlist.group :heading="__('Users')" class="grid" expandable remember>--}}
 {{--                <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>--}}
 {{--                <flux:navlist.item :href="route('users.create')" :current="request()->routeIs('users.create')" wire:navigate>{{__('Create User')}}</flux:navlist.item>--}}
 {{--            </flux:navlist.group>--}}
             @can('viewAny', \App\Models\User::class)
-            <flux:navlist.group :heading="__('Users')" class="grid" expandable >
+            <flux:navlist.group :heading="__('Users')" class="grid" expandable remember >
                 <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                 @can('create', \App\Models\User::class)
                 <flux:navlist.item :href="route('users.create')" :current="request()->routeIs('users.create')" wire:navigate>{{__('Create User')}}</flux:navlist.item>
@@ -31,7 +30,7 @@
             </flux:navlist.group>
             @endcan
             @can('viewAny', \App\Models\GymClass::class)
-                <flux:navlist.group :heading="__('Classes')" class="grid" expandable>
+                <flux:navlist.group :heading="__('Classes')" class="grid" expandable remember>
                     <flux:navlist.item :href="route('classes.index')" :current="request()->routeIs('classes.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @can('create', \App\Models\GymClass::class)
                         <flux:navlist.item :href="route('classes.create')" :current="request()->routeIs('classes.create')" wire:navigate>{{__('Create Class')}}</flux:navlist.item>
@@ -39,7 +38,7 @@
                 </flux:navlist.group>
             @endcan
             @can('viewAny', \App\Models\ClassType::class)
-                <flux:navlist.group :heading="__('Class Types')" class="grid" expandable>
+                <flux:navlist.group :heading="__('Class Types')" class="grid" expandable remember>
                     <flux:navlist.item :href="route('class-types.index')" :current="request()->routeIs('class-types.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @can('create', \App\Models\ClassType::class)
                     <flux:navlist.item :href="route('class-types.create')" :current="request()->routeIs('class-types.create')" wire:navigate>{{__('Create Class Type')}}</flux:navlist.item>
@@ -47,7 +46,7 @@
                 </flux:navlist.group>
             @endcan
             @can('viewAny', \App\Models\Role::class)
-                <flux:navlist.group :heading="__('Roles')" class="grid" expandable>
+                <flux:navlist.group :heading="__('Roles')" class="grid" expandable remember>
                     <flux:navlist.item :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @can('create', \App\Models\Role::class)
                         <flux:navlist.item :href="route('roles.create')" :current="request()->routeIs('roles.create')" wire:navigate>{{__('Create Role')}}</flux:navlist.item>
@@ -55,7 +54,11 @@
                 </flux:navlist.group>
             @endcan
             @can('viewAny', \App\Models\Tenant::class)
-                <flux:navlist.group :heading="__('Tenants')" class="grid" expandable>
+                <flux:navlist.group
+                    :heading="__('Tenants')"
+                    class="grid"
+                    expandable remember
+                >
                     <flux:navlist.item :href="route('tenants.index')" :current="request()->routeIs('tenants.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @can('create', \App\Models\Tenant::class)
                         <flux:navlist.item :href="route('tenants.create')" :current="request()->routeIs('tenants.create')" wire:navigate>{{__('Create Tenant')}}</flux:navlist.item>
@@ -64,7 +67,7 @@
             @endcan
 
             @can('viewAny', \App\Models\Plan::class)
-                <flux:navlist.group :heading="__('Plans')" class="grid" expandable>
+                <flux:navlist.group :heading="__('Plans')" class="grid" expandable remember>
                     @if(\Illuminate\Support\Facades\Route::has('plans.index'))
                         <flux:navlist.item :href="route('plans.index')" :current="request()->routeIs('plans.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @endif
@@ -77,7 +80,7 @@
             @endcan
 
             @can('viewAny', \App\Models\Subscription::class)
-                <flux:navlist.group :heading="__('Subscriptions')" class="grid" expandable>
+                <flux:navlist.group :heading="__('Subscriptions')" class="grid" expandable remember>
                     @if(\Illuminate\Support\Facades\Route::has('subscriptions.index'))
                         <flux:navlist.item :href="route('subscriptions.index')" :current="request()->routeIs('subscriptions.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @endif
@@ -90,7 +93,7 @@
             @endcan
 
             @can('viewAny', \App\Models\Payment::class)
-                <flux:navlist.group :heading="__('Payments')" class="grid" expandable>
+                <flux:navlist.group :heading="__('Payments')" class="grid" expandable remember>
                     @if(\Illuminate\Support\Facades\Route::has('payments.index'))
                         <flux:navlist.item :href="route('payments.index')" :current="request()->routeIs('payments.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @endif
@@ -103,7 +106,7 @@
             @endcan
 
             @can('viewAny', \App\Models\StripeWebhookLog::class)
-                <flux:navlist.group :heading="__('Stripe Webhooks')" class="grid" expandable>
+                <flux:navlist.group :heading="__('Stripe Webhooks')" class="grid" expandable remember>
                     @if(\Illuminate\Support\Facades\Route::has('stripe-webhook-logs.index'))
                         <flux:navlist.item :href="route('stripe-webhook-logs.index')" :current="request()->routeIs('stripe-webhook-logs.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @endif
@@ -213,5 +216,6 @@
         @fluxScripts
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     @stack('scripts')
+    
     </body>
 </html>

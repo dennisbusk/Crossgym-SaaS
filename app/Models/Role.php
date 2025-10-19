@@ -6,12 +6,14 @@ namespace App\Models;
 
 use App\Models\Traits\BelongsToTenant;
 use App\Observers\RoleObserver;
+use Auth;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 use Spatie\Translatable\HasTranslations;
 use Str;
 
@@ -60,5 +62,10 @@ class Role extends Model {
      */
     public function tenant(): BelongsTo {
         return $this->belongsTo(Tenant::class);
+    }
+    public function scopeVisibleFor(Builder $query, $role = 'member') {
+        if (!$role != 'superadmin') {
+            $query->where('slug', '!=', 'superadmin');
+        }
     }
 }

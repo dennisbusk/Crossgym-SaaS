@@ -7,7 +7,6 @@ namespace App\Livewire\Admin\Subscriptions;
 use App\Models\Subscription;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -17,7 +16,6 @@ class SubscriptionIndex extends Component
 
     public string $search = '';
 
-    #[Layout('components.layouts.app.sidebar')]
     public function render(): View
     {
         return view('livewire.admin.subscriptions.index', [

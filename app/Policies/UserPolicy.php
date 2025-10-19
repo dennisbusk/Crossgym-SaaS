@@ -48,4 +48,8 @@ class UserPolicy
     {
         return $user->hasPermission('User', 'view_admin_dashboard');
     }
+    public function view_calendar(AuthUser $user, User $model): bool
+    {
+        return $user->hasPermission('User', 'view_calendar');
+    }
 }

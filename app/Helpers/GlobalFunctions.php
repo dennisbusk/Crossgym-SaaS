@@ -8,3 +8,14 @@ if (! function_exists('tenant')) {
         return app()->bound('tenant') ? app('tenant') : null;
     }
 }
+if(!function_exists('hasRole')){
+    function hasRole($role){
+        if(auth()->user()->role->slug === $role){
+            return true;
+        }
+        if(auth()->user()->role->name === $role){
+            return true;
+        }
+        return false;
+    }
+}

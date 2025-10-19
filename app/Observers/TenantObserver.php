@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Role;
 use App\Models\Tenant;
+use Str;
 
 class TenantObserver {
 

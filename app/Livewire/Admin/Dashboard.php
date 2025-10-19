@@ -6,6 +6,7 @@ namespace App\Livewire\Admin;
 
 use App\Exports\DashboardStatsExport;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -43,6 +44,7 @@ class Dashboard extends Component
         ]), 'dashboard-stats.xlsx');
     }
 
+    #
     public function render(): View
     {
         return view('livewire.admin.dashboard');

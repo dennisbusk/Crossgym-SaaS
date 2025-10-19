@@ -1,16 +1,16 @@
 <div class="space-y-6">
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-semibold">{{ __('Stripe Webhook Logs') }}</h1>
-        <div class="flex items-center gap-2">
-            <flux:input placeholder="{{ __('Search...') }}" wire:model.live="search" />
+        <div class="flex justify-self-start">
+            <h1 class="text-2xl font-semibold">{{ __('Stripe Webhook Logs') }}</h1>
         </div>
     </div>
-
+    
     @if (session('status'))
         <div class="rounded-md bg-green-50 p-3 text-green-700">{{ __(session('status')) }}</div>
     @endif
-
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    
+    <div class="relative overflow-x-auto ">
+        
         <x-flowbite.table>
             <x-flowbite.table.head class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <x-flowbite.table.head.row>

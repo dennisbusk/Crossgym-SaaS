@@ -16,7 +16,7 @@
 
         <div>
             <label class="block text-sm font-medium">{{ __('Email') }}</label>
-            <input type="email" wire:model.defer="email" class="mt-1 w-full rounded-md border px-3 py-2" />
+            <input type="email" wire:model.defer="email" class="mt-1 w-full rounded-md border px-3 py-2" autocomplete="new-email" />
             @error('email')
             <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
             @enderror
@@ -34,7 +34,7 @@
             <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
             @enderror
         </div>
-
+@if(hasRole('superadmin'))
         <div>
             <label class="block text-sm font-medium">{{ __('Tenant') }}</label>
             <select wire:model.defer="tenant_id" class="mt-1 w-full rounded-md border px-3 py-2">
@@ -47,10 +47,47 @@
             <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
             @enderror
         </div>
+        @endif
+        <div x-data="{
+        password: @entangle('password'),
+        generateNewPassword()
+        {
+          const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+          const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+          const numbers = '0123456789';
+          const length = 12; // Using 12 characters for better security
 
-        <div>
+          let password = '';
+
+          // Ensure at least one of each required character type
+          password += lowercase.charAt(Math.floor(Math.random() * lowercase.length));
+          password += uppercase.charAt(Math.floor(Math.random() * uppercase.length));
+          password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+
+          // Fill the rest with random characters from all sets
+          const allChars = lowercase + uppercase + numbers;
+          for (let i = password.length; i < length; i++) {
+            password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+          }
+
+          // Shuffle the password to make it more random
+          password = password.split('').sort(() => Math.random() - 0.5).join('');
+
+          // Set the new password
+          this.password = password;
+        }
+        }
+        ">
             <label class="block text-sm font-medium">{{ __('Password') }}</label>
-            <input type="password" wire:model.defer="password" class="mt-1 w-full rounded-md border px-3 py-2" />
+{{--            <input type="password" wire:model.defer="password" class="mt-1 w-full rounded-md border px-3 py-2" autocomplete="new-password" />--}}
+            <div class="relative flex">
+                <input type="text" class="mt-2 w-full rounded-full border-none" x-model="password"
+                       @input.debounce.500ms="validatePassword()"
+                       autocomplete="new-password">
+                <x-flowbite.button.yellow class="absolute right-0 mr-0 border-none mt-1 top-1/2 border-2 font-semibold rounded-r-full px-2 py-1 -translate-y-1/2" @click="generateNewPassword()">
+                    {{__('generate new password')}}
+                </x-flowbite.button.yellow>
+            </div>
             @error('password')
             <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
             @enderror

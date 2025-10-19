@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Roles;
 
+use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\ValidationException;
@@ -13,39 +14,43 @@ class RoleForm extends Component
     use AuthorizesRequests;
 
     public ?Role $role = null;
+    public array $permissionsGrouped = [];
+
+
+    public function loadPermissions(): void {
+        $this->permissionsGrouped = Permission::query()
+                                              ->orderBy('model')
+                                              ->orderBy('ability')
+                                              ->get()
+                                              ->groupBy('model')
+                                              ->map(fn( $group ) => $group->map(fn( Permission $perm ) => [
+                                                  'id'      => $perm->id,
+                                                  'ability' => $perm->ability,
+                                                  'granted' => $this->role->permissions?->contains('id', $perm->id) ?? false,
+                                              ])->all())
+                                              ->all();
+    }
 
     #[Rule('required|string|max:255')]
     public string $name = '';
 
     // Permissions entered as JSON string in the form, cast to array on save
-    public ?string $permissionsInput = null;
 
     public function mount($role = null): void
     {
         $this->role = $role instanceof Role ? $role : new Role();
         if ($this->role && $this->role->exists) {
-            $this->authorize('update', $this->role);
             $this->name = $this->role->name;
-            $this->permissionsInput = $this->role->permissions ? json_encode($this->role->permissions, JSON_PRETTY_PRINT) : '';
+            $this->authorize('update', $this->role);
         } else {
             $this->authorize('create', Role::class);
         }
+        $this->loadPermissions();
     }
 
     public function save()
     {
         $this->validate();
-
-        $permissions = null;
-        if (trim((string) $this->permissionsInput) !== '') {
-            $decoded = json_decode((string) $this->permissionsInput, true);
-            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
-                throw ValidationException::withMessages([
-                    'permissionsInput' => 'Permissions must be valid JSON (an object or array).',
-                ]);
-            }
-            $permissions = $decoded;
-        }
 
         if ($this->role && $this->role->exists) {
             $this->role->update([
@@ -56,7 +61,6 @@ class RoleForm extends Component
         } else {
             $this->role = Role::create([
                 'name' => $this->name,
-                'permissions' => $permissions,
             ]);
             session()->flash('status', 'Role created.');
             return redirect()->route('roles.edit', $this->role);
@@ -66,5 +70,32 @@ class RoleForm extends Component
     public function render()
     {
         return view('livewire.admin.roles.form');
+    }
+    public function togglePermission( int $permissionId, $forcedState = null ): void {
+        if ( $forcedState === null ) {
+            if ( $this->role->permissions?->contains('id', $permissionId) ) {
+                $this->role->permissions()->detach($permissionId);
+            }
+            else {
+                $this->role->permissions()->attach($permissionId);
+            }
+        }
+        else {
+            if ( $forcedState === true ) {
+                if ( !$this->role->permissions?->contains('id', $permissionId) ) {
+                    $this->role->permissions()->attach($permissionId);
+                }
+            }
+            else if ( $forcedState === false ) {
+                if ( $this->role->permissions?->contains('id', $permissionId) ) {
+                    $this->role->permissions()->detach($permissionId);
+                }
+            }
+        }
+
+        // Refresh relation to avoid stale cache, then reload presentation data
+        $this->role->unsetRelation('permissions');
+        $this->role->load('permissions');
+        $this->loadPermissions();
     }
 }

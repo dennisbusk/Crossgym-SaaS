@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Tenants;
 use App\Models\Tenant;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
