@@ -1,4 +1,5 @@
- <div class="flex flex-col gap-6">
+<div class="max-w-lg mx-auto py-6 sm:px-6 lg:px-3 w-full">
+<div class="flex flex-col gap-6">
     <x-auth-header :title="__('Forgot password')" :description="__('Enter your email to receive a password reset link')" />
 
     <!-- Session Status -->
@@ -22,4 +23,5 @@
         <span>{{ __('Or, return to') }}</span>
         <flux:link :href="route('login')" wire:navigate>{{ __('log in') }}</flux:link>
     </div>
+</div>
 </div>

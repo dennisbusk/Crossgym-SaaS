@@ -1,3 +1,4 @@
+<div class="max-w-lg mx-auto py-6 sm:px-6 lg:px-3 w-full">
 <div class="flex flex-col gap-6">
     <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
 
@@ -51,4 +52,5 @@
             <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
         </div>
     @endif
+</div>
 </div>

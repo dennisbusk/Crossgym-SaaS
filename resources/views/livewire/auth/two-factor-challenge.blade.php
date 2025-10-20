@@ -1,5 +1,6 @@
-<x-layouts.auth>
-    <div class="flex flex-col gap-6">
+<div class="max-w-lg mx-auto py-6 sm:px-6 lg:px-3 w-full">
+
+<div class="flex flex-col gap-6">
         <div
             class="relative w-full h-auto"
             x-cloak
@@ -96,4 +97,4 @@
             </form>
         </div>
     </div>
-</x-layouts.auth>
+    </div>

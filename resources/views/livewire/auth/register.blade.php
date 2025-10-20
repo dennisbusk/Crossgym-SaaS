@@ -1,4 +1,5 @@
-<div class="flex flex-col gap-6">
+<div class="max-w-lg mx-auto py-6 sm:px-6 lg:px-3 w-full">
+    <div class="flex flex-col gap-6">
     <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
 
     <!-- Session Status -->
@@ -59,4 +60,5 @@
         <span>{{ __('Already have an account?') }}</span>
         <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
     </div>
+</div>
 </div>

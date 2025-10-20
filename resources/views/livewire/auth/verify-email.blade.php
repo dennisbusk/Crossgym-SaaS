@@ -1,4 +1,5 @@
-<div class="mt-4 flex flex-col gap-6">
+<div class="max-w-lg mx-auto py-6 sm:px-6 lg:px-3 w-full">
+    <div class="mt-4 flex flex-col gap-6">
     <flux:text class="text-center">
         {{ __('Please verify your email address by clicking on the link we just emailed to you.') }}
     </flux:text>
@@ -18,4 +19,5 @@
             {{ __('Log out') }}
         </flux:link>
     </div>
+</div>
 </div>
