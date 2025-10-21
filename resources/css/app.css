@@ -38,6 +38,22 @@
         input,select,textarea,option{
             @apply !text-gray-900;
         }
+        .fc .fc-list-sticky .fc-list-day > *{
+            @apply !bg-zinc-800;
+        }
+        /*.fc .fc-list-event:hover td{*/
+        /*    @apply !bg-zinc-700;*/
+        /*}*/
+        --fc-page-bg-color:var(--color-zinc-600);
+        .fc-event{
+            @apply !cursor-pointer;
+            &:hover{
+                @apply !bg-zinc-700;
+                td{
+                    @apply !bg-zinc-700;
+                }
+            }
+        }
     }
 }
 

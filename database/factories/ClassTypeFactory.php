@@ -25,7 +25,7 @@ class ClassTypeFactory extends Factory
         $slug = Str::slug($name['en']);
 
         return [
-            'tenant_id' => Tenant::factory(),
+            'tenant_id' => Tenant::value('id'),
             'color' => $this->faker->safeHexColor(),
             'image' => null,
             'slug' => $slug,

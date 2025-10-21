@@ -34,7 +34,7 @@ class StripeService
             'success_url' => $params['success_url'] ?? url('/payments/success'),
             'cancel_url' => $params['cancel_url'] ?? url('/payments/cancel'),
             'customer_email' => $params['customer_email'] ?? null,
-            'metadata' => array_merge((array)($params['metadata'] ?? []), [
+            'metadata' => array_merge((array)$params['metadata'] ?? [], [
                 'tenant_id' => tenant()?->id,
                 'user_id' => $params['user_id'] ?? auth()->id(),
             ]),
@@ -115,7 +115,7 @@ class StripeService
             'success_url' => $params['success_url'] ?? url('/subscriptions/success'),
             'cancel_url' => $params['cancel_url'] ?? url('/subscriptions/cancel'),
             'customer_email' => $params['customer_email'] ?? null,
-            'metadata' => array_merge((array)($params['metadata'] ?? []), [
+            'metadata' => array_merge((array)$params['metadata'] ?? [], [
                 'tenant_id' => tenant()?->id,
                 'user_id' => $params['user_id'] ?? auth()->id(),
             ]),

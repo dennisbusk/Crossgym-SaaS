@@ -61,6 +61,6 @@ class GymClass extends Model
      */
     public function participants(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'gym_class_user', 'gym_class_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'gym_class_user', 'gym_class_id', 'user_id')->withPivot('checked_in_at')->withTimestamps();
     }
 }

@@ -1,18 +1,34 @@
-<div>
-  <div id="calendar"
-       x-data="calendarComponent()"
-       x-init="initCalendar()"
-       @events-updated.window="updateEvents($event.detail.events)"
-  ></div>
+<div
+    wire:ignore
+    x-data="calendarComponent(@this)"
+    x-init="initCalendar(@js($events))"
+    @events-updated.window="updateEvents($event.detail.events)">
+  <div id="calendar"></div>
+    <!-- Modal -->
+    <div x-show="open"
+         style="background-color: rgba(0,0,0,0.5);"
+         class="fixed inset-0 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-900 p-6 rounded shadow-lg w-xl">
+        <h2 class="text-lg font-bold mb-2" x-text="chosenEvent?.title"></h2>
+        <p><strong>Start:</strong> <span x-text="$formatDateTime(chosenEvent?.start)"></span></p>
+        <p><strong>End:</strong> <span x-text="$formatDateTime(chosenEvent?.end)"></span></p>
+        <p><strong>Trainer:</strong> <span x-text="chosenEvent?.extendedProps.trainer"></span></p>
+        <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded" @click="open = false">Close</button>
+      </div>
+    </div>
+
 </div>
 
 @push('scripts')
   <script>
-    function calendarComponent() {
+    function calendarComponent($wire) {
       return {
         events: [],
+        chosenEvent: null,
+        open: false,
         calendar: null,
-        initCalendar() {
+        async initCalendar(events) {
+          this.events = events;
           let calendarEl = document.getElementById('calendar');
           this.calendar = new FullCalendar.Calendar(calendarEl, {
             plugins: [
@@ -32,10 +48,15 @@
               right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
             },
             datesSet: (info) => {
-              console.log('View changed:', info.view.type, info.start, info.end);
               // Ask Livewire to load events for this date range
-              Livewire.emit('loadEvents', info.startStr, info.endStr);
+              $wire.loadEvents( info.startStr, info.endStr);
             },
+            eventClick: (info) => {
+              console.log('Event clicked:', info.event);
+              console.log(info.event.extendedProps)
+              this.chosenEvent = info.event;
+              this.open = true;
+            }
           });
           this.calendar.render();
         },
