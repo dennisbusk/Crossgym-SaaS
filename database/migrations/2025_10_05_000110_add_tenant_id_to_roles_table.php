@@ -9,12 +9,14 @@ return new class extends Migration {
     {
         Schema::table('roles', function (Blueprint $table) {
             $table->foreignId('tenant_id')->nullable()->constrained('tenants')->cascadeOnDelete()->after('id');
+            $table->unique(['tenant_id','slug']);
         });
     }
 
     public function down(): void
     {
         Schema::table('roles', function (Blueprint $table) {
+            $table->dropUnique(['tenant_id', 'slug']);
             $table->dropConstrainedForeignId('tenant_id');
         });
     }

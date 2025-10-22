@@ -8,13 +8,14 @@ use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
+use Str;
 
 class PermissionSeeder extends Seeder {
 
     public function run(): void {
         Artisan::call('permissions:sync');
 
-        $admin = Role::firstOrCreate([ 'name' => 'Admin' ]);
+        $admin = Role::firstOrCreate([ 'slug' => Str::slug('Admin') ]);
         $admin->permissions()->sync(Permission::query()->pluck('id'));
     }
 }

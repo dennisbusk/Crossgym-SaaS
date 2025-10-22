@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Services\Stripe\StripeConnectService;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Http;
 
 class StripeConnectController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         protected StripeConnectService $service = new StripeConnectService()
     ) {}

@@ -47,20 +47,34 @@ class GymClassFactory extends Factory
         ];
         $start = $this->nearestFifteen($this->faker->dateTimeBetween('-2 month', '+12 months'));
         $end = (clone $start)->modify('+1 hour');
-
+$tenantId = Tenant::first()->id;
         return [
-            'tenant_id' => Tenant::value('id'),
+            'tenant_id' => $tenantId,
             'name' => $name,
             'description' => [
                 'da' => $this->faker->paragraph(),
                 'en' => $this->faker->paragraph(),
             ],
-            'trainer_id' => User::where('role_id', Role::where('slug', 'trainer')->value('id'))->inRandomOrder()->value('id'),
+            'trainer_id' => User::where('role_id', Role::where('slug', 'trainer')->where('tenant_id',$tenantId)->value('id'))->where('tenant_id',$tenantId)->inRandomOrder()->value('id'),
             'class_type_id' => ClassType::inRandomOrder()->value('id'),
             'max_participants' => $this->faker->numberBetween(5, 30),
             'class_start' => $start,
             'class_end' => $end,
             'recurring_id' => null,
         ];
+    }
+    public function withTenant(int $tenantId): static
+    {
+        return $this->state(fn () => ['tenant_id' => $tenantId]);
+    }
+    public function withType(int $typeId): static
+    {
+        return $this->state(fn () => ['class_type_id' => $typeId]);
+    }
+
+    // Optional: a variant to customize the number of items when needed
+    public function withParent($class_id): static
+    {
+        return $this->state(fn () => ['recurring_id' => $class_id]);
     }
 }
