@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Tenant;
+use App\Services\TenantScopeManager;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;

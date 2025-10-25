@@ -10,10 +10,10 @@ if (! function_exists('tenant')) {
 }
 if(!function_exists('hasRole')){
     function hasRole($role){
-        if(auth()->user()->role->slug === $role){
+        if(auth()->user()->role?->slug === $role){
             return true;
         }
-        if(auth()->user()->role->name === $role){
+        if(auth()->user()->role?->name === $role){
             return true;
         }
         return false;

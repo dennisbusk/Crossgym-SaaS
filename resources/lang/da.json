@@ -60,7 +60,7 @@
   "Create": "Opret",
   "Cancel": "Annuller",
   "Participants": "Deltagere",
-  "No participants yet.": "Ingen deltagere endnu.",
+  "No participants yet.": "Ingen deltagere endnu",
   "Create Class": "Opret hold",
   "Create Class Type": "Opret holdtype",
   "view_admin_dashboard" : "Admin dashboard",
@@ -103,5 +103,16 @@
   "Cancel Subscription": "Annuller abonnement",
   "Manage Payments": "Administrer betalinger",
   "Manage Subscriptions": "Administrer abonnementer",
-  "Export": "Eksporter"
+  "Export": "Eksporter",
+
+  "SuperAdmin Dashboard": "SuperAdmin Dashboard",
+  "SuperAdmin": "SuperAdmin",
+  "General settings": "Generelle indstillinger",
+  "Manage global system settings such as Stripe configuration.": "Administrer globale systemindstillinger såsom Stripe konfiguration.",
+  "Stripe": "Stripe",
+  "Stripe Key": "Stripe nøgle",
+  "Stripe Secret": "Stripe hemmelighed",
+  "Stripe Webhook Secret": "Stripe Webhook hemmelighed",
+  "Settings saved.": "Indstillinger gemt.",
+  "Save": "Gem"
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Tenant;
+use App\Services\TenantScopeManager;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +17,13 @@ class IdentifyTenant
             return $next($request);
         }
 
-        // Exempt Stripe webhook endpoint from tenant enforcement (Stripe may call a central domain)
-        if ($request->is('stripe/webhook') || $request->is('webhook/stripe')) {
+        // Exempt central and system routes from tenant enforcement
+        if (
+            $request->is('stripe/webhook') ||
+            $request->is('webhook/stripe') ||
+            $request->is('superadmin') ||
+            $request->is('superadmin/*')
+        ) {
             return $next($request);
         }
 
@@ -27,10 +33,11 @@ class IdentifyTenant
         if (! $tenant) {
             abort(404, 'Tenant not found.');
         }
-
+config()->set('session.domain' , $tenant->domain);
         session(['tenant_id' => $tenant->id]);
         app()->instance('tenant', $tenant);
-
+        $scopeManager = app(TenantScopeManager::class);
+        $scopeManager->applyScopes($tenant);
         return $next($request);
     }
 }

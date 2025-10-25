@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Traits\BelongsToTenant;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class StripeWebhookLog extends Model
 {
-    use HasFactory, BelongsToTenant;
 
     protected $fillable = [
         'tenant_id', 'event_type', 'payload', 'processed_at', 'status', 'error'

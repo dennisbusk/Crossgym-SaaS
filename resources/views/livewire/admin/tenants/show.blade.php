@@ -2,8 +2,8 @@
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ __('View Tenant') }}</h1>
         <div class="space-x-2">
-            <flux:button tag="a" href="{{ route('tenants.index') }}" variant="primary">{{ __('Back') }}</flux:button>
-            <flux:button tag="a" href="{{ route('tenants.edit', $tenant) }}" variant="primary">{{ __('Edit') }}</flux:button>
+            <flux:button tag="a" href="{{ route('tenants.index') }}" variant="ghost">{{ __('Back') }}</flux:button>
+            <flux:button tag="a" href="{{ route('tenants.edit', $tenant) }}" variant="ghost">{{ __('Edit') }}</flux:button>
         </div>
     </div>
 

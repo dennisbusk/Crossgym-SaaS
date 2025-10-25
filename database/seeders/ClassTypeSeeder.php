@@ -21,6 +21,7 @@ class ClassTypeSeeder extends Seeder
             ,
             ['name' => config('app.name','Crossgym Saas')]
         );
+        Tenant::firstOrCreate(['domain' => str_replace('.test','-2.test',str_replace(['http://','https://'],'',config('app.url')))],['name' => config('app.name','Crossgym Saas').'-2']);
         // Ensure roles exist
         $superAdminRole = Role::firstOrCreate(['slug' => Str::slug('Superadmin')],[
             'name' => 'Superadmin',

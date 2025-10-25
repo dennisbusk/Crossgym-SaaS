@@ -55,7 +55,7 @@ class StripeConnectController extends Controller
         if ($tenant->stripe_connect_account_id) {
             $this->service->updateTenantAccountStatus($tenant->stripe_connect_account_id);
         }
-        return redirect()->route('admin.dashboard')->with('status', __('Stripe er forbundet!'));
+        return redirect()->route('dashboard')->with('status', __('Stripe er forbundet!'));
     }
 
     // Optional: OAuth callback support for Standard accounts
@@ -66,10 +66,10 @@ class StripeConnectController extends Controller
 
         if ($request->filled('code')) {
             $this->service->handleOAuthCallback($request);
-            return redirect()->route('admin.dashboard')->with('status', __('Connected to Stripe.'));
+            return redirect()->route('dashboard')->with('status', __('Connected to Stripe.'));
         }
 
-        return redirect()->route('admin.dashboard')->with('status', __('Stripe connection failed.'));
+        return redirect()->route('dashboard')->with('status', __('Stripe connection failed.'));
     }
 
     protected function currentTenant(): Tenant

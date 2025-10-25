@@ -25,6 +25,8 @@ use App\Livewire\Admin\Classes\ClassForm;
 use App\Livewire\Admin\Classes\ClassIndex;
 use App\Livewire\Admin\Classes\ClassShow;
 use App\Livewire\Admin\Plans\PlanIndex;
+use App\Livewire\SuperAdmin\Dashboard as SuperAdminDashboard;
+use App\Livewire\SuperAdmin\Settings\General as SuperAdminSettingsGeneral;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -131,4 +133,11 @@ Route::middleware(['auth'])->group(function () {
 
 });
 Route::impersonate();
+
+// SuperAdmin routes (central, not tenant-scoped)
+Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::get('/', SuperAdminDashboard::class)->name('dashboard');
+    Route::get('/settings/general', SuperAdminSettingsGeneral::class)->name('settings.general');
+});
+
 require __DIR__.'/auth.php';

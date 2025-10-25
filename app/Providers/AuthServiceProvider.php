@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\Role;
+use App\Models\SystemSetting;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\GymClass;
@@ -67,6 +68,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Plan::class, PlanPolicy::class);
         Gate::policy(Subscription::class, SubscriptionPolicy::class);
         Gate::policy(Payment::class, PaymentPolicy::class);
+        Gate::policy(Plan::class, PlanPolicy::class);
         Gate::policy(StripeWebhookLog::class, StripeWebhookLogPolicy::class);
 }
 private function checkForIsSuperAdmin($user): bool {

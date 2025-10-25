@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +14,6 @@ use Spatie\Translatable\HasTranslations;
 class GymClass extends Model
 {
     use HasFactory;
-    use BelongsToTenant;
     use HasTranslations;
 
     protected $table = 'classes';

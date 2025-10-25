@@ -35,7 +35,7 @@
         --color-accent: var(--color-white);
         --color-accent-content: var(--color-white);
         --color-accent-foreground: var(--color-neutral-800);
-        input,select,textarea,option{
+        input,select:not(.datatable-selector),textarea,option{
             @apply !text-gray-900;
         }
         .fc .fc-list-sticky .fc-list-day > *{

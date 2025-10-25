@@ -7,20 +7,22 @@
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+            <a href="{{ route('home') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
                 <x-app-logo />
             </a>
-
+            
+            @if(function_exists('hasRole') && hasRole('superadmin'))
+                <flux:navlist.group :heading="__('SuperAdmin')" class="grid" expandable remember>
+                    <flux:navlist.item :href="route('superadmin.dashboard')" :current="request()->routeIs('superadmin.dashboard')" wire:navigate>{{__('Dashboard')}}</flux:navlist.item>
+                    {{--                    <flux:navlist.item :href="route('superadmin.settings.general')" :current="request()->routeIs('superadmin.settings.general')" wire:navigate>{{__('General settings')}}</flux:navlist.item>--}}
+                </flux:navlist.group>
+            @endif
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:navlist.item>
                     <flux:navlist.item icon="calendar-days" :href="route('calendar')" :current="request()->routeIs('calendar')" wire:navigate>
                         {{ __('Calendar') }}
                     </flux:navlist.item>
-{{--            <flux:navlist.group :heading="__('Users')" class="grid" expandable remember>--}}
-{{--                <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>--}}
-{{--                <flux:navlist.item :href="route('users.create')" :current="request()->routeIs('users.create')" wire:navigate>{{__('Create User')}}</flux:navlist.item>--}}
-{{--            </flux:navlist.group>--}}
             @can('viewAny', \App\Models\User::class)
             <flux:navlist.group :heading="__('Users')" class="grid" expandable remember >
                 <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
@@ -112,6 +114,7 @@
                     @endif
                 </flux:navlist.group>
             @endcan
+
 
             <flux:spacer />
 

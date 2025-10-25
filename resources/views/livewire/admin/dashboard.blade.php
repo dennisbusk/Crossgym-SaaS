@@ -6,7 +6,7 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-semibold">{{ __('Dashboard') }}</h1>
         <div class="flex items-center gap-2">
-            <flux:button wire:click="export" variant="primary">{{ __('Export') }}</flux:button>
+            <flux:button wire:click="export" variant="ghost">{{ __('Export') }}</flux:button>
             @php($tenant = tenant())
             @if(auth()->check() && $tenant && !($tenant->stripe_connect_onboarded))
                 <a href="{{ route('stripe.connect.start') }}" class="inline-flex items-center px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/80 transition">

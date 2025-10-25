@@ -52,4 +52,8 @@ class UserPolicy
     {
         return $user->hasPermission('User', 'view_calendar');
     }
+    public function impersonate(AuthUser $user, User $model): bool
+    {
+        return $user->hasPermission('User', 'impersonate');
+    }
 }

@@ -4,9 +4,7 @@ declare( strict_types=1 );
 
 namespace App\Models;
 
-use App\Models\Traits\BelongsToTenant;
 use App\Observers\RoleObserver;
-use Auth;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,12 +13,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\Translatable\HasTranslations;
-use Str;
 
 #[ObservedBy([RoleObserver::class])]
 class Role extends Model {
 
-    use HasFactory, BelongsToTenant;
+    use HasFactory;
     use HasTranslations;
 
     protected $fillable
@@ -67,5 +64,18 @@ class Role extends Model {
         if (!$role != 'superadmin') {
             $query->where('slug', '!=', 'superadmin');
         }
+    }
+    public function scopeWithGlobalRoles($query): void
+    {
+        $tenantId = tenant()->id ?? null;
+        $query->withoutGlobalScope('tenant')
+              ->where(function ($q) use ($tenantId) {
+                  if ($tenantId) {
+                      $q->where('tenant_id', $tenantId)
+                        ->orWhereNull('tenant_id');
+                  } else {
+                      $q->whereNull('tenant_id');
+                  }
+              });
     }
 }

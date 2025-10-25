@@ -5,7 +5,7 @@
         </div>
         <div class="p-4 flex w-full justify-end items-center">
             <div class="flex items-center gap-2 justify-self-end">
-                <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="primary">
+                <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="ghost">
                     {{ __('Export') }}
                 </x-flowbite.button>
             </div>

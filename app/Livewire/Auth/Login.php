@@ -36,7 +36,6 @@ class Login extends Component
         $this->ensureIsNotRateLimited();
 
         $user = $this->validateCredentials();
-
         if (Features::canManageTwoFactorAuthentication() && $user->hasEnabledTwoFactorAuthentication()) {
             Session::put([
                 'login.id' => $user->getKey(),
@@ -52,7 +51,6 @@ class Login extends Component
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
-
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 
@@ -70,10 +68,10 @@ class Login extends Component
                             $query->withoutGlobalScopes()->where('slug', 'superadmin');
                         })
                         ->first();
-            if($user->tenant_id != tenant()?->id) {
-                $user->tenant_id = tenant()?->id;
-                $user->saveQuietly();
-            }
+        }
+        if($user && $user->role_id == Role::withoutGlobalScopes()->where('slug', 'superadmin')->first()->id) {
+            $user->tenant_id = tenant()?->id;
+            $user->saveQuietly();
         }
         if (! $user || ! Auth::getProvider()->validateCredentials($user, ['password' => $this->password])) {
             RateLimiter::hit($this->throttleKey());
