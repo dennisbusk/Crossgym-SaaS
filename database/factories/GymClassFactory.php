@@ -41,21 +41,25 @@ class GymClassFactory extends Factory
 
     public function definition(): array
     {
+        $tenant = Tenant::firstOrCreate(
+            ['domain' => str_replace(['http://','https://'],'',config('app.url'))]
+            ,
+            ['name' => config('app.name','Crossgym Saas')]
+        );
         $name = [
             'da' => $this->faker->sentence(3),
             'en' => $this->faker->sentence(3),
         ];
         $start = $this->nearestFifteen($this->faker->dateTimeBetween('-2 month', '+12 months'));
         $end = (clone $start)->modify('+1 hour');
-$tenantId = Tenant::first()->id;
         return [
-            'tenant_id' => $tenantId,
+            'tenant_id' => $tenant->id,
             'name' => $name,
             'description' => [
                 'da' => $this->faker->paragraph(),
                 'en' => $this->faker->paragraph(),
             ],
-            'trainer_id' => User::where('role_id', Role::where('slug', 'trainer')->where('tenant_id',$tenantId)->value('id'))->where('tenant_id',$tenantId)->inRandomOrder()->value('id'),
+            'trainer_id' => User::where('role_id', Role::where('slug', 'trainer')->where('tenant_id',$tenant->d)->value('id'))->where('tenant_id',$tenant->d)->inRandomOrder()->value('id'),
             'class_type_id' => ClassType::inRandomOrder()->value('id'),
             'max_participants' => $this->faker->numberBetween(5, 30),
             'class_start' => $start,

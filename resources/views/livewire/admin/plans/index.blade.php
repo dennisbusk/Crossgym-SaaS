@@ -5,6 +5,13 @@
         </div>
         <div class="p-4 flex w-full justify-end items-center">
             <div class="flex items-center gap-2 justify-self-end">
+                @can('create', \App\Models\Plan::class)
+                    @if(\Illuminate\Support\Facades\Route::has('plans.create'))
+                        <x-flowbite.link href="{{ route('plans.create') }}" variant="primary">
+                            {{ __('Create Plan') }}
+                        </x-flowbite.link>
+                    @endif
+                @endcan
                 <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="ghost">
                     {{ __('Export') }}
                 </x-flowbite.button>

@@ -13,7 +13,7 @@ test('login screen can be rendered', function () {
 
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->withoutTwoFactor()->create();
-
+    app()->instance('tenant', $user->tenant);
     $response = Livewire::test(Login::class)
         ->set('email', $user->email)
         ->set('password', 'password')
@@ -28,6 +28,7 @@ test('users can authenticate using the login screen', function () {
 
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
+    app()->instance('tenant', $user->tenant);
 
     $response = Livewire::test(Login::class)
         ->set('email', $user->email)

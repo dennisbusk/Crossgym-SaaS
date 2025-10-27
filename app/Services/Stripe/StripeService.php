@@ -177,24 +177,85 @@ class StripeService
     }
 
     // 9. Create Plan (Product + Price)
-    public function createPlan(string $name, int $unitAmount, string $currency = 'dkk', string $interval = 'month'): array
+    public function createPlan(string $name, int $unitAmount, string $currency = 'dkk', string $interval = 'month', array $metadata = []): array
     {
         $client = $this->tenantClient->client();
         $opts = $this->tenantClient->options();
-        $product = $client->products->create(['name' => $name], $opts);
-        $price = $client->prices->create([
+        $metadata = $this->normalizeMetadata($metadata);
+        $product = $client->products->create([
+            'name' => $name,
+            'metadata' => $metadata,
+        ], $opts);
+
+        $priceParams = [
             'product' => $product->id,
             'unit_amount' => $unitAmount,
             'currency' => strtolower($currency),
-            'recurring' => [
+            'metadata' => $metadata,
+        ];
+        if ($interval !== 'one_time') {
+            $priceParams['recurring'] = [
                 'interval' => $interval,
-            ],
-        ], $opts);
+            ];
+        }
+        $price = $client->prices->create($priceParams, $opts);
 
         return [
             'product' => $product->toArray(),
             'price' => $price->toArray(),
         ];
+    }
+
+    // 9b. Update Product (name/metadata)
+    public function updateProduct(string $productId, string $name, array $metadata = []): array
+    {
+        $client = $this->tenantClient->client();
+        $opts = $this->tenantClient->options();
+        $metadata = $this->normalizeMetadata($metadata);
+        $product = $client->products->update($productId, [
+            'name' => $name,
+            'metadata' => $metadata,
+        ], $opts);
+        return $product->toArray();
+    }
+
+    // 9c. Create a new Price for an existing Product
+    public function createPrice(string $productId, int $unitAmount, string $currency = 'dkk', string $interval = 'month', array $metadata = []): array
+    {
+        $client = $this->tenantClient->client();
+        $opts = $this->tenantClient->options();
+        $metadata = $this->normalizeMetadata($metadata);
+        $params = [
+            'product' => $productId,
+            'unit_amount' => $unitAmount,
+            'currency' => strtolower($currency),
+            'metadata' => $metadata,
+        ];
+        if ($interval !== 'one_time') {
+            $params['recurring'] = [
+                'interval' => $interval,
+            ];
+        }
+        $price = $client->prices->create($params, $opts);
+        return $price->toArray();
+    }
+
+    private function normalizeMetadata(array $metadata): array
+    {
+        $normalized = [];
+        foreach ($metadata as $key => $value) {
+            if (is_array($value)) {
+                $normalized[$key] = json_encode($value);
+            } elseif (is_bool($value)) {
+                $normalized[$key] = $value ? 'true' : 'false';
+            } elseif (is_null($value)) {
+                // Stripe ignores nulls; skip
+                continue;
+            } else {
+                $normalized[$key] = (string)$value;
+            }
+        }
+        return $normalized;
     }
 
     // 10. Create PaymentIntent using Destination Charges model (platform handles payments)

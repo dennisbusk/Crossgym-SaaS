@@ -26,7 +26,7 @@ class ClassTypeSeeder extends Seeder
         $superAdminRole = Role::firstOrCreate(['slug' => Str::slug('Superadmin')],[
             'name' => 'Superadmin',
             'slug' => Str::slug('Superadmin'),
-            'tenant_id' => 1,
+            'tenant_id' => null,
         ]);
         $adminRole = Role::firstOrCreate(['slug' => Str::slug('Admin')],[
             'name' => 'Admin',

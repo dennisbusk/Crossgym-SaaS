@@ -18,6 +18,11 @@ class ClassTypeFactory extends Factory
 
     public function definition(): array
     {
+        $tenant = Tenant::firstOrCreate(
+            ['domain' => str_replace(['http://','https://'],'',config('app.url'))]
+            ,
+            ['name' => config('app.name','Crossgym Saas')]
+        );
         $name = [
             'da' => $this->faker->unique()->words(2, true),
             'en' => $this->faker->unique()->words(2, true),
@@ -25,7 +30,7 @@ class ClassTypeFactory extends Factory
         $slug = Str::slug($name['en']);
 
         return [
-            'tenant_id' => Tenant::first()->id,
+            'tenant_id' => $tenant->id,
             'color' => $this->faker->safeHexColor(),
             'image' => null,
             'slug' => $slug,

@@ -55,6 +55,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    protected $with = ['role'];
+
 
     /**
      * The role this user belongs to.

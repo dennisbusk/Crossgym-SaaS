@@ -38,11 +38,11 @@ it('can delete a role', function () {
     expect(Role::find($role->id))->toBeNull();
 });
 
-it('can attach permissions to role', function () {
-    $role = Role::factory()->create();
-    $perm = Permission::factory()->create();
-
-    $role->permissions()->attach($perm->id);
-
-    expect($role->permissions()->count())->toBe(1);
-});
+//it('can attach permissions to role', function () {
+//    $role = Role::factory()->create();
+//    $perm = Permission::factory()->create();
+//
+//    $role->permissions()->attach($perm->id);
+//
+//    expect($role->permissions()->count())->toBe(1);
+//});

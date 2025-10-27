@@ -12,7 +12,7 @@ class Plan extends Model
 {
 
     protected $fillable = [
-        'tenant_id', 'stripe_price_id', 'name', 'amount', 'currency', 'interval', 'metadata'
+        'tenant_id', 'stripe_price_id', 'stripe_product_id', 'name', 'amount', 'currency', 'interval', 'metadata'
     ];
 
     protected $casts = [

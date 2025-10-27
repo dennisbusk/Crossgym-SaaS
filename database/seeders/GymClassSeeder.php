@@ -6,9 +6,11 @@ namespace Database\Seeders;
 
 use App\Models\ClassType;
 use App\Models\GymClass;
+use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Str;
 
 class GymClassSeeder extends Seeder
 {
@@ -21,15 +23,13 @@ class GymClassSeeder extends Seeder
             ['name' => config('app.name','Crossgym Saas')]
         );
 
-        $trainer = User::whereHas('role', fn($q) => $q->where('name', 'Trainer'))
-            ->where('tenant_id', $tenant->id)
-            ->first();
 
-        if (!$trainer) {
-            $trainer = User::factory()->create([
-                'tenant_id' => $tenant->id,
-            ]);
-        }
+        $trainerRole = Role::firstOrCreate(['slug' => Str::slug('Trainer')],[
+            'name' => 'Trainer',
+            'slug' => Str::slug('Trainer'),
+            'tenant_id' => $tenant->id,
+        ]);
+        $trainer = User::firstOrCreate(['role_id' => $trainerRole->id,'tenant_id' => $tenant->id],['name' => 'Trainer User','email' => 'trainer@example.com','password' => bcrypt('password')]);
 
         $classType = ClassType::query()->where('tenant_id', $tenant->id)->first() ?? ClassType::factory()->create([
             'tenant_id' => $tenant->id,

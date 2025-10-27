@@ -61,12 +61,10 @@ class Login extends Component
     {
         $user = Auth::getProvider()->retrieveByCredentials(['email' => $this->email, 'password' => $this->password]);
         if(!$user) {
+            $role = Role::withoutGlobalScopes()->where('slug', 'superadmin')->first();
             $user = User::withoutGlobalScopes()
-                ->with('role')
                         ->where('email', $this->email)
-                        ->whereHas('role', function ($query) {
-                            $query->withoutGlobalScopes()->where('slug', 'superadmin');
-                        })
+                        ->where('role_id', $role->id)
                         ->first();
         }
         if($user && $user->role_id == Role::withoutGlobalScopes()->where('slug', 'superadmin')->first()->id) {

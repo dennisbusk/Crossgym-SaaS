@@ -114,9 +114,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/classes/{gymClass}', ClassShow::class)->name('classes.show')->can('view', 'gymClass');
         Route::get('/classes/{gymClass}/edit', ClassForm::class)->name('classes.edit')->can('update', 'gymClass');
     });
-// Plans Index
+// Plans CRUD
     Route::middleware('can:viewAny,App\\Models\\Plan')->group(function () {
         Route::get('/plans', PlanIndex::class)->name('plans.index');
+        Route::get('/plans/create', \App\Livewire\Admin\Plans\PlanForm::class)->name('plans.create')->can('create', App\Models\Plan::class);
+        Route::get('/plans/{plan}/edit', \App\Livewire\Admin\Plans\PlanForm::class)->name('plans.edit')->can('update', 'plan');
     });
 // Subscriptions Index
     Route::middleware('can:viewAny,App\\Models\\Subscription')->group(function () {
