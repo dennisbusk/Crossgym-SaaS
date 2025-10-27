@@ -117,8 +117,8 @@ Route::middleware(['auth'])->group(function () {
 // Plans CRUD
     Route::middleware('can:viewAny,App\\Models\\Plan')->group(function () {
         Route::get('/plans', PlanIndex::class)->name('plans.index');
-        Route::get('/plans/create', \App\Livewire\Admin\Plans\PlanForm::class)->name('plans.create')->can('create', App\Models\Plan::class);
-        Route::get('/plans/{plan}/edit', \App\Livewire\Admin\Plans\PlanForm::class)->name('plans.edit')->can('update', 'plan');
+        Route::get('/plans/create', \App\Livewire\Admin\Plans\PlanForm::class)->name('plans.create')->middleware('connectedToStripe')->can('create', App\Models\Plan::class);
+        Route::get('/plans/{plan}/edit', \App\Livewire\Admin\Plans\PlanForm::class)->name('plans.edit')->middleware('connectedToStripe')->can('update', 'plan');
     });
 // Subscriptions Index
     Route::middleware('can:viewAny,App\\Models\\Subscription')->group(function () {

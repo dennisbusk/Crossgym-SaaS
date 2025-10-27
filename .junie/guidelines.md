@@ -139,9 +139,7 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
         </div>
     </div>
     
-    @if (session('status'))
-        <div class="rounded-md bg-green-50 p-3 text-green-700">{{ __(session('status')) }}</div>
-    @endif
+    <x-banners/>
     
     <div class="relative overflow-x-auto ">
         

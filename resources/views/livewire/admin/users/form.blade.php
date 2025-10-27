@@ -1,9 +1,7 @@
 <div class="space-y-6 max-w-xl">
     <h1 class="text-2xl font-semibold">{{ $user?->exists ? __('Edit User') : __('Create User') }}</h1>
 
-    @if (session('status'))
-        <div class="rounded-md bg-green-50 p-3 text-green-700">{{ __(session('status')) }}</div>
-    @endif
+    <x-banners/>
 
     <form wire:submit.prevent="save" class="space-y-4">
         <div>

@@ -6,9 +6,7 @@
         </div>
     </div>
     
-    @if (session('status'))
-        <div class="rounded-md bg-green-50 p-3 text-green-700">{{ __(session('status')) }}</div>
-    @endif
+    <x-banners/>
     
     <div class="relative overflow-x-auto ">
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">

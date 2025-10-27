@@ -123,5 +123,6 @@
   "Stripe Secret": "Stripe hemmelighed",
   "Stripe Webhook Secret": "Stripe Webhook hemmelighed",
   "Settings saved.": "Indstillinger gemt.",
-  "Save": "Gem"
+  "Save": "Gem",
+  "Stripe Connect not onboarded": "Stripe Connect er ikke forbundet!"
 }

@@ -3,7 +3,7 @@
 
     <div class="rounded-md border p-4 space-y-2">
         <div><strong>{{ __('Slug') }}:</strong> {{ $classType->slug }}</div>
-        <div><strong>{{ __('Color') }}:</strong> {{ $classType->color }}</div>
+        <div><strong>{{ __('Color') }}:</strong> <x-color :color="$classType->color"></x-color></div>
         <div><strong>{{ __('Image') }}:</strong> {{ $classType->image }}</div>
         <div><strong>{{ __('Description') }}:</strong> {{ $classType->getTranslation('description', app()->getLocale()) }}</div>
     </div>

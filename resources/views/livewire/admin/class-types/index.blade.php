@@ -15,9 +15,7 @@
         </div>
     </div>
     
-    @if (session('status'))
-        <div class="rounded-md bg-green-50 p-3 text-green-700">{{ __(session('status')) }}</div>
-    @endif
+    <x-banners/>
     
     <div class="relative overflow-x-auto ">
         
@@ -33,7 +31,7 @@
                 @forelse ($classTypes as $type)
                     <x-flowbite.table.body.row>
                         <x-flowbite.table.body.cell>{{ $type->getTranslation('name', app()->getLocale()) }}</x-flowbite.table.body.cell>
-                        <x-flowbite.table.body.cell><span class="h-6 w-6 rounded-full" style="background-color: {{ $type->color }}"></span></x-flowbite.table.body.cell>
+                        <x-flowbite.table.body.cell><x-color :color="$type->color"></x-color></x-flowbite.table.body.cell>
                         <x-flowbite.table.body.cell class="text-right space-x-2">
                             <flux:button icon="eye" tag="a" href="{{ route('class-types.show', $type) }}" variant="ghost" />
                             <flux:button icon="pencil-square" tag="a" href="{{ route('class-types.edit', $type) }}" variant="ghost" />

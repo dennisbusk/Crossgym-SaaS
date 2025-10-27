@@ -8,6 +8,11 @@ if (! function_exists('tenant')) {
         return app()->bound('tenant') ? app('tenant') : null;
     }
 }
+if (! function_exists('connectedToStripe')) {
+    function connectedToStripe(): bool{
+    return !(!hasRole('superadmin') && !tenant()?->stripe_connect_onboarded);
+    }
+}
 if(!function_exists('hasRole')){
     function hasRole($role){
         if(auth()->user()->role?->slug === $role){

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\IdentifyTenant::class);
+        $middleware->alias(['connectedToStripe' => \App\Http\Middleware\connectedToStripeMiddleware::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
