@@ -1,9 +1,17 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
+        @if(function_exists('is_impersonating') && is_impersonating())
+            <div class="w-full bg-yellow-500 text-black text-sm px-4 py-2 flex items-center justify-between">
+                <div>
+                    {{ __('You are impersonating') }}: <strong>{{ auth()->user()->name }}</strong>
+                </div>
+                <a href="{{ route('impersonate.leave') }}" class="underline font-semibold">{{ __('Leave impersonation') }}</a>
+            </div>
+        @endif
         <flux:header container class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
@@ -20,6 +28,8 @@
             <flux:spacer />
 
             <flux:navbar class="me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
+                <x-theme-toggle />
+                
 {{--                <flux:tooltip :content="__('Search')" position="bottom">--}}
 {{--                    <flux:navbar.item class="!h-10 [&>div>svg]:size-5" icon="magnifying-glass" href="#" :label="__('Search')" />--}}
 {{--                </flux:tooltip>--}}
@@ -96,6 +106,23 @@
             <a href="{{ route('dashboard') }}" class="ms-1 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
                 <x-app-logo />
             </a>
+
+            <div class="mt-3 ms-1">
+                <button type="button" x-data="{ dark: document.documentElement.classList.contains('dark') }"
+                        @click="dark = !dark; document.documentElement.classList.toggle('dark', dark); localStorage.setItem('theme', dark ? 'dark' : 'light')"
+                        class="inline-flex items-center justify-center h-10 w-10 rounded-md hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60 focus:outline-none"
+                        aria-label="{{ __('Toggle theme') }}">
+                    <!-- Sun icon (light mode) -->
+                    <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5z" />
+                    </svg>
+                    <!-- Moon icon (dark mode) -->
+                    <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21.752 15.002A9.718 9.718 0 0 1 12.004 22C6.478 22 2 17.523 2 11.996 2 7.37 4.942 3.5 9.12 2.16a.75.75 0 0 1 .967.967 8.25 8.25 0 0 0 10.506 10.506.75.75 0 0 1 .159 1.37z"/>
+                    </svg>
+                    <span class="sr-only">{{ __('Toggle theme') }}</span>
+                </button>
+            </div>
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')">

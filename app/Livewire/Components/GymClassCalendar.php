@@ -10,7 +10,7 @@ use Livewire\Component;
 class GymClassCalendar extends Component {
 
     #[On( 'loadEvents' )]
-    public function loadEvents( $start = null, $end = null ) {
+    public function loadEvents( $start = null, $end = null ): void {
         $start = Carbon::parse($start ?? now()->toDateString())->startOfMonth()->startOfWeek();
         $end   = Carbon::parse($end ?? now()->toDateString())->endOfMonth()->endOfWeek();
         // Fetch events for this range
@@ -27,7 +27,7 @@ class GymClassCalendar extends Component {
         return view('livewire.components.gym-class-calendar')->with([ 'events' => $events ]);
     }
 
-    public function getEvents($start, $end) {
+    public function getEvents($start, $end){
         return GymClass::query()->whereBetween('class_start', [ $start, $end ])->get()->map(fn( $event ) => [
             'id'            => $event->id,
             'title'         => $event->name,

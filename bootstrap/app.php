@@ -14,7 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\IdentifyTenant::class);
-        $middleware->alias(['connectedToStripe' => \App\Http\Middleware\connectedToStripeMiddleware::class]);
+        $middleware->append(\App\Http\Middleware\SetThemeMiddleware::class);
+        $middleware->alias([
+            'connectedToStripe' => \App\Http\Middleware\connectedToStripeMiddleware::class,
+            'tenant.onboarded' => \App\Http\Middleware\EnsureTenantOnboarded::class,
+        ]);
+        // Apply tenant onboarding check globally for authenticated tenant routes
+        $middleware->append(\App\Http\Middleware\EnsureTenantOnboarded::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -18,6 +18,7 @@ class ManagePermissions extends Component {
      */
     public array $permissionsGrouped = [];
 
+
     public function mount( Role $role ): void {
         $this->role = $role;
         $this->loadPermissions();
@@ -63,6 +64,15 @@ class ManagePermissions extends Component {
         $this->role->unsetRelation('permissions');
         $this->role->load('permissions');
         $this->loadPermissions();
+    }
+
+    public function syncUsersForRole(): void
+    {
+        $this->role->load('users', 'permissions');
+        foreach ($this->role->users as $user) {
+            $user->syncPermissionsFromRole($this->role);
+        }
+        session()->flash('status', __('Users synced to role permissions.'));
     }
 
 //    public function toggleAll(string $model): void

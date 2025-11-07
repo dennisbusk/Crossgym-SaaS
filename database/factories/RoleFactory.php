@@ -17,7 +17,6 @@ class RoleFactory extends Factory {
         return [
             'name'        => [ 'da' => $name, 'en' => $name ],
             'slug'        => Str::slug($name) . '-' . Str::random(5),
-            'permissions' => [],
         ];
     }
 }

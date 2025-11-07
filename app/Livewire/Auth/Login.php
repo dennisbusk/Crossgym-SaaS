@@ -60,17 +60,29 @@ class Login extends Component
     protected function validateCredentials(): User
     {
         $user = Auth::getProvider()->retrieveByCredentials(['email' => $this->email, 'password' => $this->password]);
-        if(!$user) {
-            $role = Role::withoutGlobalScopes()->where('slug', 'superadmin')->first();
-            $user = User::withoutGlobalScopes()
-                        ->where('email', $this->email)
-                        ->where('role_id', $role->id)
-                        ->first();
+
+        // If a direct provider lookup fails, try locating a superadmin by email (only if the role exists)
+        if (! $user) {
+            $superAdminRole = Role::withoutGlobalScopes()->where('slug', 'superadmin')->first();
+
+            if ($superAdminRole) {
+                $user = User::withoutGlobalScopes()
+                    ->where('email', $this->email)
+                    ->where('role_id', $superAdminRole->id)
+                    ->first();
+            }
         }
-        if($user && $user->role_id == Role::withoutGlobalScopes()->where('slug', 'superadmin')->first()->id) {
-            $user->tenant_id = tenant()?->id;
-            $user->saveQuietly();
+
+        // If user is a superadmin and the helper exists, sync tenant_id softly (no assumption that role exists)
+        if ($user) {
+            $superAdminRole = $superAdminRole ?? Role::withoutGlobalScopes()->where('slug', 'superadmin')->first();
+            if ($superAdminRole && (int) $user->role_id === (int) $superAdminRole->id) {
+                // tenant() helper expected to be available; if it returns null nothing happens
+                $user->tenant_id = tenant()?->id;
+                $user->saveQuietly();
+            }
         }
+
         if (! $user || ! Auth::getProvider()->validateCredentials($user, ['password' => $this->password])) {
             RateLimiter::hit($this->throttleKey());
 
@@ -78,6 +90,7 @@ class Login extends Component
                 'email' => __('auth.failed'),
             ]);
         }
+
         return $user;
     }
 

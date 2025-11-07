@@ -20,7 +20,7 @@
     <div class="relative overflow-x-auto ">
         
         <x-flowbite.table>
-            <x-flowbite.table.head>
+            <x-flowbite.table.head class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <x-flowbite.table.head.row>
                     <x-flowbite.table.head.cell>{{ __('Name') }}</x-flowbite.table.head.cell>
                     <x-flowbite.table.head.cell>{{ __('Color') }}</x-flowbite.table.head.cell>
@@ -39,7 +39,7 @@
                         </x-flowbite.table.body.cell>
                     </x-flowbite.table.body.row>
                 @empty
-                    <x-flowbite.table.body.row>
+                    <x-flowbite.table.body.row class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 ">
                         <x-flowbite.table.body.cell colspan="3" class="text-center">{{ __('No class types found.') }}</x-flowbite.table.body.cell>
                     </x-flowbite.table.body.row>
                 @endforelse

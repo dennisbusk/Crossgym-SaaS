@@ -6,7 +6,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Traits\BelongsToTenant;
+use App\Observers\UserObserver;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,11 +16,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Lab404\Impersonate\Models\Impersonate as ImpersonateTrait;
 
+#[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, BelongsToTenant;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, BelongsToTenant, ImpersonateTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -92,29 +96,52 @@ class User extends Authenticatable
     }
 
     /**
-     * Aggregate of role permissions and user overrides.
+     * Sync the user's permissions to match the given role's permissions.
+     * This overwrites the permission_user table to be a 1:1 reflection of the role.
      */
-    public function allPermissions() {
-        $rolePermissions = $this->role ? $this->role->permissions?->pluck('id')->toArray() : [];
-
-        $userOverrides = $this->permissions
-            ->mapWithKeys(fn( $p ) => [ $p->id => (bool) $p->pivot->granted ])
-            ->toArray();
-
-        $final = collect($rolePermissions)
-            ->mapWithKeys(fn( $id ) => [ $id => true ])
-            ->merge($userOverrides)
-            ->filter(fn( $granted ) => $granted)
-            ->keys();
-
-        return Permission::whereIn('id', $final)->get();
+    public function syncPermissionsFromRole(Role $role): void {
+        $ids = $role->permissions()->pluck('permissions.id')->all();
+        // Build mapping: granted = true for role permissions
+        $mapping = [];
+        foreach ($ids as $id) {
+            $mapping[$id] = ['granted' => true];
+        }
+        // Replace all existing user permissions with role permissions
+        $this->permissions()->sync($mapping);
+        // Reload relation cache
+        $this->unsetRelation('permissions');
+        $this->load('permissions');
     }
 
+    /**
+     * Permission check using only the permission_user pivot (granted flag true).
+     * Superadmin bypass still applies.
+     */
     public function hasPermission( string $model, string $ability ): bool {
-        return $this->allPermissions()
-                    ->where('model', $model)
-                    ->where('ability', $ability)
-                    ->isNotEmpty();
+        if($this->role && $this->role->slug === 'superadmin') return true;
+        return $this->permissions()
+            ->where('permissions.model', $model)
+            ->where('permissions.ability', $ability)
+            ->wherePivot('granted', true)
+            ->exists();
+    }
+
+    /**
+     * Whether this user may impersonate others.
+     */
+    public function canImpersonate(): bool
+    {
+        // Defer to policy/permissions: allow if user has 'impersonate' on User
+        return $this->hasPermission('User', 'impersonate') || ($this->role && $this->role->slug === 'superadmin');
+    }
+
+    /**
+     * Whether this user can be impersonated by others.
+     */
+    public function canBeImpersonated(): bool
+    {
+        // Prevent impersonating SuperAdmin by default
+        return ! ($this->role && $this->role->slug === 'superadmin');
     }
 
     /**

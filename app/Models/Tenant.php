@@ -29,12 +29,31 @@ class Tenant extends Model {
             'stripe_connect_onboarded',
             'stripe_connect_charges_enabled',
             'stripe_connect_payouts_enabled',
+            'subscription_option_id',
+            'onboarded_at',
         ];
+
+    protected $casts = [
+        'onboarded_at' => 'datetime',
+    ];
 
     /**
      * Get the users for the tenant.
      */
     public function users(): HasMany {
         return $this->hasMany(User::class);
+    }
+
+    /**
+     * The selected subscription option.
+     */
+    public function subscriptionOption(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(SubscriptionOption::class);
+    }
+
+    public function hasSubscription(): bool
+    {
+        return ! is_null($this->subscription_option_id);
     }
 }

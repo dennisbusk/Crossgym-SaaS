@@ -9,6 +9,9 @@
 @source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 @source "../../node_modules/flowbite";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @custom-variant dark (&:where(.dark, .dark *));
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -58,6 +61,27 @@
 }
 
 @layer base {
+    :root {
+        --bg: #ffffff;
+        --text: #0a0a0a;
+        --card-bg: #ffffff;
+        --card-border: #e5e5e5; /* neutral-200 */
+        --muted: #525252; /* zinc-600 */
+        --ring: #171717; /* zinc-900 */
+    }
+    .dark {
+        --bg: #0a0a0a; /* zinc-950 */
+        --text: #ededec; /* near-white */
+        --card-bg: #0f0f10; /* neutral-900-ish */
+        --card-border: #262626; /* zinc-800 */
+        --muted: #a3a3a3; /* zinc-400 */
+        --ring: #ffffff;
+    }
+
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+    }
 
     *,
     ::after,
@@ -65,6 +89,14 @@
     ::backdrop,
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+@layer components {
+    .card {
+        @apply rounded-xl border p-4 sm:p-5;
+        background-color: var(--card-bg);
+        border-color: var(--card-border);
     }
 }
 

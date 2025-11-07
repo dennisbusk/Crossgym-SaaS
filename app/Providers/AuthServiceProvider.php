@@ -44,20 +44,26 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // Global before hook to honor dynamic permissions
-        Gate::before(function (User $user, string $ability, ?array $arguments = null) {
-
-            if($this->checkForIsSuperAdmin($user)) return true;
-
-            if (! $arguments || count($arguments) === 0) return null; // abilities without a model are not handled here
-
-            $subject = $arguments[0];
-            $className = is_object($subject) ? class_basename($subject) : (is_string($subject) ? class_basename($subject) : null);
-            if (! $className) {
-                return null;
-            }
-
-            return $user->hasPermission($className, $ability) ? true : null;
-        });
+//        Gate::before(function (User $user, string $ability, ?array $arguments = null) {
+//            // During impersonation, do NOT grant superadmin bypass or any elevation based on the impersonator.
+//            // All checks should reflect the currently authenticated (impersonated) user only.
+//            if (! method_exists($user, 'isImpersonated') || ! $user->isImpersonated()) {
+//                if ($this->checkForIsSuperAdmin($user)) {
+//                    return true;
+//                }
+//            }
+//
+//            if (! $arguments || count($arguments) === 0) return null; // abilities without a model are not handled here
+//
+//            $subject = $arguments[0];
+//            $className = is_object($subject) ? class_basename($subject) : (is_string($subject) ? class_basename($subject) : null);
+//            if (! $className) {
+//                return null;
+//            }
+//
+//            // This uses the impersonated user's permissions when impersonating, which is desired.
+//            return $user->hasPermission($className, $ability) ? true : null;
+//        });
     }
     private function registerPolicies(): void {
         Gate::policy(Role::class, RolePolicy::class);

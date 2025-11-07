@@ -21,7 +21,14 @@ class StripePolicy
 
     protected function isAdmin(User $user): bool
     {
-        $role = strtolower($user->role?->name ?? '');
-        return in_array($role, ['admin', 'superadmin']);
+        // Do not treat user as admin while impersonating
+        if (method_exists($user, 'isImpersonated') && $user->isImpersonated()) {
+            return false;
+        }
+        $roleName = is_array($user->role?->getAttributes()['name'] ?? null)
+            ? strtolower($user->role?->getTranslations('name')['en'] ?? $user->role?->getTranslations('name')['da'] ?? '')
+            : strtolower((string) ($user->role?->name ?? ''));
+        $roleSlug = strtolower($user->role?->slug ?? '');
+        return in_array($roleName, ['admin', 'superadmin'], true) || in_array($roleSlug, ['admin', 'superadmin'], true);
     }
 }

@@ -28,6 +28,36 @@
             </div>
         </div>
 
+        <div class="mt-8 rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+            <h2 class="text-lg font-semibold mb-4">{{ __('Subscription Overview') }}</h2>
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-neutral-600 dark:text-neutral-300">
+                    <thead class="text-xs uppercase bg-neutral-50 dark:bg-neutral-800/50 text-neutral-500 dark:text-neutral-400">
+                        <tr>
+                            <th class="px-4 py-3">{{ __('Subscription Name') }}</th>
+                            <th class="px-4 py-3">{{ __('Number of Tenants') }}</th>
+                            <th class="px-4 py-3">{{ __('Earned (DKK)') }}</th>
+                            <th class="px-4 py-3 text-right">{{ __('Type') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($subscriptionOverview as $row)
+                            <tr class="border-b border-neutral-100 dark:border-neutral-800">
+                                <td class="px-4 py-3">{{ $row['name'] }}</td>
+                                <td class="px-4 py-3">{{ $row['tenants'] }}</td>
+                                <td class="px-4 py-3">{{ $row['earned_dkk'] !== null ? number_format($row['earned_dkk'], 2, ',', '.') : __('N/A') }}</td>
+                                <td class="px-4 py-3 text-right">{{ \Illuminate\Support\Str::of($row['type'])->replace('_', ' ')->title() }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-3 text-neutral-500">{{ __('No data to display.') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
 {{--    <div class="mt-6">--}}
 {{--        <flux:link :href="route('superadmin.settings.general')" variant="primary">{{ __('General settings') }}</flux:link>--}}
 {{--    </div>--}}

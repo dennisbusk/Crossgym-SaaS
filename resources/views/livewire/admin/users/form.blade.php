@@ -79,10 +79,10 @@
             <label class="block text-sm font-medium">{{ __('Password') }}</label>
 {{--            <input type="password" wire:model.defer="password" class="mt-1 w-full rounded-md border px-3 py-2" autocomplete="new-password" />--}}
             <div class="relative flex">
-                <input type="text" class="mt-2 w-full rounded-full border-none" x-model="password"
+                <input type="text" class="mt-2 w-full rounded-md border" x-model="password"
                        @input.debounce.500ms="validatePassword()"
                        autocomplete="new-password">
-                <x-flowbite.button.yellow class="absolute right-0 mr-0 border-none mt-1 top-1/2 border-2 font-semibold rounded-r-full px-2 py-1 -translate-y-1/2" @click="generateNewPassword()">
+                <x-flowbite.button.yellow class="absolute right-0 mr-0 border-none mt-1 top-1/2 border-2 font-semibold rounded-l-none rounded-r-md px-2 py-1 -translate-y-1/2" @click="generateNewPassword()">
                     {{__('generate new password')}}
                 </x-flowbite.button.yellow>
             </div>

@@ -1,17 +1,27 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $theme['mode'] }}">
     <head>
         @include('partials.head')
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
+    @if(function_exists('is_impersonating') && is_impersonating())
+        <div class="w-full bg-yellow-500 text-black text-sm px-4 py-2 flex items-center justify-between">
+            <div>
+                {{ __('You are impersonating') }}: <strong>{{ auth()->user()->name }}</strong>
+            </div>
+            <a href="{{ route('impersonate.leave') }}" class="underline font-semibold">{{ __('Leave impersonation') }}</a>
+        </div>
+    @endif
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
-
+<div class="flex justify-between">
             <a href="{{ route('home') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
                 <x-app-logo />
             </a>
-            
+            <x-theme-toggle />
+</div>
             @if(function_exists('hasRole') && hasRole('superadmin'))
+                @livewire('components.tenant-switcher')
                 <flux:navlist.group :heading="__('SuperAdmin')" class="grid" expandable remember>
                     <flux:navlist.item :href="route('superadmin.dashboard')" :current="request()->routeIs('superadmin.dashboard')" wire:navigate>{{__('Dashboard')}}</flux:navlist.item>
                     {{--                    <flux:navlist.item :href="route('superadmin.settings.general')" :current="request()->routeIs('superadmin.settings.general')" wire:navigate>{{__('General settings')}}</flux:navlist.item>--}}

@@ -15,6 +15,17 @@ class StripeService
         protected StripeTenantClient $tenantClient
     ) {}
 
+    public function updateConnectedAccountMetadata(Tenant $tenant, array $metadata): array
+    {
+        $client = new \Stripe\StripeClient(config('services.stripe.secret'));
+        $accountId = (string) $tenant->stripe_connect_account_id;
+        $normalized = $this->normalizeMetadata($metadata);
+        $account = $client->accounts->update($accountId, [
+            'metadata' => $normalized,
+        ]);
+        return $account->toArray();
+    }
+
     public static function forTenant(?Tenant $tenant = null): self
     {
         return new self(new StripeTenantClient($tenant));

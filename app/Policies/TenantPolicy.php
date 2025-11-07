@@ -10,14 +10,18 @@ class TenantPolicy
     /**
      * Grant all abilities to SuperAdmin before other checks.
      */
-    public function before(User $user, string $ability): ?bool
-    {
-        if ($user->role && $user->role->slug === 'superadmin') {
-            return true;
-        }
-
-        return null;
-    }
+//    public function before(User $user, string $ability): ?bool
+//    {
+//        // When impersonating, do not grant superadmin bypass
+//        if (method_exists($user, 'isImpersonated') && $user->isImpersonated()) {
+//            return null;
+//        }
+//        if ($user->role && $user->role->slug === 'superadmin') {
+//            return true;
+//        }
+//
+//        return null;
+//    }
 
     public function viewAny(User $user): bool
     {

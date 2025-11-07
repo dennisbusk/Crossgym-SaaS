@@ -1,5 +1,12 @@
 <div class="space-y-6">
-  <h2 class="text-xl font-bold">{{ __('Manage Permissions for Role:') }} {{ $role->name }}</h2>
+  <div class="flex items-center justify-between">
+    <h2 class="text-xl font-bold">{{ __('Manage Permissions for Role:') }} {{ $role->name }}</h2>
+    <div class="flex items-center gap-2" x-data>
+      <flux:button wire:click="syncUsersForRole" variant="primary">
+        {{ __('Sync all users with this role') }}
+      </flux:button>
+    </div>
+  </div>
   
   @foreach ($permissionsGrouped as $model => $permissions)
     <div
@@ -18,7 +25,7 @@
                 },
                 init() {
                     const checkboxes = $el.querySelectorAll('.perm-checkbox');
-                    // Hold Toggle All i sync, når enkeltfelter ændres
+                    // Keep Toggle All in sync when single fields change
                     checkboxes.forEach(cb => {
                         cb.addEventListener('change', () => {
                             this.allChecked = Array.from(checkboxes).every(c => c.checked);

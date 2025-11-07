@@ -33,10 +33,16 @@ class UserIndex extends Component
         return Excel::download(new UsersExport(), 'users.xlsx');
     }
 
-    public function render()
-    {
+    public function render() {
+        $users = User::query();
+        if (auth()->user()->role->name != 'superadmin') {
+            $users->whereHas('role', function ($query) {
+                $query->where('slug', '!=', 'superadmin');
+            });
+        }
+        $users = $users->latest()->get();
         return view('livewire.admin.users.index', [
-            'users' => User::query()->with(['role', 'tenant'])->latest()->get(),
+            'users' => $users,
         ]);
     }
 }

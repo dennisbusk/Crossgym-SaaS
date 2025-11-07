@@ -32,14 +32,13 @@ class ManagePermissions extends Component {
                                               ->get()
                                               ->groupBy('model')
                                               ->map(fn( $group ) => $group->map(function ( Permission $perm ) use ( $userPerms ) {
-                                                  $roleGranted = $this->user->role?->permissions?->contains('id', $perm->id) ?? false;
                                                   $override    = $userPerms[ $perm->id ] ?? null;
-                                                  $effective   = $override ?? ( $this->user->role?->hasPermission($perm->model, $perm->ability) ?? false );
+                                                  $effective   = $override ?? false;
 
                                                   return [
                                                       'id'            => $perm->id,
                                                       'ability'       => $perm->ability,
-                                                      'role_granted'  => $roleGranted,
+                                                      'role_granted'  => false,
                                                       'user_override' => $override,
                                                       'effective'     => (bool) $effective,
                                                   ];

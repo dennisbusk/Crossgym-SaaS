@@ -10,8 +10,9 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/alpine-globals.js', 'resources/js/app.js'],
             refresh: true,
         }),
-        tailwindcss(),
-    ],
+        tailwindcss({
+            darkMode: 'class', // 👈 Force class-based dark mode
+        }),    ],
     server: {
         cors: true,
     },

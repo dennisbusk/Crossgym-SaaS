@@ -26,7 +26,6 @@
             <x-flowbite.table.head.cell>{{ __('Name') }}</x-flowbite.table.head.cell>
             <x-flowbite.table.head.cell>{{ __('Email') }}</x-flowbite.table.head.cell>
             <x-flowbite.table.head.cell>{{ __('Role') }}</x-flowbite.table.head.cell>
-            <x-flowbite.table.head.cell>{{ __('Tenant') }}</x-flowbite.table.head.cell>
             <x-flowbite.table.head.cell class="text-right">{{ __('Actions') }}</x-flowbite.table.head.cell>
             </x-flowbite.table.head.row>
         </x-flowbite.table.head>
@@ -38,10 +37,12 @@
                     <x-flowbite.table.body.cell>{{ $user->name }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $user->email }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $user->role?->name }}</x-flowbite.table.body.cell>
-                    <x-flowbite.table.body.cell>{{ $user->tenant?->name }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell class="text-right space-x-2">
                         <flux:button icon="eye" tag="a" href="{{ route('users.show', $user) }}" variant="ghost" />
                         <flux:button icon="lock-closed" tag="a" href="{{ route('users.permissions', $user) }}" variant="ghost" />
+                        @if (function_exists('can_impersonate') && function_exists('can_be_impersonated') && can_impersonate() && can_be_impersonated($user))
+                            <flux:button icon="arrow-path" tag="a" href="{{ route('impersonate', $user->id) }}" variant="ghost" :label="__('Impersonate')" />
+                        @endif
                         <flux:button icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}" variant="ghost" />
                         <flux:button icon="trash" wire:click="delete({{ $user->id }})" variant="ghost" />
                     </x-flowbite.table.body.cell>

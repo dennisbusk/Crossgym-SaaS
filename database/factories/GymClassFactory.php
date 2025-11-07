@@ -59,7 +59,7 @@ class GymClassFactory extends Factory
                 'da' => $this->faker->paragraph(),
                 'en' => $this->faker->paragraph(),
             ],
-            'trainer_id' => User::where('role_id', Role::where('slug', 'trainer')->where('tenant_id',$tenant->d)->value('id'))->where('tenant_id',$tenant->d)->inRandomOrder()->value('id'),
+            'trainer_id' => User::where('role_id', Role::where('slug', 'trainer')->where('tenant_id',$tenant->id)->value('id'))->where('tenant_id',$tenant->id)->inRandomOrder()->value('id'),
             'class_type_id' => ClassType::inRandomOrder()->value('id'),
             'max_participants' => $this->faker->numberBetween(5, 30),
             'class_start' => $start,
