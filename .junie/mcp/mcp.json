@@ -6,6 +6,10 @@
                 "C:\\Users\\Denni\\PhpstormProjects\\crossgym-saas\\artisan",
                 "boost:mcp"
             ]
+        },
+        "herd": {
+            "command": "C:\\Users\\Denni\\AppData\\Local\\Programs\\Herd\\resources\\herd.exe",
+            "args": ["mcp", "serve"]
         }
     }
 }

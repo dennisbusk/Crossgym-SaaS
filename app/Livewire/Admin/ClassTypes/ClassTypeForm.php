@@ -9,10 +9,13 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
+use Str;
 
 class ClassTypeForm extends Component
 {
     use AuthorizesRequests;
+
+    protected $listeners = ['imageUpdated'];
 
     public ?ClassType $classType = null;
 
@@ -42,9 +45,20 @@ class ClassTypeForm extends Component
         }
     }
 
+    public function imageUpdated($url)
+    {
+        $this->image = $url;
+        if ($this->classType && $this->classType->exists) {
+            $this->classType->update(['image' => $url]);
+        }
+    }
+
     public function save()
     {
         $this->validate();
+        if( !$this->classType->exists){
+            $this->slug = STR::slug($this->name);
+        }
 
         $data = [
             'slug' => $this->slug,
@@ -55,15 +69,21 @@ class ClassTypeForm extends Component
         ];
 
         if ($this->classType && $this->classType->exists) {
+            $this->saveImage();
             $this->classType->update($data);
             session()->flash('status', __('Class type updated.'));
         } else {
             $user = Auth::user();
             $data['tenant_id'] = $user?->tenant_id;
             $this->classType = ClassType::create($data);
+            $this->saveImage();
             session()->flash('status', __('Class type created.'));
             return redirect()->route('class-types.edit', $this->classType);
         }
+    }
+
+    public function saveImage() {
+        $this->emitTo('image-uploader', 'save', 'class-types/'.$this->classType->id);
     }
 
     public function render()

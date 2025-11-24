@@ -17,20 +17,14 @@
             <textarea wire:model.defer="description" class="mt-1 w-full rounded-md border px-3 py-2"></textarea>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <label class="block text-sm font-medium">{{ __('Slug') }}</label>
-                <input type="text" wire:model.defer="slug" class="mt-1 w-full rounded-md border px-3 py-2" />
-            </div>
             <div>
                 <label class="block text-sm font-medium">{{ __('Color') }}</label>
-                <input type="text" wire:model.defer="color" class="mt-1 w-full rounded-md border px-3 py-2" placeholder="#000000" />
+                <input type="color" wire:model.defer="color" class="mt-1 border h-8 w-8" placeholder="#000000" />
             </div>
             <div>
-                <label class="block text-sm font-medium">{{ __('Image URL') }}</label>
-                <input type="text" wire:model.defer="image" class="mt-1 w-full rounded-md border px-3 py-2" />
+                <label class="block text-sm font-medium">{{ __('Image') }}</label>
+                <livewire:components.image-uploader wire:model="image" :value="$image" />
             </div>
-        </div>
 
         <div class="flex gap-2 justify-end">
             <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
