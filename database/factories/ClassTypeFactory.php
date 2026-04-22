@@ -23,8 +23,8 @@ class ClassTypeFactory extends Factory
             ['name' => config('app.name', 'Crossgym Saas')]
         );
         $name = [
-            'da' => $this->faker->unique()->words(2, true),
-            'en' => $this->faker->unique()->words(2, true),
+            'da' => fake()->unique()->words(2, true),
+            'en' => fake()->unique()->words(2, true),
         ];
         $slug = Str::slug($name['en']);
 
@@ -34,8 +34,8 @@ class ClassTypeFactory extends Factory
             'slug' => $slug,
             'name' => $name,
             'description' => [
-                'da' => $this->faker->sentence(),
-                'en' => $this->faker->sentence(),
+                'da' => fake()->sentence(),
+                'en' => fake()->sentence(),
             ],
         ];
     }

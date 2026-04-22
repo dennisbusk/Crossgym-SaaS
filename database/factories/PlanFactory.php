@@ -22,14 +22,14 @@ class PlanFactory extends Factory
             ['domain' => str_replace(['http://', 'https://'], '', config('app.url'))],
             ['name' => config('app.name', 'Crossgym Saas')]
         );
-        $name = $this->faker->unique()->words(2, true);
+        $name = fake()->unique()->words(2, true);
 
         return [
             'tenant_id' => $tenant->id,
             'stripe_price_id' => 'price_'.Str::random(16),
             'stripe_product_id' => 'prod_'.Str::random(16),
             'name' => $name,
-            'amount' => $this->faker->numberBetween(1000, 10000),
+            'amount' => fake()->numberBetween(1000, 10000),
             'currency' => 'DKK',
             'interval' => 'month',
             'metadata' => [

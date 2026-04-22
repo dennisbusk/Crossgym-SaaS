@@ -19,8 +19,8 @@ class ColorFactory extends Factory
     {
         return [
             'tenant_id' => Tenant::factory(),
-            'name' => $this->faker->colorName(),
-            'color' => $this->faker->hexColor(),
+            'name' => fake()->colorName(),
+            'color' => fake()->hexColor(),
         ];
     }
 }

@@ -16,8 +16,8 @@ class PermissionFactory extends Factory
 
     public function definition(): array
     {
-        $model = $this->faker->randomElement(['User', 'Role', 'Permission', 'Tenant', 'ClassType', 'GymClass']);
-        $ability = $this->faker->randomElement(['view', 'create', 'update', 'delete']);
+        $model = fake()->randomElement(['User', 'Role', 'Permission', 'Tenant', 'ClassType', 'GymClass']);
+        $ability = fake()->randomElement(['view', 'create', 'update', 'delete']);
 
         return [
             'model' => $model,

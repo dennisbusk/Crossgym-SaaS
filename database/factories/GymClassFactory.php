@@ -46,22 +46,22 @@ class GymClassFactory extends Factory
             ['name' => config('app.name', 'Crossgym Saas')]
         );
         $name = [
-            'da' => $this->faker->sentence(3),
-            'en' => $this->faker->sentence(3),
+            'da' => fake()->sentence(3),
+            'en' => fake()->sentence(3),
         ];
-        $start = $this->nearestFifteen($this->faker->dateTimeBetween('-2 month', '+12 months'));
+        $start = $this->nearestFifteen(fake()->dateTimeBetween('-2 month', '+12 months'));
         $end = (clone $start)->modify('+1 hour');
 
         return [
             'tenant_id' => $tenant->id,
             'name' => $name,
             'description' => [
-                'da' => $this->faker->paragraph(),
-                'en' => $this->faker->paragraph(),
+                'da' => fake()->paragraph(),
+                'en' => fake()->paragraph(),
             ],
             'trainer_id' => User::where('role_id', Role::where('slug', 'trainer')->where('tenant_id', $tenant->id)->value('id'))->where('tenant_id', $tenant->id)->inRandomOrder()->value('id'),
             'class_type_id' => ClassType::inRandomOrder()->value('id'),
-            'max_participants' => $this->faker->numberBetween(5, 30),
+            'max_participants' => fake()->numberBetween(5, 30),
             'class_start' => $start,
             'class_end' => $end,
             'recurring_id' => null,

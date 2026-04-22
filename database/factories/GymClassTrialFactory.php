@@ -19,7 +19,7 @@ class GymClassTrialFactory extends Factory
         return [
             'tenant_id' => \App\Models\Tenant::factory(),
             'gym_class_id' => \App\Models\GymClass::factory(),
-            'name' => $this->faker->name(),
+            'name' => fake()->name(),
             'check_in_id' => null,
         ];
     }

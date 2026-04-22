@@ -22,8 +22,8 @@ class ExerciseFactory extends Factory
     {
         return [
             'tenant_id' => Tenant::factory(),
-            'name' => ['da' => $this->faker->word()],
-            'category' => $this->faker->randomElement(['strength', 'cardio', 'biometric']),
+            'name' => ['da' => fake()->word()],
+            'category' => fake()->randomElement(['strength', 'cardio', 'biometric']),
         ];
     }
 }
