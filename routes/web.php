@@ -132,8 +132,6 @@ Route::get('/manifest.json', function () {
 
 Route::middleware(['auth', 'terms.accepted'])->group(function () {
 
-    Route::get('auth/stripe/connect', [StripeConnectController::class, 'connect'])->name('stripe.connect');
-    Route::get('auth/stripe/connect/callback', [StripeConnectController::class, 'callback'])->name('stripe.connect.callback');
     Route::redirect('profile', 'profile/settings');
 
     // Alias for tests expecting /settings/profile with name profile.profile

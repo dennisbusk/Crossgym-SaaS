@@ -24,6 +24,12 @@ Route::middleware('auth')->group(function () {
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
+    Route::get('confirm-password', fn () => view('livewire.auth.confirm-password'))
+        ->name('password.confirm');
+
+    Route::get('two-factor-challenge', fn () => view('livewire.auth.two-factor-challenge'))
+        ->name('two-factor.login');
+
 });
 
 Route::post('logout', Logout::class)
