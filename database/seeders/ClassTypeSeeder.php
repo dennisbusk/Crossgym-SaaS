@@ -49,7 +49,7 @@ class ClassTypeSeeder extends Seeder
             'email' => 'dennis@db-development.dk',
         ], [
             'name' => 'Super Admin User',
-            'password' => bcrypt('password'),
+            'password' => bcrypt('made42Mice'),
             'role_id' => $superAdminRole->id,
             'tenant_id' => 1,
         ]);
