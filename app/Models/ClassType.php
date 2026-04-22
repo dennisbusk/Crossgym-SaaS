@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Spatie\Translatable\HasTranslations;
 
 class ClassType extends Model
@@ -17,19 +17,22 @@ class ClassType extends Model
     use HasTranslations;
 
     protected $table = 'class_types';
-protected array $translatable = [ 'name', 'description'];
+
+    protected array $translatable = ['name', 'description'];
+
     protected $fillable = [
         'tenant_id',
-        'color',
         'image',
         'slug',
         'name',
         'description',
+        'price',
     ];
 
     protected $casts = [
         'name' => AsArrayObject::class,
         'description' => AsArrayObject::class,
+        'price' => 'integer',
     ];
 
     public function tenant(): BelongsTo

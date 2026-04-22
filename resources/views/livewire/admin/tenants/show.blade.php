@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-4xl p-6 space-y-6">
+<div class="mx-auto max-w-7xl p-6 space-y-6">
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ __('View Tenant') }}</h1>
         <div class="space-x-2">

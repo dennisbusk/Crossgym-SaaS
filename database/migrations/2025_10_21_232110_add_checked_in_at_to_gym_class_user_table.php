@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('gym_class_user', function (Blueprint $table) {
-            if(!Schema::hasColumn('gym_class_user', 'checked_in_at'))
-            $table->timestamp('checked_in_at')->nullable()->after('created_at');
+            if (! Schema::hasColumn('gym_class_user', 'checked_in_at')) {
+                $table->timestamp('checked_in_at')->nullable()->after('created_at');
+            }
             $table->index(
                 ['gym_class_id', 'user_id', 'checked_in_at'],
                 'gym_class_user_checked_in_at_index'

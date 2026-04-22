@@ -9,6 +9,7 @@ use App\Models\Tenant;
 use App\Services\Stripe\StripeService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class TenantChooseSubscription extends Component
@@ -23,6 +24,7 @@ class TenantChooseSubscription extends Component
         }
     }
 
+    #[Layout('components.layouts.app')]
     public function render(): View
     {
         return view('livewire.admin.tenants.choose-subscription', [

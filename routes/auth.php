@@ -2,10 +2,6 @@
 
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Livewire\Actions\Logout;
-use App\Livewire\Admin\Roles\RoleForm;
-use App\Livewire\Admin\Roles\RoleIndex;
-use App\Livewire\Admin\Tenants\TenantForm;
-use App\Livewire\Admin\Tenants\TenantIndex;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
@@ -27,7 +23,6 @@ Route::middleware('auth')->group(function () {
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
-
 
 });
 

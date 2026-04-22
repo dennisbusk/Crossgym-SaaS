@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
-use App\Models\User;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class UsersExport implements FromCollection, WithHeadings
+class UsersExport implements FromQuery, WithHeadings, WithMapping
 {
-    /**
-     * @return Collection<int, array<string, mixed>
-     */
-    public function collection(): Collection
+    public function __construct(protected Builder $query) {}
+
+    public function query()
     {
-        return User::query()
-            ->select(['id', 'name', 'email', 'role_id', 'tenant_id', 'created_at'])
-            ->get()
-            ->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => optional($user->role)->name,
-                    'tenant' => optional($user->tenant)->name,
-                    'created_at' => $user->created_at,
-                ];
-            });
+        return $this->query;
+    }
+
+    public function map($user): array
+    {
+        return [
+            $user->id,
+            $user->name,
+            $user->email,
+            optional($user->role)->name,
+            optional($user->tenant)->name,
+            $user->created_at,
+        ];
     }
 
     public function headings(): array

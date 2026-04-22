@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Admin\Users;
 
+use App\Models\Plan;
 use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
-use Auth;
+use App\Services\UserSubscriptionService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class UserForm extends Component
@@ -16,15 +20,30 @@ class UserForm extends Component
 
     public ?User $user = null;
 
+    #[Rule('required|string|max:255')]
     public string $name = '';
+
+    #[Rule('required|email|max:255')]
     public string $email = '';
-    public ?int $role_id = null;
-    public ?int $tenant_id = null;
+
+    // Leave blank to keep current password on edit
+    #[Rule('nullable|string|min:8')]
     public string $password = '';
 
-    public function mount($user = null): void
+    #[Rule('required|integer|exists:roles,id')]
+    public ?int $role_id = null;
+
+    // Only visible to superadmin in the form
+    #[Rule('nullable|integer|exists:tenants,id')]
+    public ?int $tenant_id = null;
+
+    // Optional plan selection to assign/swap
+    #[Rule('nullable|integer|exists:plans,id')]
+    public ?int $plan_id = null;
+
+    public function mount(?User $user = null): void
     {
-        $this->user = $user && $user->exists ? $user : null;
+        $this->user = $user?->exists ? $user : null;
 
         if ($this->user) {
             $this->authorize('update', $this->user);
@@ -34,29 +53,12 @@ class UserForm extends Component
             $this->tenant_id = $this->user->tenant_id;
         } else {
             $this->authorize('create', User::class);
-            $this->tenant_id = tenant()->id ?? Auth::user()->tenant_id;
         }
     }
 
     public function save(): void
     {
-        $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required', 'email', 'max:255',
-                Rule::unique('users', 'email')->ignore($this->user?->id),
-            ],
-            'role_id' => ['nullable', 'exists:roles,id'],
-            'tenant_id' => ['nullable', 'exists:tenants,id'],
-        ];
-
-        if (!$this->user) {
-            $rules['password'] = ['required', 'string', 'min:8'];
-        } elseif ($this->password !== '') {
-            $rules['password'] = ['string', 'min:8'];
-        }
-
-        $validated = $this->validate($rules);
+        $validated = $this->validate();
 
         // Only include password if provided (on update)
         if ($this->password !== '') {
@@ -67,9 +69,36 @@ class UserForm extends Component
 
         if ($this->user) {
             $this->user->update($validated);
-            session()->flash('status', __('User updated.'));
         } else {
             $this->user = User::create($validated);
+        }
+
+        // Handle plan assignment if selected
+        if ($this->plan_id) {
+            $plan = Plan::query()
+                ->where('tenant_id', $this->tenant_id ?? tenant()?->id)
+                ->find($this->plan_id);
+            if ($plan) {
+                $meta = (array) ($plan->metadata ?? []);
+                $planType = (string) ($meta['plan_type'] ?? ($plan->interval === 'one_time' ? 'one_off' : 'subscription'));
+                // Resolve via container to allow mocking in tests
+                $service = app(UserSubscriptionService::class);
+                if ($planType === 'subscription') {
+                    $service->assignSubscriptionPlan($this->user, $plan);
+                    session()->flash('status', __('Subscription assigned.'));
+                } else {
+                    $url = $service->assignOneOffPlan($this->user, $plan);
+                    if ($url) {
+                        session()->flash('status', __('One-off plan initiated. Complete payment to grant credits.'));
+                        session()->flash('checkout_url', $url);
+                    }
+                }
+            }
+        }
+
+        if (! $this->user->wasRecentlyCreated) {
+            session()->flash('status', __('User updated.'));
+        } else {
             session()->flash('status', __('User created.'));
         }
 
@@ -78,9 +107,22 @@ class UserForm extends Component
 
     public function render()
     {
+        // Current subscription details for display
+        $currentSubscription = $this->user?->subscription;
+        $currentPlan = null;
+        if ($currentSubscription?->stripe_price_id) {
+            $currentPlan = Plan::query()->where('stripe_price_id', $currentSubscription->stripe_price_id)->first();
+        }
+
         return view('livewire.admin.users.form', [
             'roles' => Role::query()->visibleFor(Auth::user()->role->slug)->orderBy('name')->get(['id', 'name']),
             'tenants' => Tenant::query()->orderBy('name')->get(['id', 'name']),
+            'plans' => Plan::query()
+                ->when(tenant(), fn ($q) => $q->where('tenant_id', tenant()->id))
+                ->orderBy('name')
+                ->get(['id', 'name', 'interval', 'metadata']),
+            'currentSubscription' => $currentSubscription,
+            'currentPlan' => $currentPlan,
         ]);
     }
 }

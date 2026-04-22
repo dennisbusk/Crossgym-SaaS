@@ -41,6 +41,7 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
         'connect_client_id' => env('STRIPE_CONNECT_CLIENT_ID'), // BC
         'client_id' => env('STRIPE_CONNECT_CLIENT_ID'), // per spec
+        'ai_coach_product_id' => env('AI_COACH_STRIPE_PRODUCT_ID'),
     ],
 
 ];

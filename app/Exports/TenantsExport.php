@@ -4,21 +4,28 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
-use App\Models\Tenant;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class TenantsExport implements FromCollection, WithHeadings
+class TenantsExport implements FromQuery, WithHeadings, WithMapping
 {
-    /**
-     * @return Collection<int, array<string, mixed>
-     */
-    public function collection(): Collection
+    public function __construct(protected Builder $query) {}
+
+    public function query()
     {
-        return Tenant::query()
-            ->select(['id', 'name', 'domain', 'created_at'])
-            ->get();
+        return $this->query;
+    }
+
+    public function map($tenant): array
+    {
+        return [
+            $tenant->id,
+            $tenant->name,
+            $tenant->domain,
+            $tenant->created_at,
+        ];
     }
 
     public function headings(): array

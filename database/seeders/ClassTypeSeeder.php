@@ -17,29 +17,28 @@ class ClassTypeSeeder extends Seeder
     {
         // Ensure a tenant exists
         $tenant = Tenant::firstOrCreate(
-            ['domain' => str_replace(['http://','https://'],'',config('app.url'))]
-            ,
-            ['name' => config('app.name','Crossgym Saas')]
+            ['domain' => str_replace(['http://', 'https://'], '', config('app.url'))],
+            ['name' => config('app.name', 'Crossgym Saas')]
         );
-        Tenant::firstOrCreate(['domain' => str_replace('.test','-2.test',str_replace(['http://','https://'],'',config('app.url')))],['name' => config('app.name','Crossgym Saas').'-2']);
+        Tenant::firstOrCreate(['domain' => str_replace('.test', '-2.test', str_replace(['http://', 'https://'], '', config('app.url')))], ['name' => config('app.name', 'Crossgym Saas').'-2']);
         // Ensure roles exist
-        $superAdminRole = Role::firstOrCreate(['slug' => Str::slug('Superadmin')],[
+        $superAdminRole = Role::firstOrCreate(['slug' => Str::slug('Superadmin')], [
             'name' => 'Superadmin',
             'slug' => Str::slug('Superadmin'),
             'tenant_id' => null,
         ]);
-        $adminRole = Role::firstOrCreate(['slug' => Str::slug('Admin')],[
+        $adminRole = Role::firstOrCreate(['slug' => Str::slug('Admin')], [
             'name' => 'Admin',
             'slug' => Str::slug('Admin'),
             'tenant_id' => $tenant->id,
         ]);
 
-        $trainerRole = Role::firstOrCreate(['slug' => Str::slug('Trainer')],[
+        $trainerRole = Role::firstOrCreate(['slug' => Str::slug('Trainer')], [
             'name' => 'Trainer',
             'slug' => Str::slug('Trainer'),
             'tenant_id' => $tenant->id,
         ]);
-        $memberRole = Role::firstOrCreate(['slug' => Str::slug('Member')],[
+        $memberRole = Role::firstOrCreate(['slug' => Str::slug('Member')], [
             'name' => 'Member',
             'slug' => Str::slug('Member'),
             'tenant_id' => $tenant->id,
@@ -47,7 +46,7 @@ class ClassTypeSeeder extends Seeder
 
         // Ensure a couple of users exist
         User::firstOrCreate([
-            'email' => 'superadmin@db.dk',
+            'email' => 'dennis@db-development.dk',
         ], [
             'name' => 'Super Admin User',
             'password' => bcrypt('password'),

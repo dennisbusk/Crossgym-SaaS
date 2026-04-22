@@ -6,11 +6,9 @@
         <div class="p-4 flex w-full justify-end items-center">
             <div class="flex items-center gap-2 justify-self-end">
                 @can('create', \App\Models\Plan::class)
-                    @if(\Illuminate\Support\Facades\Route::has('plans.create'))
-                        <x-flowbite.link href="{{ route('plans.create') }}" variant="primary">
-                            {{ __('Create Plan') }}
-                        </x-flowbite.link>
-                    @endif
+                    <x-flowbite.link href="{{ route('plans.create') }}" variant="primary">
+                        {{ __('Create Plan') }}
+                    </x-flowbite.link>
                 @endcan
                 <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="ghost">
                     {{ __('Export') }}
@@ -18,20 +16,20 @@
             </div>
         </div>
     </div>
-    
+
     <x-banners/>
-    
+
     <div class="relative overflow-x-auto ">
-        
+
         <x-flowbite.table>
             <x-flowbite.table.head class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <x-flowbite.table.head.row>
-                    <x-flowbite.table.head.cell>{{ __('ID') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Name') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Price') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Interval') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Stripe Price ID') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Subscribers') }}</x-flowbite.table.head.cell>
+                    <x-flowbite.table.head.sortable field="id" :$sortField :$sortDirection>{{ __('ID') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="name" :$sortField :$sortDirection>{{ __('Name') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="amount" :$sortField :$sortDirection>{{ __('Price') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="interval" :$sortField :$sortDirection>{{ __('Interval') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="stripe_price_id" :$sortField :$sortDirection>{{ __('Stripe Price ID') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="subscribers_count" :$sortField :$sortDirection>{{ __('Subscribers') }}</x-flowbite.table.head.sortable>
                     <x-flowbite.table.head.cell class="text-right">{{ __('Actions') }}</x-flowbite.table.head.cell>
                 </x-flowbite.table.head.row>
             </x-flowbite.table.head>
@@ -51,15 +49,18 @@
                         <x-flowbite.table.body.cell class="font-mono text-xs">{{ $plan->stripe_price_id }}</x-flowbite.table.body.cell>
                         <x-flowbite.table.body.cell>{{ $plan->subscribers_count ?? 0 }}</x-flowbite.table.body.cell>
                         <x-flowbite.table.body.cell class="text-right space-x-2">
-                            @if(\Illuminate\Support\Facades\Route::has('plans.show'))
-                                <x-flowbite.button icon="eye" href="{{ route('plans.show', $plan) }}" variant="ghost" />
-                            @endif
-                            @if(\Illuminate\Support\Facades\Route::has('plans.edit'))
-                                <x-flowbite.button icon="pencil-square" href="{{ route('plans.edit', $plan) }}" variant="ghost" />
-                            @endif
-                            @if(\Illuminate\Support\Facades\Route::has('plans.destroy'))
-                                <x-flowbite.button icon="trash" wire:click="delete({{ $plan->id }})" variant="ghost" />
-                            @endif
+                            @can('view', $plan)
+                            <flux:button icon="eye" tag="a" href="{{ route('plans.show', $plan) }}" variant="ghost" />
+
+                            @endcan
+                            @can('update', $plan)
+                            <flux:button icon="pencil-square" tag="a" href="{{ route('plans.edit', $plan) }}" variant="ghost" />
+
+                            @endcan
+                            @can('delete', $plan)
+                            <flux:button icon="trash" wire:click="delete({{ $plan->id }})" variant="ghost" />
+
+                            @endcan
                         </x-flowbite.table.body.cell>
                     </x-flowbite.table.body.row>
                 @empty

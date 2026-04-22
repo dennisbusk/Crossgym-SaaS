@@ -4,19 +4,19 @@
             <h1 class="text-2xl font-semibold">{{ __('Stripe Webhook Logs') }}</h1>
         </div>
     </div>
-    
+
     <x-banners/>
-    
+
     <div class="relative overflow-x-auto ">
-        
+
         <x-flowbite.table>
             <x-flowbite.table.head class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <x-flowbite.table.head.row>
-                    <x-flowbite.table.head.cell>{{ __('ID') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Event Type') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Status') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Processed At') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Error') }}</x-flowbite.table.head.cell>
+                    <x-flowbite.table.head.sortable field="id" :$sortField :$sortDirection>{{ __('ID') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="event_type" :$sortField :$sortDirection>{{ __('Event Type') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="status" :$sortField :$sortDirection>{{ __('Status') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="processed_at" :$sortField :$sortDirection>{{ __('Processed At') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="error" :$sortField :$sortDirection>{{ __('Error') }}</x-flowbite.table.head.sortable>
                     <x-flowbite.table.head.cell class="text-right">{{ __('Actions') }}</x-flowbite.table.head.cell>
                 </x-flowbite.table.head.row>
             </x-flowbite.table.head>

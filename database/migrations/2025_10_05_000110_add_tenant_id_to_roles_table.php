@@ -4,13 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::table('roles', function (Blueprint $table) {
             $table->foreignId('tenant_id')->nullable()->constrained('tenants')->cascadeOnDelete()->after('id');
             // Name the index explicitly so we can safely drop it later
-            $table->unique(['tenant_id','slug'], 'roles_tenant_id_slug_unique');
+            $table->unique(['tenant_id', 'slug'], 'roles_tenant_id_slug_unique');
         });
     }
 

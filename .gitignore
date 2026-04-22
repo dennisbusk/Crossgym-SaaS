@@ -49,3 +49,5 @@ Thumbs.db
 
 /vendor/
 .env
+
+bootstrap/cache/.

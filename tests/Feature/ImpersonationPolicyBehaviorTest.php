@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
+use App\Models\AICoachSettings;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 
 uses(RefreshDatabase::class);
 
-function makeTenantWithRoles(): array {
+function makeTenantWithRoles(): array
+{
     $tenant = Tenant::factory()->create();
 
     // Global SuperAdmin role (tenant_id null)
@@ -106,4 +108,25 @@ it('superadmin not impersonating still bypasses policies', function () {
 
     $this->actingAs($admin);
     expect(Gate::allows('viewAny', User::class))->toBeTrue();
+    expect(Gate::allows('viewAny', AICoachSettings::class))->toBeTrue();
+});
+
+it('while impersonating, ai coach settings checks use impersonated user permissions', function () {
+    [$tenant, $superAdminRole, $memberRole] = makeTenantWithRoles();
+
+    $admin = User::factory()->create([
+        'role_id' => $superAdminRole->id,
+        'tenant_id' => $tenant->id,
+    ]);
+
+    $member = User::factory()->create([
+        'role_id' => $memberRole->id,
+        'tenant_id' => $tenant->id,
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('impersonate', $member->id))
+        ->assertRedirect();
+
+    expect(Gate::denies('viewAny', AICoachSettings::class))->toBeTrue();
 });

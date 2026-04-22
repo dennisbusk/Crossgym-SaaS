@@ -1,5 +1,5 @@
-<div class="w-64">
-  <label for="tenant-select" class="sr-only">Select Tenant</label>
+<div class="w-full">
+  <label for="tenant-select" class="sr-only">{{ __('Select Tenant') }}</label>
   <select
       id="tenant-select"
       wire:model="selectedTenant"

@@ -6,8 +6,6 @@ namespace App\Services\Stripe;
 
 use App\Models\Tenant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Stripe\StripeClient;
 
 class StripeConnectService
@@ -15,7 +13,7 @@ class StripeConnectService
     public function __construct(
         protected ?StripeTenantClient $tenantClient = null,
     ) {
-        $this->tenantClient = $tenantClient ?? new StripeTenantClient();
+        $this->tenantClient = $tenantClient ?? new StripeTenantClient;
     }
 
     /**
@@ -30,7 +28,7 @@ class StripeConnectService
         if (empty($tenant->stripe_connect_account_id)) {
             $account = $client->accounts->create([
                 'type' => 'express',
-                'email' => $tenant->stripe_connect_email ?: (string)optional($tenant->users()->first())->email,
+                'email' => $tenant->stripe_connect_email ?: (string) optional($tenant->users()->first())->email,
                 'capabilities' => [
                     'card_payments' => ['requested' => true],
                     'transfers' => ['requested' => true],
@@ -50,13 +48,13 @@ class StripeConnectService
 
         // Create an account link (hosted onboarding)
         $link = $client->accountLinks->create([
-            'account' => (string)$tenant->stripe_connect_account_id,
+            'account' => (string) $tenant->stripe_connect_account_id,
             'refresh_url' => route('stripe.connect.refresh'),
             'return_url' => route('stripe.connect.return'),
             'type' => 'account_onboarding',
         ]);
 
-        return (string)$link->url;
+        return (string) $link->url;
     }
 
     /**
@@ -65,8 +63,8 @@ class StripeConnectService
      */
     public function handleOAuthCallback(Request $request): void
     {
-        $code = (string)$request->string('code');
-        if (!$code) {
+        $code = (string) $request->string('code');
+        if (! $code) {
             abort(400, __('Missing code'));
         }
 
@@ -77,7 +75,7 @@ class StripeConnectService
             'grant_type' => 'authorization_code',
         ]);
 
-        if (!$resp->ok()) {
+        if (! $resp->ok()) {
             abort(400, __('Stripe connection failed.'));
         }
 
@@ -92,7 +90,7 @@ class StripeConnectService
         ])->save();
 
         // Update status from Stripe
-        if (!empty($tenant->stripe_connect_account_id)) {
+        if (! empty($tenant->stripe_connect_account_id)) {
             $this->updateTenantAccountStatus($tenant->stripe_connect_account_id);
         }
     }
@@ -107,13 +105,15 @@ class StripeConnectService
 
         /** @var Tenant|null $tenant */
         $tenant = Tenant::where('stripe_connect_account_id', $acct->id)->first();
-        if (!$tenant) return;
+        if (! $tenant) {
+            return;
+        }
 
         $tenant->forceFill([
-            'stripe_connect_charges_enabled' => (bool)($acct->charges_enabled ?? false),
-            'stripe_connect_payouts_enabled' => (bool)($acct->payouts_enabled ?? false),
+            'stripe_connect_charges_enabled' => (bool) ($acct->charges_enabled ?? false),
+            'stripe_connect_payouts_enabled' => (bool) ($acct->payouts_enabled ?? false),
             'stripe_connect_email' => $acct->email ?? $tenant->stripe_connect_email,
-            'stripe_connect_onboarded' => (bool)($acct->details_submitted ?? false),
+            'stripe_connect_onboarded' => (bool) ($acct->details_submitted ?? false),
         ])->save();
     }
 
@@ -121,6 +121,7 @@ class StripeConnectService
     {
         // Always use platform secret to manage Connect accounts
         $secret = config('services.stripe.secret');
-        return new StripeClient((string)$secret);
+
+        return new StripeClient((string) $secret);
     }
 }

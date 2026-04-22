@@ -11,7 +11,8 @@ class StripeHelper
 {
     public static function getStripeClient(?StripeTenantClient $tenantClient = null): StripeClient
     {
-        $tenantClient = $tenantClient ?? new StripeTenantClient();
+        $tenantClient = $tenantClient ?? new StripeTenantClient;
+
         return $tenantClient->client();
     }
 }

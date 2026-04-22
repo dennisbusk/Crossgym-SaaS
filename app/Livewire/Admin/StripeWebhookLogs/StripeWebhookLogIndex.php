@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Admin\StripeWebhookLogs;
 
 use App\Models\StripeWebhookLog;
+use App\Traits\WithSorting;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 class StripeWebhookLogIndex extends Component
 {
     use WithPagination;
+    use WithSorting;
 
     public string $search = '';
 
@@ -25,15 +27,15 @@ class StripeWebhookLogIndex extends Component
 
     protected function logs(): LengthAwarePaginator
     {
-        return StripeWebhookLog::query()
+        $logs = StripeWebhookLog::query()
             ->when($this->search !== '', function ($q) {
                 $q->where(function ($qq) {
                     $qq->where('event_type', 'like', "%{$this->search}%")
-                       ->orWhere('status', 'like', "%{$this->search}%")
-                       ->orWhere('error', 'like', "%{$this->search}%");
+                        ->orWhere('status', 'like', "%{$this->search}%")
+                        ->orWhere('error', 'like', "%{$this->search}%");
                 });
-            })
-            ->orderByDesc('id')
-            ->paginate(10);
+            });
+
+        return $this->applySorting($logs)->paginate(10);
     }
 }

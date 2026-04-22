@@ -11,22 +11,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 
 #[ObservedBy([SystemSettingObserver::class])]
-class SystemSetting extends Model {
-
+class SystemSetting extends Model
+{
     protected $fillable
         = [
             'key',
             'value',
         ];
 
-    //Value Mutator
-    protected function value(): Attribute {
+    // Value Mutator
+    protected function value(): Attribute
+    {
         return Attribute::make(
-        // MUTATOR: called when setting the value
-            get: fn( $value ) => json_decode(Crypt::decrypt($value), true),
+            // MUTATOR: called when setting the value
+            get: fn ($value) => json_decode(Crypt::decrypt($value), true),
 
             // ACCESSOR: called when getting the value
-            set: fn( $value ) => Crypt::encrypt(json_encode($value)),
+            set: fn ($value) => Crypt::encrypt(json_encode($value)),
         );
     }
 }

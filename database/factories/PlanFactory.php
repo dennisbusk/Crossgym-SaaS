@@ -19,11 +19,11 @@ class PlanFactory extends Factory
     public function definition(): array
     {
         $tenant = Tenant::firstOrCreate(
-            ['domain' => str_replace(['http://','https://'],'',config('app.url'))]
-            ,
-            ['name' => config('app.name','Crossgym Saas')]
+            ['domain' => str_replace(['http://', 'https://'], '', config('app.url'))],
+            ['name' => config('app.name', 'Crossgym Saas')]
         );
         $name = $this->faker->unique()->words(2, true);
+
         return [
             'tenant_id' => $tenant->id,
             'stripe_price_id' => 'price_'.Str::random(16),

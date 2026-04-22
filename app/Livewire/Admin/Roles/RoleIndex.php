@@ -6,6 +6,7 @@ namespace App\Livewire\Admin\Roles;
 
 use App\Exports\RolesExport;
 use App\Models\Role;
+use App\Traits\WithSorting;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -14,8 +15,9 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class RoleIndex extends Component
 {
-    use WithPagination;
     use AuthorizesRequests;
+    use WithPagination;
+    use WithSorting;
 
     #[Url]
     public string $search = '';
@@ -42,15 +44,24 @@ class RoleIndex extends Component
     {
         $this->authorize('viewAny', Role::class);
 
-        return Excel::download(new RolesExport(), 'roles.xlsx');
+        $query = Role::query();
+        $query = $this->applyFilters($query);
+
+        return Excel::download(new RolesExport($query), 'roles.xlsx');
+    }
+
+    protected function applyFilters($query)
+    {
+        return $query->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"));
     }
 
     public function render()
     {
-        $roles = Role::query()
-            ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
-            ->latest()
-            ->paginate(10);
+        $roles = Role::query();
+
+        $roles = $this->applyFilters($roles);
+
+        $roles = $this->applySorting($roles)->paginate(10);
 
         return view('livewire.admin.roles.index', [
             'roles' => $roles,

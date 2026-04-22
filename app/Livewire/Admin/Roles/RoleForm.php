@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Roles;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
 
@@ -14,21 +13,22 @@ class RoleForm extends Component
     use AuthorizesRequests;
 
     public ?Role $role = null;
+
     public array $permissionsGrouped = [];
 
-
-    public function loadPermissions(): void {
+    public function loadPermissions(): void
+    {
         $this->permissionsGrouped = Permission::query()
-                                              ->orderBy('model')
-                                              ->orderBy('ability')
-                                              ->get()
-                                              ->groupBy('model')
-                                              ->map(fn( $group ) => $group->map(fn( Permission $perm ) => [
-                                                  'id'      => $perm->id,
-                                                  'ability' => $perm->ability,
-                                                  'granted' => $this->role->permissions?->contains('id', $perm->id) ?? false,
-                                              ])->all())
-                                              ->all();
+            ->orderBy('model')
+            ->orderBy('ability')
+            ->get()
+            ->groupBy('model')
+            ->map(fn ($group) => $group->map(fn (Permission $perm) => [
+                'id' => $perm->id,
+                'ability' => $perm->ability,
+                'granted' => $this->role->permissions?->contains('id', $perm->id) ?? false,
+            ])->all())
+            ->all();
     }
 
     #[Rule('required|string|max:255')]
@@ -38,7 +38,7 @@ class RoleForm extends Component
 
     public function mount($role = null): void
     {
-        $this->role = $role instanceof Role ? $role : new Role();
+        $this->role = $role instanceof Role ? $role : new Role;
         if ($this->role && $this->role->exists) {
             $this->name = $this->role->name;
             $this->authorize('update', $this->role);
@@ -57,12 +57,13 @@ class RoleForm extends Component
                 'name' => $this->name,
                 'permissions' => $permissions,
             ]);
-            session()->flash('status', 'Role updated.');
+            session()->flash('status', __('Role updated.'));
         } else {
             $this->role = Role::create([
                 'name' => $this->name,
             ]);
-            session()->flash('status', 'Role created.');
+            session()->flash('status', __('Role created.'));
+
             return redirect()->route('roles.edit', $this->role);
         }
     }
@@ -71,23 +72,22 @@ class RoleForm extends Component
     {
         return view('livewire.admin.roles.form');
     }
-    public function togglePermission( int $permissionId, $forcedState = null ): void {
-        if ( $forcedState === null ) {
-            if ( $this->role->permissions?->contains('id', $permissionId) ) {
+
+    public function togglePermission(int $permissionId, $forcedState = null): void
+    {
+        if ($forcedState === null) {
+            if ($this->role->permissions?->contains('id', $permissionId)) {
                 $this->role->permissions()->detach($permissionId);
-            }
-            else {
+            } else {
                 $this->role->permissions()->attach($permissionId);
             }
-        }
-        else {
-            if ( $forcedState === true ) {
-                if ( !$this->role->permissions?->contains('id', $permissionId) ) {
+        } else {
+            if ($forcedState === true) {
+                if (! $this->role->permissions?->contains('id', $permissionId)) {
                     $this->role->permissions()->attach($permissionId);
                 }
-            }
-            else if ( $forcedState === false ) {
-                if ( $this->role->permissions?->contains('id', $permissionId) ) {
+            } elseif ($forcedState === false) {
+                if ($this->role->permissions?->contains('id', $permissionId)) {
                     $this->role->permissions()->detach($permissionId);
                 }
             }

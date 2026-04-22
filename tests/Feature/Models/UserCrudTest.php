@@ -1,6 +1,6 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 use App\Models\Role;
 use App\Models\Tenant;
@@ -8,14 +8,14 @@ use App\Models\User;
 
 it('can create a user', function () {
     $user = User::factory()
-                ->for(Tenant::factory())
-                ->for(Role::factory())
-                ->create();
+        ->for(Tenant::factory())
+        ->for(Role::factory())
+        ->create();
 
     expect($user->exists)->toBeTrue()
-                         ->and(User::count())->toBe(1)
-                         ->and($user->tenant)->not->toBeNull()
-                                                  ->and($user->role)->not->toBeNull();
+        ->and(User::count())->toBe(1)
+        ->and($user->tenant)->not->toBeNull()
+        ->and($user->role)->not->toBeNull();
 });
 
 it('can read a user', function () {
@@ -24,13 +24,13 @@ it('can read a user', function () {
     $found = User::find($user->id);
 
     expect($found)->not->toBeNull()
-                       ->and($found->id)->toBe($user->id);
+        ->and($found->id)->toBe($user->id);
 });
 
 it('can update a user', function () {
-    $user = User::factory()->for(Tenant::factory())->for(Role::factory())->create([ 'name' => 'John Doe' ]);
+    $user = User::factory()->for(Tenant::factory())->for(Role::factory())->create(['name' => 'John Doe']);
 
-    $user->update([ 'name' => 'Jane Doe' ]);
+    $user->update(['name' => 'Jane Doe']);
 
     expect($user->fresh()->name)->toBe('Jane Doe');
 });

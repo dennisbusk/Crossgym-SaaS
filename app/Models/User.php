@@ -1,12 +1,12 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Traits\BelongsToTenant;
 use App\Observers\UserObserver;
+use App\Traits\BelongsToTenant;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,14 +15,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 use Lab404\Impersonate\Models\Impersonate as ImpersonateTrait;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
 #[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, BelongsToTenant, ImpersonateTrait;
+    use BelongsToTenant, HasFactory, ImpersonateTrait, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -35,6 +35,24 @@ class User extends Authenticatable
         'password',
         'role_id',
         'tenant_id',
+        'medlemsnummer',
+        'address',
+        'postal_code',
+        'city',
+        'birthday',
+        'phone',
+        'mobile',
+        'sex',
+        'joined_at',
+        'left_at',
+        'is_approved_for_closed_classes',
+        'image',
+        'terms_accepted_at',
+        'old_user_id',
+        'old_member_id',
+        'stripe_customer_id',
+        'card_brand',
+        'card_last_four',
     ];
 
     /**
@@ -59,8 +77,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    protected $with = ['role'];
 
+    protected $with = ['role'];
 
     /**
      * The role this user belongs to.
@@ -78,28 +96,38 @@ class User extends Authenticatable
         return $this->belongsTo(Tenant::class);
     }
 
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class);
+    }
+
     /**
      * Classes this user participates in.
      */
     public function attendingClasses(): BelongsToMany
     {
-        return $this->belongsToMany(GymClass::class, 'gym_class_user', 'user_id', 'gym_class_id')->withTimestamps();
+        return $this->belongsToMany(GymClass::class, 'gym_class_user', 'user_id', 'gym_class_id')
+            ->using(\App\Models\Pivots\GymClassUser::class)
+            ->withPivot(['id', 'check_in_id'])
+            ->withTimestamps();
     }
 
     /**
      * Direct user-specific permissions with granted flag.
      */
-    public function permissions(): BelongsToMany {
+    public function permissions(): BelongsToMany
+    {
         return $this->belongsToMany(Permission::class)
-                    ->withPivot('granted')
-                    ->withTimestamps();
+            ->withPivot('granted')
+            ->withTimestamps();
     }
 
     /**
      * Sync the user's permissions to match the given role's permissions.
      * This overwrites the permission_user table to be a 1:1 reflection of the role.
      */
-    public function syncPermissionsFromRole(Role $role): void {
+    public function syncPermissionsFromRole(Role $role): void
+    {
         $ids = $role->permissions()->pluck('permissions.id')->all();
         // Build mapping: granted = true for role permissions
         $mapping = [];
@@ -115,10 +143,9 @@ class User extends Authenticatable
 
     /**
      * Permission check using only the permission_user pivot (granted flag true).
-     * Superadmin bypass still applies.
      */
-    public function hasPermission( string $model, string $ability ): bool {
-        if($this->role && $this->role->slug === 'superadmin') return true;
+    public function hasPermission(string $model, string $ability): bool
+    {
         return $this->permissions()
             ->where('permissions.model', $model)
             ->where('permissions.ability', $ability)

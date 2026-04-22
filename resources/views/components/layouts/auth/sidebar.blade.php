@@ -23,10 +23,12 @@
             @if(function_exists('hasRole') && hasRole('superadmin'))
                 @livewire('components.tenant-switcher')
                 <flux:navlist.group :heading="__('SuperAdmin')" class="grid" expandable remember>
-                    <flux:navlist.item :href="route('superadmin.dashboard')" :current="request()->routeIs('superadmin.dashboard')" wire:navigate>{{__('Dashboard')}}</flux:navlist.item>
+                    @can('viewDashboard', \App\Models\SuperAdmin::class)
+                        <flux:navlist.item :href="route('superadmin.dashboard')" :current="request()->routeIs('superadmin.dashboard')" wire:navigate>{{__('Dashboard')}}</flux:navlist.item>
+                    @endcan
                     {{--                    <flux:navlist.item :href="route('superadmin.settings.general')" :current="request()->routeIs('superadmin.settings.general')" wire:navigate>{{__('General settings')}}</flux:navlist.item>--}}
-             
-                
+
+
                 @can('viewAny', \App\Models\Tenant::class)
 {{--                    <flux:navlist.group--}}
 {{--                        :heading="__('Tenants')"--}}
@@ -40,12 +42,16 @@
                 @endcan
                 </flux:navlist.group>
             @endif
+            @can('viewAny', \App\Models\Dashboard::class)
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:navlist.item>
+            @endcan
+            @can('viewAny', \App\Models\Calendar::class)
                     <flux:navlist.item icon="calendar-days" :href="route('calendar')" :current="request()->routeIs('calendar')" wire:navigate>
                         {{ __('Calendar') }}
                     </flux:navlist.item>
+            @endcan
             @can('viewAny', \App\Models\User::class)
             <flux:navlist.group :heading="__('Users')" class="grid" expandable remember >
                 <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
@@ -59,6 +65,9 @@
                     <flux:navlist.item :href="route('classes.index')" :current="request()->routeIs('classes.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>
                     @can('create', \App\Models\GymClass::class)
                         <flux:navlist.item :href="route('classes.create')" :current="request()->routeIs('classes.create')" wire:navigate>{{__('Create Class')}}</flux:navlist.item>
+                    @endcan
+                    @can('viewAny', \App\Models\Color::class)
+                        <flux:navlist.item :href="route('colors.index')" :current="request()->routeIs('colors.index')" wire:navigate>{{__('Colors')}}</flux:navlist.item>
                     @endcan
                 </flux:navlist.group>
             @endcan
@@ -118,6 +127,24 @@
                 </flux:navlist.group>
             @endcan
 
+            @can('viewAny', \App\Models\Retention::class)
+            <flux:navlist.item icon="arrow-path" :href="route('retention.index')" :current="request()->routeIs('retention.index')" wire:navigate>
+                {{ __('Retention') }}
+            </flux:navlist.item>
+            @endcan
+
+            @can('viewAny', \App\Models\EmailLog::class)
+            <flux:navlist.item icon="envelope" :href="route('email-logs.index')" :current="request()->routeIs('email-logs.index')" wire:navigate>
+                {{ __('Email Logs') }}
+            </flux:navlist.item>
+            @endcan
+
+            @can('viewAny', \App\Models\EmailTemplate::class)
+            <flux:navlist.item icon="envelope-open" :href="route('admin.email-templates.index')" :current="request()->routeIs('admin.email-templates.*')" wire:navigate>
+                {{ __('Email Skabeloner') }}
+            </flux:navlist.item>
+            @endcan
+
             @can('viewAny', \App\Models\StripeWebhookLog::class)
                 <flux:navlist.group :heading="__('Stripe Webhooks')" class="grid" expandable remember>
                     @if(\Illuminate\Support\Facades\Route::has('stripe-webhook-logs.index'))
@@ -125,6 +152,20 @@
                     @endif
                 </flux:navlist.group>
             @endcan
+
+            @can('viewAny', \App\Models\AICoachSettings::class)
+                <flux:navlist.item :href="route('ai-coach-settings.index')" :current="request()->routeIs('ai-coach-settings.index')" icon="sparkles" wire:navigate>{{ __('AI Coach Settings') }}</flux:navlist.item>
+            @endcan
+
+            @if(tenant() && auth()->user()->can('update', tenant()))
+                <flux:navlist.item icon="cog-6-tooth" :href="route('tenants.edit', tenant())" :current="request()->fullUrlIs(route('tenants.edit', tenant()))" wire:navigate>
+                    {{ __('Gym Settings') }}
+                </flux:navlist.item>
+            @endif
+
+                @if(\Illuminate\Support\Facades\Route::has('profile.settings'))
+                                            <flux:navlist.item :href="route('profile.settings')" :current="str_contains(request()->route()->getName(),'profile')" icon="user" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
+                    @endif
 
 
             <flux:spacer />
@@ -160,7 +201,7 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        <flux:menu.item :href="route('profile.settings')" wire:navigate>{{ __('Profile') }}</flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />
@@ -210,7 +251,7 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        <flux:menu.item :href="route('profile.settings')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />
@@ -230,6 +271,6 @@
         @fluxScripts
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     @stack('scripts')
-    
+
     </body>
 </html>

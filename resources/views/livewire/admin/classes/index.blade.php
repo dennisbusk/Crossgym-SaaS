@@ -15,18 +15,36 @@
         </div>
     </div>
     <x-banners/>
-    
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+        <flux:input label="{{ __('Search') }}" placeholder="{{ __('Search...') }}" wire:model.live="search" icon="magnifying-glass" />
+        <flux:input type="date" label="{{ __('From') }}" wire:model.live="fromDate" />
+        <flux:input type="date" label="{{ __('To') }}" wire:model.live="toDate" />
+        <flux:select label="{{ __('Trainer') }}" wire:model.live="trainerId" placeholder="{{ __('Trainer') }}">
+            <flux:select.option value="">{{ __('All Trainers') }}</flux:select.option>
+            @foreach($trainers as $trainer)
+                <flux:select.option value="{{ $trainer->id }}">{{ $trainer->name }}</flux:select.option>
+            @endforeach
+        </flux:select>
+        <flux:select label="{{ __('Class Type') }}" wire:model.live="classTypeId" placeholder="{{ __('Class Type') }}">
+            <flux:select.option value="">{{ __('All Types') }}</flux:select.option>
+            @foreach($classTypes as $type)
+                <flux:select.option value="{{ $type->id }}">{{ $type->getTranslation('name', app()->getLocale()) }}</flux:select.option>
+            @endforeach
+        </flux:select>
+    </div>
+
     <div class="relative overflow-x-auto ">
-        
+
         <x-flowbite.table>
             <x-flowbite.table.head>
                 <x-flowbite.table.head.row>
-                    <x-flowbite.table.head.cell>{{ __('Name') }}</x-flowbite.table.head.cell>
+                    <x-flowbite.table.head.sortable field="name" :$sortField :$sortDirection>{{ __('Name') }}</x-flowbite.table.head.sortable>
                     <x-flowbite.table.head.cell>{{ __('Type') }}</x-flowbite.table.head.cell>
                     <x-flowbite.table.head.cell>{{ __('Trainer') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Start') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('End') }}</x-flowbite.table.head.cell>
-                    <x-flowbite.table.head.cell>{{ __('Participants') }}</x-flowbite.table.head.cell>
+                    <x-flowbite.table.head.sortable field="class_start" :$sortField :$sortDirection>{{ __('Start') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="class_end" :$sortField :$sortDirection>{{ __('End') }}</x-flowbite.table.head.sortable>
+                    <x-flowbite.table.head.sortable field="participants_count" :$sortField :$sortDirection>{{ __('Participants') }}</x-flowbite.table.head.sortable>
                     <x-flowbite.table.head.cell class="text-right">{{ __('Actions') }}</x-flowbite.table.head.cell>
                 </x-flowbite.table.head.row>
             </x-flowbite.table.head>
@@ -54,5 +72,9 @@
                 @endforelse
             </x-flowbite.table.body>
         </x-flowbite.table>
+    </div>
+
+    <div class="mt-4">
+        {{ $classes->links() }}
     </div>
 </div>

@@ -9,12 +9,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-function actingAsBasicMember(): array {
+function actingAsBasicMember(): array
+{
     $tenant = Tenant::factory()->create();
     $role = Role::factory()->create(['slug' => 'member']); // no explicit permissions
     $user = User::factory()->create([
         'tenant_id' => $tenant->id,
-        'role_id'   => $role->id,
+        'role_id' => $role->id,
     ]);
 
     test()->actingAs($user);
@@ -31,9 +32,10 @@ it('user without explicit permissions can access auth-only routes', function () 
     $authOnlyRoutes = [
         'dashboard',
         'calendar',
-        'settings.profile',
-        'settings.password',
-        'settings.appearance',
+        'profile.settings',
+        'profile.password',
+        'profile.bookings',
+        'profile.billing',
         'tenant.subscription',
     ];
 

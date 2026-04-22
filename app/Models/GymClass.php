@@ -30,6 +30,9 @@ class GymClass extends Model
         'class_start',
         'class_end',
         'recurring_id',
+        'all_day_event',
+        'featured',
+        'color_id',
     ];
 
     protected $casts = [
@@ -37,6 +40,8 @@ class GymClass extends Model
         'description' => AsArrayObject::class,
         'class_start' => 'datetime',
         'class_end' => 'datetime',
+        'all_day_event' => 'boolean',
+        'featured' => 'boolean',
     ];
 
     public function tenant(): BelongsTo
@@ -49,6 +54,11 @@ class GymClass extends Model
         return $this->belongsTo(ClassType::class, 'class_type_id');
     }
 
+    public function color(): BelongsTo
+    {
+        return $this->belongsTo(Color::class, 'color_id');
+    }
+
     public function trainer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'trainer_id');
@@ -59,6 +69,14 @@ class GymClass extends Model
      */
     public function participants(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'gym_class_user', 'gym_class_id', 'user_id')->withPivot('checked_in_at')->withTimestamps();
+        return $this->belongsToMany(User::class, 'gym_class_user', 'gym_class_id', 'user_id')
+            ->using(\App\Models\Pivots\GymClassUser::class)
+            ->withPivot(['id', 'check_in_id'])
+            ->withTimestamps();
+    }
+
+    public function trials(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(GymClassTrial::class);
     }
 }

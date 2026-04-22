@@ -18,10 +18,11 @@ it('superadmin can impersonate a user and then leave', function () {
         'tenant_id' => null,
     ]);
 
-    $memberRole = Role::factory()->create([
-        'name' => ['da' => 'Medlem', 'en' => 'Member'],
+    $memberRole = Role::firstOrCreate([
         'slug' => 'member',
         'tenant_id' => $tenant->id,
+    ], [
+        'name' => ['da' => 'Medlem', 'en' => 'Member'],
     ]);
 
     // Create users

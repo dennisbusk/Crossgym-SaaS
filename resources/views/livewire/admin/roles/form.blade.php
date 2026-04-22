@@ -1,5 +1,5 @@
 <div class="space-y-6 max-w-3xl">
-        <h1 class="text-2xl font-semibold">{{ $role && $role->exists ? 'Edit Role' : 'Create Role' }}</h1>
+        <h1 class="text-2xl font-semibold">{{ $role && $role->exists ? __('Edit Role') : __('Create Role') }}</h1>
 
     @if (session('status'))
         <div class="mb-4 rounded bg-green-50 text-green-800 px-3 py-2">{{ session('status') }}</div>
@@ -7,15 +7,15 @@
 
     <form wire:submit.prevent="save" class="space-y-4">
         <div>
-            <label class="block text-sm font-medium mb-1">Name</label>
+            <label class="block text-sm font-medium mb-1">{{ __('Name') }}</label>
             <input type="text" wire:model.live="name" class="w-full rounded border px-3 py-2" />
             @error('name') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
         </div>
-        
+
 {{--        @include('partials.form-errors', [--}}
 {{--            'errors' => $errors,--}}
 {{--        ])--}}
-        
+
         <div class="flex gap-2 justify-end">
             <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
                 {{ $role?->exists ? __('Update') : __('Create') }}
@@ -26,7 +26,7 @@
     @if($role->exists)
     <div class="space-y-6">
         <h2 class="text-xl font-bold">{{ __('Manage Permissions for Role:') }} {{ $role->name }}</h2>
-        
+
         @foreach ($permissionsGrouped as $model => $permissions)
             <div
                 class="border rounded-2xl p-4 bg-gray-800 shadow"
@@ -63,7 +63,7 @@
                         <span>{{ __('Toggle all') }}</span>
                     </label>
                 </div>
-                
+
                 <div class="grid grid-cols-1 gap-2">
                     @foreach ($permissions as $perm)
                         <label class="flex items-center gap-2 cursor-pointer"
@@ -88,5 +88,5 @@
         @endforeach
     </div>
     @endif
-    
+
 </div>

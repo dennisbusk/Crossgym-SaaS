@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Stripe;
 
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Log;
 use Stripe\StripeClient;
 
 class StripeTenantClient
@@ -26,17 +25,18 @@ class StripeTenantClient
     public function options(): array
     {
         $account = $this->tenant?->stripe_connect_account_id;
+
         return $account ? ['stripe_account' => $account] : [];
     }
 
     public function publicKey(): string
     {
-        return (string)($this->tenant?->stripe_public_key ?? config('services.stripe.key'));
+        return (string) ($this->tenant?->stripe_public_key ?? config('services.stripe.key'));
     }
 
     public function secretKey(): string
     {
-        return (string)($this->tenant?->stripe_secret_key ?? config('services.stripe.secret'));
+        return (string) ($this->tenant?->stripe_secret_key ?? config('services.stripe.secret'));
     }
 
     public function webhookSecret(): ?string

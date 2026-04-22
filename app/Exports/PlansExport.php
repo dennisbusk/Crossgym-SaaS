@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class PlansExport implements FromCollection, WithHeadings
+class PlansExport implements FromQuery, WithHeadings, WithMapping
 {
     public function __construct(
-        protected Collection $plans
-    ) {
+        protected Builder $query
+    ) {}
+
+    public function query()
+    {
+        return $this->query;
     }
 
-    public function collection(): Collection
+    public function map($plan): array
     {
-        return $this->plans->map(function ($plan) {
-            $amount = is_null($plan->amount) ? '' : number_format(((int) $plan->amount) / 100, 2, ',', '.');
+        $amount = is_null($plan->amount) ? '' : number_format(((int) $plan->amount) / 100, 2, ',', '.');
 
-            return [
-                'id' => $plan->id,
-                'name' => $plan->name,
-                'price' => $amount . ' ' . strtoupper((string) $plan->currency),
-                'interval' => $plan->interval,
-                'stripe_price_id' => $plan->stripe_price_id,
-                'subscribers' => $plan->subscribers_count ?? 0,
-            ];
-        });
+        return [
+            $plan->id,
+            $plan->name,
+            $amount.' '.strtoupper((string) $plan->currency),
+            $plan->interval,
+            $plan->stripe_price_id,
+            $plan->subscribers_count ?? 0,
+        ];
     }
 
     public function headings(): array

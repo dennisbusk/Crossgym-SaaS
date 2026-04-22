@@ -1,17 +1,18 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
-@import "flowbite/src/themes/default";
+@import 'flowbite/src/themes/default';
+@import './fullcalendar-tailwind.css';
 
-@plugin "flowbite/plugin";
+@plugin 'flowbite/plugin';
 
+/* content sources */
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
-@source "../../node_modules/flowbite";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@source '../../node_modules/flowbite';
+
+/* dark mode variant */
 @custom-variant dark (&:where(.dark, .dark *));
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -28,8 +29,9 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+    --color-brand: var(--brand-color);
+    --color-accent: var(--brand-color);
+    --color-accent-content: var(--brand-color);
     --color-accent-foreground: var(--color-white);
 }
 
@@ -39,7 +41,7 @@
         --color-accent-content: var(--color-white);
         --color-accent-foreground: var(--color-neutral-800);
         input,select:not(.datatable-selector),textarea,option{
-            @apply !text-gray-900;
+            @apply border border-gray-300 bg-white text-gray-900 shadow-sm hover:border-gray-400 dark:!bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:focus:border-blue-400 dark:focus:ring-blue-900 transition;
         }
         .fc .fc-list-sticky .fc-list-day > *{
             @apply !bg-zinc-800;

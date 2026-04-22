@@ -20,12 +20,12 @@ class TenantScopeManager
         $models = $this->getTenantAwareModels();
         foreach ($models as $modelClass) {
             // Add global scope
-            $modelClass::addGlobalScope('tenant', function (Builder $builder) use ($tenant, $modelClass) {
+            $modelClass::addGlobalScope('tenant', function (Builder $builder) use ($tenant) {
                 $builder->where('tenant_id', $tenant->id);
             });
             // Auto-assign tenant_id on create
             $modelClass::creating(function ($model) use ($tenant) {
-                if (!$model->tenant_id) {
+                if (! $model->tenant_id) {
                     $model->tenant_id = $tenant->id;
                 }
             });
@@ -43,19 +43,19 @@ class TenantScopeManager
             $modelsPath = app_path('Models');
 
             return collect(File::allFiles($modelsPath))
-                ->map(fn($file) => 'App\\Models\\' . Str::studly($file->getFilenameWithoutExtension()))
-                ->filter(fn($class) => class_exists($class))
+                ->map(fn ($file) => 'App\\Models\\'.Str::studly($file->getFilenameWithoutExtension()))
+                ->filter(fn ($class) => class_exists($class))
                 ->filter(function ($class) {
                     $instance = new $class;
 
-                    if (!method_exists($instance, 'getTable')) {
+                    if (! method_exists($instance, 'getTable')) {
                         return false;
                     }
 
                     $table = $instance->getTable();
 
                     // Skip tables that don't exist yet
-                    if (!Schema::hasTable($table)) {
+                    if (! Schema::hasTable($table)) {
                         return false;
                     }
 

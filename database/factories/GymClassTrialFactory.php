@@ -1,0 +1,26 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\GymClassTrial>
+ */
+class GymClassTrialFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'tenant_id' => \App\Models\Tenant::factory(),
+            'gym_class_id' => \App\Models\GymClass::factory(),
+            'name' => $this->faker->name(),
+            'check_in_id' => null,
+        ];
+    }
+}

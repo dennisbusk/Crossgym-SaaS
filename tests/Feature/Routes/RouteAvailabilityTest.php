@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route as RouteFacade;
 
 uses(RefreshDatabase::class);
 
-function actingAsWithTenantAndRole(?string $roleSlug = null): User {
+function actingAsWithTenantAndRole(?string $roleSlug = null): User
+{
     $tenant = Tenant::factory()->create();
 
     $role = Role::factory()->create([
@@ -37,7 +38,8 @@ function actingAsWithTenantAndRole(?string $roleSlug = null): User {
     return $user;
 }
 
-function allowAllPolicies(): void {
+function allowAllPolicies(): void
+{
     Gate::before(function () {
         return true; // allow everything in these route availability tests
     });
@@ -80,9 +82,11 @@ it('guest is redirected from protected routes', function () {
     $protected = [
         'dashboard',
         'calendar',
-        'settings.profile',
-        'settings.password',
-        'settings.appearance',
+        'profile.profile',
+        'profile.password',
+        'profile.settings',
+        'profile.bookings',
+        'profile.billing',
         'tenant.subscription',
     ];
 
@@ -98,9 +102,10 @@ it('authenticated user can access primary app routes', function () {
     $okRoutes = [
         'dashboard',
         'calendar',
-        'settings.profile',
-        'settings.password',
-        'settings.appearance',
+        'profile.settings',
+        'profile.password',
+        'profile.bookings',
+        'profile.billing',
         'tenant.subscription',
     ];
 
@@ -130,7 +135,6 @@ it('authenticated user can access CRUD index/create/show/edit routes', function 
         'trainer_id' => $trainer->id,
         'class_type_id' => $classType->id,
     ]);
-
 
     // Roles
     $this->get(route('roles.index'))->assertOk();

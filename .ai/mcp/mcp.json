@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "laravel-boost": {
+      "command": "C:\\laragon\\bin\\php\\php-8.2\\php.exe",
+      "args": [
+        "C:\\Users\\Denni\\PhpstormProjects\\crossgym-saas\\artisan",
+        "boost:mcp"
+      ]
+    },
+    "herd": {
+      "command": "C:\\Users\\Denni\\AppData\\Local\\Programs\\Herd\\resources\\herd.exe",
+      "args": [
+        "mcp",
+        "serve"
+      ]
+    }
+  }
+}

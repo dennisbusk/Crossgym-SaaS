@@ -4,25 +4,28 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\AICoachSettings;
+use App\Models\ClassType;
+use App\Models\Dashboard;
+use App\Models\GymClass;
+use App\Models\Payment;
+use App\Models\Plan;
 use App\Models\Role;
-use App\Models\SystemSetting;
+use App\Models\StripeWebhookLog;
+use App\Models\Subscription;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Models\GymClass;
-use App\Models\ClassType;
-use App\Models\Plan;
-use App\Models\Subscription;
-use App\Models\Payment;
-use App\Models\StripeWebhookLog;
+use App\Policies\AICoachSettingsPolicy;
+use App\Policies\ClassTypePolicy;
+use App\Policies\DashboardPolicy;
+use App\Policies\GymClassPolicy;
+use App\Policies\PaymentPolicy;
+use App\Policies\PlanPolicy;
 use App\Policies\RolePolicy;
+use App\Policies\StripeWebhookLogPolicy;
+use App\Policies\SubscriptionPolicy;
 use App\Policies\TenantPolicy;
 use App\Policies\UserPolicy;
-use App\Policies\GymClassPolicy;
-use App\Policies\ClassTypePolicy;
-use App\Policies\PlanPolicy;
-use App\Policies\SubscriptionPolicy;
-use App\Policies\PaymentPolicy;
-use App\Policies\StripeWebhookLogPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -43,29 +46,22 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Global before hook to honor dynamic permissions
-//        Gate::before(function (User $user, string $ability, ?array $arguments = null) {
-//            // During impersonation, do NOT grant superadmin bypass or any elevation based on the impersonator.
-//            // All checks should reflect the currently authenticated (impersonated) user only.
-//            if (! method_exists($user, 'isImpersonated') || ! $user->isImpersonated()) {
-//                if ($this->checkForIsSuperAdmin($user)) {
-//                    return true;
-//                }
-//            }
-//
-//            if (! $arguments || count($arguments) === 0) return null; // abilities without a model are not handled here
-//
-//            $subject = $arguments[0];
-//            $className = is_object($subject) ? class_basename($subject) : (is_string($subject) ? class_basename($subject) : null);
-//            if (! $className) {
-//                return null;
-//            }
-//
-//            // This uses the impersonated user's permissions when impersonating, which is desired.
-//            return $user->hasPermission($className, $ability) ? true : null;
-//        });
+        Gate::before(function (User $user): ?bool {
+            // During impersonation, do NOT grant superadmin bypass or any
+            // elevation based on the impersonator. Checks must reflect the
+            // currently authenticated (impersonated) user only.
+            if (method_exists($user, 'isImpersonated') && $user->isImpersonated()) {
+                return null;
+            }
+
+            return $this->checkForIsSuperAdmin($user) ? true : null;
+        });
     }
-    private function registerPolicies(): void {
+
+    private function registerPolicies(): void
+    {
+        Gate::policy(AICoachSettings::class, AICoachSettingsPolicy::class);
+        Gate::policy(Dashboard::class, DashboardPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Tenant::class, TenantPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
@@ -76,15 +72,13 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Payment::class, PaymentPolicy::class);
         Gate::policy(Plan::class, PlanPolicy::class);
         Gate::policy(StripeWebhookLog::class, StripeWebhookLogPolicy::class);
-}
-private function checkForIsSuperAdmin($user): bool {
-    static $isSuperadmin = [];
-    if (!array_key_exists($user->id, $isSuperadmin)) {
-        $isSuperadmin[$user->id] = $user->role()
-                                        ->withoutGlobalScopes()
-                                        ->where('slug', 'superadmin')
-                                        ->exists();
     }
-    return ($isSuperadmin[$user->id]);
-}
+
+    private function checkForIsSuperAdmin($user): bool
+    {
+        return $user->role()
+            ->withoutGlobalScopes()
+            ->where('slug', 'superadmin')
+            ->exists();
+    }
 }

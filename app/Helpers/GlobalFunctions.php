@@ -19,6 +19,7 @@ if (! function_exists('tenant')) {
             if ($tenant) {
                 // Cache for the remainder of the request to avoid repeated lookups
                 app()->instance('tenant', $tenant);
+
                 return $tenant;
             }
         }
@@ -47,6 +48,26 @@ if (! function_exists('hasRole')) {
         if ($user->role?->name === $role) {
             return true;
         }
+
         return false;
+    }
+}
+if (! function_exists('request_cache')) {
+    /**
+     * Store a value for the duration of the current request.
+     * Runtime cache — ikke persistent.
+     */
+    function request_cache(string $key, callable $callback)
+    {
+        static $runtime = [];
+
+        if (array_key_exists($key, $runtime)) {
+            return $runtime[$key];
+        }
+
+        $value = $callback();
+        $runtime[$key] = $value;
+
+        return $value;
     }
 }

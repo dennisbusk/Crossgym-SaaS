@@ -13,10 +13,9 @@ class ClassRecurringService
     /**
      * Generate recurring classes based on an initial class and interval.
      *
-     * @param GymClass $base     The base class to copy from.
-     * @param string   $interval daily|weekly|monthly
-     * @param int      $occurrences Number of additional occurrences to create
-     *
+     * @param  GymClass  $base  The base class to copy from.
+     * @param  string  $interval  daily|weekly|monthly
+     * @param  int  $occurrences  Number of additional occurrences to create
      * @return array<int, GymClass>
      */
     public function generate(GymClass $base, string $interval, int $occurrences = 8): array

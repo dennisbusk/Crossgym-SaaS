@@ -6,11 +6,11 @@
   <script>
   if (document.getElementById("table") && typeof simpleDatatables.DataTable !== 'undefined') {
   const dataTable = new simpleDatatables.DataTable("#table", {
-  searchable: true,
+  searchable: false,
   sortable: false,
-    paging: true, // enable or disable pagination
+    paging: false, // enable or disable pagination
     perPage: 10, // set the number of rows per page
-    perPageSelect: [5, 10, 20, 50], // set the number of rows per page options
+    perPageSelect: [5, 10, 20, 50,100], // set the number of rows per page options
     firstLast: true, // enable or disable the first and last buttons
     nextPrev: true, // enable or disable the next and previous buttons
   });

@@ -25,10 +25,10 @@ class UserFactory extends Factory
     public function definition(): array
     {
         $tenant = Tenant::firstOrCreate(
-            ['domain' => str_replace(['http://','https://'],'',config('app.url'))]
-            ,
-            ['name' => config('app.name','Crossgym Saas')]
+            ['domain' => str_replace(['http://', 'https://'], '', config('app.url'))],
+            ['name' => config('app.name', 'Crossgym Saas')]
         );
+
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
@@ -38,7 +38,8 @@ class UserFactory extends Factory
             'two_factor_secret' => Str::random(10),
             'two_factor_recovery_codes' => Str::random(10),
             'two_factor_confirmed_at' => now(),
-            'tenant_id' => $tenant->id
+            'terms_accepted_at' => now(),
+            'tenant_id' => $tenant->id,
         ];
     }
 
@@ -63,6 +64,7 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => null,
         ]);
     }
+
     public function withTenant(int $tenantId): static
     {
         return $this->state(fn () => ['tenant_id' => $tenantId]);

@@ -26,19 +26,16 @@ class ClassTypeForm extends Component
 
     public ?string $slug = null;
 
-    public ?string $color = null;
-
     public ?string $image = null;
 
     public function mount($classType = null): void
     {
-        $this->classType = $classType instanceof ClassType ? $classType : new ClassType();
+        $this->classType = $classType instanceof ClassType ? $classType : new ClassType;
         if ($this->classType && $this->classType->exists) {
             $this->authorize('update', $this->classType);
-            $this->name = (string)($this->classType->getTranslation('name', app()->getLocale()) ?? '');
-            $this->description = (string)($this->classType->getTranslation('description', app()->getLocale()) ?? '');
+            $this->name = (string) ($this->classType->getTranslation('name', app()->getLocale()) ?? '');
+            $this->description = (string) ($this->classType->getTranslation('description', app()->getLocale()) ?? '');
             $this->slug = $this->classType->slug;
-            $this->color = $this->classType->color;
             $this->image = $this->classType->image;
         } else {
             $this->authorize('create', ClassType::class);
@@ -56,13 +53,12 @@ class ClassTypeForm extends Component
     public function save()
     {
         $this->validate();
-        if( !$this->classType->exists){
+        if (! $this->classType->exists) {
             $this->slug = STR::slug($this->name);
         }
 
         $data = [
             'slug' => $this->slug,
-            'color' => $this->color,
             'image' => $this->image,
             'name' => [app()->getLocale() => $this->name],
             'description' => [app()->getLocale() => (string) $this->description],
@@ -78,11 +74,13 @@ class ClassTypeForm extends Component
             $this->classType = ClassType::create($data);
             $this->saveImage();
             session()->flash('status', __('Class type created.'));
+
             return redirect()->route('class-types.edit', $this->classType);
         }
     }
 
-    public function saveImage() {
+    public function saveImage()
+    {
         $this->emitTo('image-uploader', 'save', 'class-types/'.$this->classType->id);
     }
 

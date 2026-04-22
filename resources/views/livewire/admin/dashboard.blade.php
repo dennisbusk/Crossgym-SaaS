@@ -1,10 +1,42 @@
 <div class="space-y-6">
     <x-banners/>
 
-    <div class="flex justify-between items-center mb-4">
+    @if($subscriptionNotice)
+        <div class="rounded border border-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-600 p-4">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <div class="font-semibold text-yellow-800 dark:text-yellow-200">
+                        {{ __('Your subscription requires attention. Please complete payment to activate your membership.') }}
+                    </div>
+                    <div class="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                        {{ __('Status') }}: {{ __($subscriptionNotice['status'] ?? 'N/A') }}
+                    </div>
+                </div>
+                <div class="shrink-0">
+                    <flux:button variant="primary" wire:click="completeSubscription">
+                        {{ __('Complete subscription') }}
+                    </flux:button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
         <h1 class="text-2xl font-semibold">{{ __('Dashboard') }}</h1>
-        <div class="flex items-center gap-2">
-            <flux:button wire:click="export" variant="ghost">{{ __('Export') }}</flux:button>
+        <div class="flex flex-wrap items-center gap-2">
+            @if(auth()->user()?->hasPermission('Dashboard', 'view_revenue') || auth()->user()?->hasPermission('Dashboard', 'view_bookings') || auth()->user()?->hasPermission('Dashboard', 'view_charts'))
+            <flux:select wire:model.live="period" class="min-w-[140px]">
+                <option value="today">{{ __('Today') }}</option>
+                <option value="week">{{ __('This week') }}</option>
+                <option value="month">{{ __('This month') }}</option>
+                <option value="quarter">{{ __('This quarter') }}</option>
+                <option value="year">{{ __('This year') }}</option>
+            </flux:select>
+            @endif
+            @can('view_export', $dashboard)
+            <flux:button wire:click="export" variant="primary">{{ __('Export') }}</flux:button>
+            @endcan
+            @can('view_stripe_status', $dashboard)
             @php($tenant = tenant())
             @if(auth()->check() && $tenant && !($tenant->stripe_connect_onboarded))
                 <a href="{{ route('stripe.connect.start') }}" class="inline-flex items-center px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/80 transition">
@@ -15,10 +47,13 @@
                     {{ __('Stripe er forbundet!') }}
                 </div>
             @endif
+            @endcan
         </div>
     </div>
 
+    @if(auth()->user()?->hasPermission('Dashboard', 'view_revenue') || auth()->user()?->hasPermission('Dashboard', 'view_bookings'))
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        @can('view_revenue', $dashboard)
         <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
             <div class="text-neutral-500 text-sm">{{ __('Total Transactions') }}</div>
             <div class="text-3xl font-semibold mt-1">{{ number_format($totalTransactions) }}</div>
@@ -27,6 +62,8 @@
             <div class="text-neutral-500 text-sm">{{ __('Total Revenue (DKK)') }}</div>
             <div class="text-3xl font-semibold mt-1">{{ number_format($totalRevenueDkk / 100, 2, ',', '.') }}</div>
         </div>
+        @endcan
+        @can('view_bookings', $dashboard)
         <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
             <div class="text-neutral-500 text-sm">{{ __('Total Bookings (Active)') }}</div>
             <div class="text-3xl font-semibold mt-1">{{ number_format($totalBookingsActive) }}</div>
@@ -35,8 +72,11 @@
             <div class="text-neutral-500 text-sm">{{ __('Total Bookings (Completed)') }}</div>
             <div class="text-3xl font-semibold mt-1">{{ number_format($totalBookingsCompleted) }}</div>
         </div>
+        @endcan
     </div>
+    @endif
 
+    @can('view_subscribers', $dashboard)
     <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
         <h2 class="text-lg font-semibold mb-3">{{ __('Total Subscribers (per Plan)') }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -50,4 +90,116 @@
             @endforelse
         </div>
     </div>
+    @endcan
+
+    @can('view_upcoming_classes', $dashboard)
+    <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+        <h2 class="text-lg font-semibold mb-3">{{ __('Upcoming Classes') }}</h2>
+        <div class="space-y-2">
+            @forelse($upcomingClasses as $class)
+                <a href="{{ route('calendar') }}" wire:navigate class="block rounded bg-neutral-50 dark:bg-neutral-800 p-3 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition">
+                    <div class="font-medium">{{ $class->hasTranslation('name') ? $class->getTranslation('name', app()->getLocale(), true) : $class->name }}</div>
+                    <div class="text-sm text-neutral-500">{{ $class->class_start?->format('d/m H:i') }} · {{ $class->trainer?->name ?? '-' }}</div>
+                </a>
+            @empty
+                <div class="text-neutral-500">{{ __('No upcoming classes.') }}</div>
+            @endforelse
+        </div>
+        @if(count($upcomingClasses) > 0)
+        <a href="{{ route('calendar') }}" wire:navigate class="mt-3 inline-block text-sm text-primary hover:underline">{{ __('View calendar') }}</a>
+        @endif
+    </div>
+    @endcan
+
+    @can('view_recent_activity', $dashboard)
+    <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+        <h2 class="text-lg font-semibold mb-3">{{ __('Recent Activity') }}</h2>
+        <div class="space-y-2">
+            @forelse($recentActivity as $payment)
+                <div class="rounded bg-neutral-50 dark:bg-neutral-800 p-3 flex justify-between items-center">
+                    <div>
+                        <span class="font-medium">{{ $payment->user?->name ?? __('Unknown') }}</span>
+                        <span class="text-neutral-500 text-sm">· {{ $payment->type }} · {{ number_format($payment->amount / 100, 2, ',', '.') }} {{ $payment->currency }}</span>
+                    </div>
+                    <div class="text-sm text-neutral-500">{{ $payment->created_at?->diffForHumans() }}</div>
+                </div>
+            @empty
+                <div class="text-neutral-500">{{ __('No recent activity.') }}</div>
+            @endforelse
+        </div>
+    </div>
+    @endcan
+
+    @can('view_charts', $dashboard)
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="dashboard-charts-container" data-revenue="{{ json_encode($revenueChartData) }}" data-bookings="{{ json_encode($bookingsChartData) }}" wire:key="charts-{{ $period }}">
+        <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+            <h2 class="text-lg font-semibold mb-3">{{ __('Revenue (DKK)') }}</h2>
+            <div class="h-64">
+                <canvas id="dashboard-revenue-chart"></canvas>
+            </div>
+        </div>
+        <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+            <h2 class="text-lg font-semibold mb-3">{{ __('Bookings') }}</h2>
+            <div class="h-64">
+                <canvas id="dashboard-bookings-chart"></canvas>
+            </div>
+        </div>
+    </div>
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        function initDashboardCharts() {
+            const container = document.getElementById('dashboard-charts-container');
+            if (!container) return;
+            const revenueData = JSON.parse(container.dataset.revenue || '{"labels":[],"data":[]}');
+            const bookingsData = JSON.parse(container.dataset.bookings || '{"labels":[],"data":[]}');
+            const revenueCtx = document.getElementById('dashboard-revenue-chart');
+            const bookingsCtx = document.getElementById('dashboard-bookings-chart');
+            if (!revenueCtx || !bookingsCtx) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#a1a1aa' : '#71717a';
+            if (window.revenueChart) window.revenueChart.destroy();
+            if (window.bookingsChart) window.bookingsChart.destroy();
+            window.revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: revenueData.labels,
+                    datasets: [{ label: '{{ __("Revenue") }}', data: revenueData.data, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor } }, y: { ticks: { color: textColor } } } }
+            });
+            window.bookingsChart = new Chart(bookingsCtx, {
+                type: 'bar',
+                data: {
+                    labels: bookingsData.labels,
+                    datasets: [{ label: '{{ __("Bookings") }}', data: bookingsData.data, backgroundColor: '#22c55e' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor } }, y: { ticks: { color: textColor } } } }
+            });
+        }
+        document.addEventListener('livewire:navigated', initDashboardCharts);
+        document.addEventListener('DOMContentLoaded', initDashboardCharts);
+        document.addEventListener('livewire:commit', () => {
+            if (document.getElementById('dashboard-charts-container')) initDashboardCharts();
+        });
+    </script>
+    @endpush
+    @endcan
+
+    @can('view_trainer_widget', $dashboard)
+    @if(count($trainerClassesToday) > 0)
+    <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+        <h2 class="text-lg font-semibold mb-3">{{ __('My Classes Today') }}</h2>
+        <div class="space-y-2">
+            @foreach($trainerClassesToday as $class)
+                <a href="{{ route('calendar') }}" wire:navigate class="block rounded bg-neutral-50 dark:bg-neutral-800 p-3 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition">
+                    <div class="font-medium">{{ $class->hasTranslation('name') ? $class->getTranslation('name', app()->getLocale(), true) : $class->name }}</div>
+                    <div class="text-sm text-neutral-500">{{ $class->class_start?->format('H:i') }} · {{ $class->participants->count() + $class->trials->count() }}/{{ $class->max_participants }} {{ __('participants') }}</div>
+                </a>
+            @endforeach
+        </div>
+        <a href="{{ route('calendar') }}" wire:navigate class="mt-3 inline-block text-sm text-primary hover:underline">{{ __('Open calendar') }}</a>
+    </div>
+    @endif
+    @endcan
 </div>

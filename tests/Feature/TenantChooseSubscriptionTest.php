@@ -12,11 +12,13 @@ use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
-function actingAsWithTenant(?User $user = null, ?Tenant $tenant = null): User {
+function actingAsWithTenant(?User $user = null, ?Tenant $tenant = null): User
+{
     $tenant = $tenant ?? Tenant::factory()->create();
     $user = $user ?? User::factory()->create(['tenant_id' => $tenant->id]);
     test()->actingAs($user);
     test()->withSession(['tenant_id' => $tenant->id]);
+
     return $user;
 }
 

@@ -4,21 +4,27 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
-use App\Models\Role;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class RolesExport implements FromCollection, WithHeadings
+class RolesExport implements FromQuery, WithHeadings, WithMapping
 {
-    /**
-     * @return Collection<int, array<string, mixed>
-     */
-    public function collection(): Collection
+    public function __construct(protected Builder $query) {}
+
+    public function query()
     {
-        return Role::query()
-            ->select(['id', 'name', 'created_at'])
-            ->get();
+        return $this->query;
+    }
+
+    public function map($role): array
+    {
+        return [
+            $role->id,
+            $role->name,
+            $role->created_at,
+        ];
     }
 
     public function headings(): array

@@ -1,6 +1,6 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 namespace App\Livewire\Admin\Users;
 
@@ -8,8 +8,8 @@ use App\Models\Permission;
 use App\Models\User;
 use Livewire\Component;
 
-class ManagePermissions extends Component {
-
+class ManagePermissions extends Component
+{
     public User $user;
 
     /**
@@ -17,99 +17,100 @@ class ManagePermissions extends Component {
      */
     public array $permissionsGrouped = [];
 
-    public function mount( User $user ): void {
+    public function mount(User $user): void
+    {
         $this->user = $user;
         $this->loadPermissions();
     }
 
-    public function loadPermissions(): void {
+    public function loadPermissions(): void
+    {
         $userPerms = $this->user->permissions
-            ->mapWithKeys(fn( $p ) => [ $p->id => (bool) $p->pivot->granted ]);
+            ->mapWithKeys(fn ($p) => [$p->id => (bool) $p->pivot->granted]);
 
         $this->permissionsGrouped = Permission::query()
-                                              ->orderBy('model')
-                                              ->orderBy('ability')
-                                              ->get()
-                                              ->groupBy('model')
-                                              ->map(fn( $group ) => $group->map(function ( Permission $perm ) use ( $userPerms ) {
-                                                  $override    = $userPerms[ $perm->id ] ?? null;
-                                                  $effective   = $override ?? false;
+            ->orderBy('model')
+            ->orderBy('ability')
+            ->get()
+            ->groupBy('model')
+            ->map(fn ($group) => $group->map(function (Permission $perm) use ($userPerms) {
+                $override = $userPerms[$perm->id] ?? null;
+                $effective = $override ?? false;
 
-                                                  return [
-                                                      'id'            => $perm->id,
-                                                      'ability'       => $perm->ability,
-                                                      'role_granted'  => false,
-                                                      'user_override' => $override,
-                                                      'effective'     => (bool) $effective,
-                                                  ];
-                                              })->all())
-                                              ->all();
+                return [
+                    'id' => $perm->id,
+                    'ability' => $perm->ability,
+                    'role_granted' => false,
+                    'user_override' => $override,
+                    'effective' => (bool) $effective,
+                ];
+            })->all())
+            ->all();
     }
 
-    public function togglePermission( int $permissionId, $forcedState = null ): void {
+    public function togglePermission(int $permissionId, $forcedState = null): void
+    {
         $existing = $this->user->permissions()->where('permission_id', $permissionId)->first();
-        if ( $forcedState === null ) {
-            if ( $existing ) {
+        if ($forcedState === null) {
+            if ($existing) {
                 // If override exists, remove it to revert to role behavior
                 $this->user->permissions()->detach($permissionId);
-            }
-            else {
+            } else {
                 // If no override, check current effective and invert it
                 $perm = Permission::find($permissionId);
-                if ( !$perm ) {
+                if (! $perm) {
                     return;
                 }
                 $effective = $this->user->hasPermission($perm->model, $perm->ability);
-                $this->user->permissions()->attach($permissionId, [ 'granted' => !$effective ]);
+                $this->user->permissions()->attach($permissionId, ['granted' => ! $effective]);
             }
-        }
-        else {
-            if ( $forcedState === true ) {
-                if ( !$existing ) {
-                    $this->user->permissions()->attach($permissionId, [ 'granted' => $forcedState ]);
+        } else {
+            if ($forcedState === true) {
+                if (! $existing) {
+                    $this->user->permissions()->attach($permissionId, ['granted' => $forcedState]);
                 }
-            }
-            else if ( $forcedState === false ) {
-                if ( $existing ) {
+            } elseif ($forcedState === false) {
+                if ($existing) {
                     $this->user->permissions()->detach($permissionId);
                 }
             }
         }
         // Refresh relations to avoid stale cache
         $this->user->unsetRelation('permissions');
-        $this->user->load([ 'permissions', 'role.permissions' ]);
+        $this->user->load(['permissions', 'role.permissions']);
         $this->loadPermissions();
     }
 
-//    public function toggleAll(string $model): void
-//    {
-//        // Get all permissions for the given model
-//        $perms = Permission::where('model', $model)->get(['id', 'model', 'ability']);
-//        if ($perms->isEmpty()) {
-//            return;
-//        }
-//
-//        // Determine if all are currently effective
-//        $allEffective = $perms->every(function (Permission $perm) {
-//            return $this->user->hasPermission($perm->model, $perm->ability);
-//        });
-//
-//        $target = ! $allEffective;
-//
-//        // Build mapping for syncWithoutDetaching to set overrides to target for all
-//        $mapping = [];
-//        foreach ($perms as $perm) {
-//            $mapping[$perm->id] = ['granted' => $target];
-//        }
-//        $this->user->permissions()->syncWithoutDetaching($mapping);
-//
-//        // Refresh relations and reload
-//        $this->user->unsetRelation('permissions');
-//        $this->user->load(['permissions', 'role.permissions']);
-//        $this->loadPermissions();
-//    }
+    //    public function toggleAll(string $model): void
+    //    {
+    //        // Get all permissions for the given model
+    //        $perms = Permission::where('model', $model)->get(['id', 'model', 'ability']);
+    //        if ($perms->isEmpty()) {
+    //            return;
+    //        }
+    //
+    //        // Determine if all are currently effective
+    //        $allEffective = $perms->every(function (Permission $perm) {
+    //            return $this->user->hasPermission($perm->model, $perm->ability);
+    //        });
+    //
+    //        $target = ! $allEffective;
+    //
+    //        // Build mapping for syncWithoutDetaching to set overrides to target for all
+    //        $mapping = [];
+    //        foreach ($perms as $perm) {
+    //            $mapping[$perm->id] = ['granted' => $target];
+    //        }
+    //        $this->user->permissions()->syncWithoutDetaching($mapping);
+    //
+    //        // Refresh relations and reload
+    //        $this->user->unsetRelation('permissions');
+    //        $this->user->load(['permissions', 'role.permissions']);
+    //        $this->loadPermissions();
+    //    }
 
-    public function render() {
+    public function render()
+    {
         return view('livewire.admin.users.manage-permissions');
     }
 }

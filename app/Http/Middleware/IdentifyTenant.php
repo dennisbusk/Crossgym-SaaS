@@ -22,7 +22,8 @@ class IdentifyTenant
             $request->is('stripe/webhook') ||
             $request->is('webhook/stripe') ||
             $request->is('superadmin') ||
-            $request->is('superadmin/*')
+            $request->is('superadmin/*') ||
+            $request->is('email/track-open/*')
         ) {
             return $next($request);
         }
@@ -33,11 +34,12 @@ class IdentifyTenant
         if (! $tenant) {
             abort(404, 'Tenant not found.');
         }
-config()->set('session.domain' , $tenant->domain);
+        config()->set('session.domain', $tenant->domain);
         session(['tenant_id' => $tenant->id]);
         app()->instance('tenant', $tenant);
         $scopeManager = app(TenantScopeManager::class);
         $scopeManager->applyScopes($tenant);
+
         return $next($request);
     }
 }

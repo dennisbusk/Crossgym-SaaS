@@ -6,13 +6,17 @@ namespace App\Livewire\Admin\Tenants;
 
 use App\Exports\TenantsExport;
 use App\Models\Tenant;
+use App\Traits\WithSorting;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 
 class TenantIndex extends Component
 {
     use AuthorizesRequests;
+    use WithPagination;
+    use WithSorting;
 
     public function mount(): void
     {
@@ -30,13 +34,27 @@ class TenantIndex extends Component
     {
         $this->authorize('viewAny', Tenant::class);
 
-        return Excel::download(new TenantsExport(), 'tenants.xlsx');
+        $query = Tenant::query();
+        $query = $this->applyFilters($query);
+
+        return Excel::download(new TenantsExport($query), 'tenants.xlsx');
+    }
+
+    protected function applyFilters($query)
+    {
+        return $query;
     }
 
     public function render()
     {
+        $tenants = Tenant::query();
+
+        $tenants = $this->applyFilters($tenants);
+
+        $tenants = $this->applySorting($tenants)->paginate(10);
+
         return view('livewire.admin.tenants.index', [
-            'tenants' => Tenant::query()->latest()->get(),
+            'tenants' => $tenants,
         ]);
     }
 }

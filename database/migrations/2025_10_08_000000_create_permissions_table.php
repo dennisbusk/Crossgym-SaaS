@@ -1,30 +1,38 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
-    public function up(): void {
-        Schema::create('permissions', function ( Blueprint $table ) {
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('permissions', function (Blueprint $table) {
             $table->id();
             $table->string('model');
             $table->string('ability');
-            $table->unique([ 'model', 'ability' ]);
+            $table->unique(['model', 'ability']);
             $table->timestamps();
         });
-        Schema::table('roles', function ( Blueprint $table ) {
-            $table->dropColumn('permissions');
-        });
+
+        if (Schema::hasTable('roles') && Schema::hasColumn('roles', 'permissions') && DB::getDriverName() !== 'sqlite') {
+            Schema::table('roles', function (Blueprint $table) {
+                $table->dropColumn('permissions');
+            });
+        }
     }
 
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('permissions');
-        Schema::table('roles', function ( Blueprint $table ) {
-            $table->json('permissions')->nullable();
-        });
+        if (Schema::hasTable('roles') && ! Schema::hasColumn('roles', 'permissions')) {
+            Schema::table('roles', function (Blueprint $table) {
+                $table->json('permissions')->nullable();
+            });
+        }
     }
 };

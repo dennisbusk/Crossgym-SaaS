@@ -1,6 +1,6 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 namespace Database\Seeders;
 
@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ClassTypeSeeder::class,
             GymClassSeeder::class,
-            PermissionSeeder::class
+            PermissionSeeder::class,
         ]);
     }
 }

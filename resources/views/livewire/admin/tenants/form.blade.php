@@ -1,32 +1,48 @@
 <div class="space-y-6 max-w-xl">
-    <h1 class="text-2xl font-semibold">{{ $tenant?->exists ? 'Edit Tenant' : 'Create Tenant' }}</h1>
+    <flux:heading size="xl">{{ $tenant?->exists ? __('Edit Tenant') : __('Create Tenant') }}</flux:heading>
 
-    @if (session('status'))
-        <div class="rounded-md bg-green-50 p-3 text-green-700">{{ session('status') }}</div>
-    @endif
+    <x-banners />
 
-    <form wire:submit.prevent="save" class="space-y-4">
-        <div>
-            <label class="block text-sm font-medium">Name</label>
-            <input type="text" wire:model.defer="name" class="mt-1 w-full rounded-md border px-3 py-2" />
-            @error('name')
-            <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
-            @enderror
+    <form wire:submit="save" class="space-y-6">
+        <flux:input label="{{ __('Name') }}" wire:model="name" />
+
+        <flux:input label="{{ __('Domain') }}" wire:model="domain" placeholder="e.g. gym1.localhost" />
+
+        <hr class="border-gray-200 dark:border-gray-700">
+
+        <flux:heading size="lg">{{ __('PWA Settings') }}</flux:heading>
+
+        <flux:input label="{{ __('App Name (PWA)') }}" wire:model="app_name" placeholder="{{ __('Display name on home screen') }}" />
+
+        <div class="space-y-2">
+            <flux:label>{{ __('App Icon') }}</flux:label>
+            @if ($tenant?->icon_path)
+                <div class="mb-2">
+                    <img src="{{ asset('storage/' . $tenant->icon_path) }}" alt="Current Icon" class="w-16 h-16 rounded shadow">
+                </div>
+            @endif
+            <input type="file" wire:model="icon" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+            <flux:error name="icon" />
         </div>
 
-        <div>
-            <label class="block text-sm font-medium">Domain</label>
-            <input type="text" wire:model.defer="domain" class="mt-1 w-full rounded-md border px-3 py-2" placeholder="e.g. gym1.localhost" />
-            @error('domain')
-            <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
-            @enderror
+        <div class="grid grid-cols-2 gap-4">
+            <flux:input type="color" label="{{ __('Theme Color') }}" wire:model="theme_color" />
+            <flux:input type="color" label="{{ __('Background Color') }}" wire:model="background_color" />
         </div>
+
+        <flux:textarea label="{{ __('Terms & Conditions') }}" wire:model="terms" rows="10" />
+
+        <flux:field>
+            <flux:label>{{ __('Allow members to manage subscriptions') }}</flux:label>
+            <flux:description>{{ __('If disabled, only administrators can change member subscriptions.') }}</flux:description>
+            <flux:switch wire:model="allow_member_billing_management" />
+        </flux:field>
 
         <div class="flex gap-2 justify-end">
-            <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
-                {{ $tenant?->exists ? 'Update' : 'Create' }}
-            </button>
-            <a href="{{ route('tenants.index') }}" class="inline-flex items-center rounded-md bg-yellow-600 px-3 py-2 hover:bg-yellow-800">Cancel</a>
+            <flux:button href="{{ route('tenants.index') }}" variant="ghost">{{ __('Cancel') }}</flux:button>
+            <flux:button type="submit" variant="primary">
+                {{ $tenant?->exists ? __('Update') : __('Create') }}
+            </flux:button>
         </div>
     </form>
 </div>

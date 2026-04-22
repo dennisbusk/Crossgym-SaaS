@@ -9,7 +9,10 @@
         },
         "herd": {
             "command": "C:\\Users\\Denni\\AppData\\Local\\Programs\\Herd\\resources\\herd.exe",
-            "args": ["mcp", "serve"]
+            "args": [
+                "mcp",
+                "serve"
+            ]
         }
     }
 }

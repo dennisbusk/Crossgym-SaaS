@@ -14,15 +14,15 @@
             </div>
         </div>
     </div>
-    
+
     <x-banners/>
-    
+
     <div class="relative overflow-x-auto ">
-        
+
         <x-flowbite.table>
             <x-flowbite.table.head class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <x-flowbite.table.head.row>
-                    <x-flowbite.table.head.cell>{{ __('Name') }}</x-flowbite.table.head.cell>
+                    <x-flowbite.table.head.sortable field="name" :$sortField :$sortDirection>{{ __('Name') }}</x-flowbite.table.head.sortable>
                     <x-flowbite.table.head.cell>{{ __('Users') }}</x-flowbite.table.head.cell>
                     <x-flowbite.table.head.cell class="text-right">{{ __('Actions') }}</x-flowbite.table.head.cell>
                 </x-flowbite.table.head.row>
@@ -47,5 +47,9 @@
             </x-flowbite.table.body>
         </x-flowbite.table>
 
+    </div>
+
+    <div class="mt-4">
+        {{ $roles->links() }}
     </div>
 </div>

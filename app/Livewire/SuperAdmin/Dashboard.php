@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace App\Livewire\SuperAdmin;
 
-use App\Models\Tenant;
-use App\Models\User;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\SubscriptionOption;
-use App\Models\Payment;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
     public int $tenantsCount = 0;
+
     public int $usersCount = 0;
+
     public int $plansCount = 0;
+
     public int $subscriptionsCount = 0;
 
     /**
      * Subscription overview rows: [name, tenants, earned_dkk|null, type]
+     *
      * @var array<int, array<string, mixed>>
      */
     public array $subscriptionOverview = [];

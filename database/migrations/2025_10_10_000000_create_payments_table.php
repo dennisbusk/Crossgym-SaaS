@@ -6,7 +6,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::dropIfExists('payments');
@@ -19,9 +20,9 @@ return new class extends Migration {
             $table->integer('amount');
             $table->string('currency', 10)->default('DKK');
             $table->string('status')->nullable();
-            $table->enum('type', ['payment','refund','partial_refund'])->default('payment');
+            $table->enum('type', ['payment', 'refund', 'partial_refund'])->default('payment');
             $table->timestamps();
-            $table->unique(['tenant_id','stripe_payment_intent_id']);
+            $table->unique(['tenant_id', 'stripe_payment_intent_id']);
         });
     }
 

@@ -31,7 +31,8 @@ class SetThemeMiddleware
 
         // Optionally also attach it to the request (for backend use)
         $request->attributes->set('theme', $theme);
-//dd($theme);
+
+        // dd($theme);
         return $next($request);
     }
 }

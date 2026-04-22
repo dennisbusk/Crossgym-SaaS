@@ -9,19 +9,6 @@ use App\Models\User;
 
 class PlanPolicy
 {
-//    public function before(User $user, string $ability): ?bool
-//    {
-//        // When impersonating, do not grant superadmin bypass
-//        if (method_exists($user, 'isImpersonated') && $user->isImpersonated()) {
-//            return null;
-//        }
-//        if ($user->role && $user->role->slug === 'superadmin') {
-//            return true;
-//        }
-//
-//        return null;
-//    }
-
     public function viewAny(User $user): bool
     {
         return $user->hasPermission('Plan', 'viewAny');
@@ -44,6 +31,14 @@ class PlanPolicy
 
     public function delete(User $user, Plan $plan): bool
     {
-        return $user->hasPermission('Plan', 'delete');
+        // Require permission
+        if (! $user->hasPermission('Plan', 'delete')) {
+            return false;
+        }
+
+        // Business rule: a plan can only be deleted if there are no active/trialing subscriptions on it
+        return ! $plan->subscriptions()
+            ->whereIn('status', ['active', 'trialing'])
+            ->exists();
     }
 }

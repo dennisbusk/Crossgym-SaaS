@@ -12,14 +12,13 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 
 class StripeConnectController extends Controller
 {
     use AuthorizesRequests;
 
     public function __construct(
-        protected StripeConnectService $service = new StripeConnectService()
+        protected StripeConnectService $service = new StripeConnectService
     ) {}
 
     // Legacy entry point (OAuth authorize). Redirect to new start route.
@@ -35,6 +34,7 @@ class StripeConnectController extends Controller
         $this->authorize('update', $tenant);
 
         $url = $this->service->createAccountLink($tenant);
+
         return redirect()->away($url);
     }
 
@@ -44,6 +44,7 @@ class StripeConnectController extends Controller
         $tenant = $this->currentTenant();
         $this->authorize('update', $tenant);
         $url = $this->service->createAccountLink($tenant);
+
         return redirect()->away($url);
     }
 
@@ -55,6 +56,7 @@ class StripeConnectController extends Controller
         if ($tenant->stripe_connect_account_id) {
             $this->service->updateTenantAccountStatus($tenant->stripe_connect_account_id);
         }
+
         return redirect()->route('dashboard')->with('status', __('Stripe er forbundet!'));
     }
 
@@ -66,6 +68,7 @@ class StripeConnectController extends Controller
 
         if ($request->filled('code')) {
             $this->service->handleOAuthCallback($request);
+
             return redirect()->route('dashboard')->with('status', __('Connected to Stripe.'));
         }
 
@@ -76,6 +79,7 @@ class StripeConnectController extends Controller
     {
         /** @var Authenticatable&\App\Models\User $user */
         $user = Auth::user();
+
         return $user->tenant;
     }
 }

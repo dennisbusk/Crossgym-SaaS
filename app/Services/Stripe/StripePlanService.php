@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Stripe;
 
 use App\Models\Plan;
+use App\Models\Tenant;
 use Illuminate\Support\Arr;
 
 class StripePlanService
@@ -13,9 +14,9 @@ class StripePlanService
         protected StripeService $stripe
     ) {}
 
-    public static function make(): self
+    public static function make(?Tenant $tenant = null): self
     {
-        return new self(StripeService::forTenant());
+        return new self(StripeService::forTenant($tenant));
     }
 
     public function getPlans(): array
@@ -33,7 +34,7 @@ class StripePlanService
             ['tenant_id' => tenant()?->id, 'stripe_price_id' => $price['id']],
             [
                 'name' => $product['name'] ?? $name,
-                'amount' => (int)($price['unit_amount'] ?? $amount),
+                'amount' => (int) ($price['unit_amount'] ?? $amount),
                 'currency' => strtoupper($price['currency'] ?? $currency),
                 'interval' => Arr::get($price, 'recurring.interval', $interval) ?? 'one_time',
                 'metadata' => $product['metadata'] ?? $metadata,
@@ -50,9 +51,9 @@ class StripePlanService
         }
 
         $needsNewPrice = false;
-        $currentInterval = (string)($plan->interval ?? 'month');
-        $currentAmount = (int)($plan->amount ?? 0);
-        $currentCurrency = strtoupper((string)($plan->currency ?? 'DKK'));
+        $currentInterval = (string) ($plan->interval ?? 'month');
+        $currentAmount = (int) ($plan->amount ?? 0);
+        $currentCurrency = strtoupper((string) ($plan->currency ?? 'DKK'));
 
         if ($currentAmount !== $amount || strtoupper($currency) !== $currentCurrency || $currentInterval !== $interval) {
             $needsNewPrice = true;
@@ -60,23 +61,24 @@ class StripePlanService
 
         if ($needsNewPrice) {
             $productId = $plan->stripe_product_id;
-            if (!$productId) {
+            if (! $productId) {
                 // create product first
                 $created = $this->stripe->createPlan($name, $amount, $currency, $interval, $metadata);
                 $plan->stripe_product_id = $created['product']['id'] ?? null;
                 $plan->stripe_price_id = $created['price']['id'] ?? null;
-                $plan->amount = (int)($created['price']['unit_amount'] ?? $amount);
+                $plan->amount = (int) ($created['price']['unit_amount'] ?? $amount);
                 $plan->currency = strtoupper($created['price']['currency'] ?? $currency);
                 $plan->interval = Arr::get($created, 'price.recurring.interval', $interval) ?? 'one_time';
                 $plan->metadata = $created['product']['metadata'] ?? $metadata;
                 $plan->name = $created['product']['name'] ?? $name;
                 $plan->save();
+
                 return $plan;
             }
 
             $price = $this->stripe->createPrice($productId, $amount, $currency, $interval, $metadata);
             $plan->stripe_price_id = $price['id'] ?? $plan->stripe_price_id;
-            $plan->amount = (int)($price['unit_amount'] ?? $amount);
+            $plan->amount = (int) ($price['unit_amount'] ?? $amount);
             $plan->currency = strtoupper($price['currency'] ?? $currency);
             $plan->interval = Arr::get($price, 'recurring.interval', $interval) ?? 'one_time';
         }

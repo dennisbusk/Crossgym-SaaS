@@ -9,10 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
-
     protected $fillable = [
         'tenant_id', 'user_id', 'stripe_payment_intent_id', 'stripe_session_id',
-        'amount', 'currency', 'status', 'type'
+        'amount', 'currency', 'status', 'type',
     ];
 
     public function tenant(): BelongsTo

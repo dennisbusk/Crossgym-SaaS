@@ -29,6 +29,7 @@ class StripePolicy
             ? strtolower($user->role?->getTranslations('name')['en'] ?? $user->role?->getTranslations('name')['da'] ?? '')
             : strtolower((string) ($user->role?->name ?? ''));
         $roleSlug = strtolower($user->role?->slug ?? '');
-        return in_array($roleName, ['admin', 'superadmin'], true) || in_array($roleSlug, ['admin', 'superadmin'], true);
+
+        return $roleName === 'admin' || $roleSlug === 'admin';
     }
 }

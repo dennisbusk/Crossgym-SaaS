@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
-use App\Models\ClassType;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ClassTypesExport implements FromCollection, WithHeadings
+class ClassTypesExport implements FromQuery, WithHeadings, WithMapping
 {
-    public function collection()
+    public function __construct(protected Builder $query) {}
+
+    public function query()
     {
-        return ClassType::query()
-            ->select(['id', 'slug', 'color', 'image', 'name', 'description', 'created_at'])
-            ->get()
-            ->map(function (ClassType $t) {
-                return [
-                    'id' => $t->id,
-                    'slug' => $t->slug,
-                    'color' => $t->color,
-                    'image' => $t->image,
-                    'name' => json_encode($t->getAttribute('name')),
-                    'description' => json_encode($t->getAttribute('description')),
-                    'created_at' => $t->created_at,
-                ];
-            });
+        return $this->query;
+    }
+
+    public function map($t): array
+    {
+        return [
+            $t->id,
+            $t->slug,
+            $t->color,
+            $t->image,
+            json_encode($t->getAttribute('name')),
+            json_encode($t->getAttribute('description')),
+            $t->created_at,
+        ];
     }
 
     public function headings(): array

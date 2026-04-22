@@ -18,18 +18,16 @@ class GymClassSeeder extends Seeder
     {
 
         $tenant = Tenant::firstOrCreate(
-            ['domain' => str_replace(['http://','https://'],'',config('app.url'))]
-            ,
-            ['name' => config('app.name','Crossgym Saas')]
+            ['domain' => str_replace(['http://', 'https://'], '', config('app.url'))],
+            ['name' => config('app.name', 'Crossgym Saas')]
         );
 
-
-        $trainerRole = Role::firstOrCreate(['slug' => Str::slug('Trainer')],[
+        $trainerRole = Role::firstOrCreate(['slug' => Str::slug('Trainer')], [
             'name' => 'Trainer',
             'slug' => Str::slug('Trainer'),
             'tenant_id' => $tenant->id,
         ]);
-        $trainer = User::firstOrCreate(['role_id' => $trainerRole->id,'tenant_id' => $tenant->id],['name' => 'Trainer User','email' => 'trainer@example.com','password' => bcrypt('password')]);
+        $trainer = User::firstOrCreate(['role_id' => $trainerRole->id, 'tenant_id' => $tenant->id], ['name' => 'Trainer User', 'email' => 'trainer@example.com', 'password' => bcrypt('password')]);
 
         $classType = ClassType::query()->where('tenant_id', $tenant->id)->first() ?? ClassType::factory()->create([
             'tenant_id' => $tenant->id,

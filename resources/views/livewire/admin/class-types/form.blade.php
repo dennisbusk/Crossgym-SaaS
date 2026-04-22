@@ -18,10 +18,6 @@
         </div>
 
             <div>
-                <label class="block text-sm font-medium">{{ __('Color') }}</label>
-                <input type="color" wire:model.defer="color" class="mt-1 border h-8 w-8" placeholder="#000000" />
-            </div>
-            <div>
                 <label class="block text-sm font-medium">{{ __('Image') }}</label>
                 <livewire:components.image-uploader wire:model="image" :value="$image" />
             </div>

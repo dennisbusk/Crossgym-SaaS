@@ -22,8 +22,17 @@
         @elseif ($step === 2)
             <div class="space-y-4">
                 <h2 class="text-xl font-semibold">{{ __('Basic settings') }}</h2>
-                <p class="text-neutral-600 dark:text-neutral-400">{{ __('You can update logo and info later in Settings. For now, click Next to continue.') }}</p>
-                {{-- Placeholder for future basic settings form --}}
+                <p class="text-neutral-600 dark:text-neutral-400">{{ __('Configure your gym\'s basic settings.') }}</p>
+
+                <div class="space-y-4 max-w-md">
+                    <flux:input label="{{ __('App Name') }}" wire:model="app_name" />
+                    <flux:input label="{{ __('Theme Color') }}" type="color" wire:model="theme_color" />
+
+                    <flux:field>
+                        <flux:label>{{ __('Allow members to manage subscriptions') }}</flux:label>
+                        <flux:switch wire:model="allow_member_billing_management" />
+                    </flux:field>
+                </div>
             </div>
         @elseif ($step === 3)
             <div class="space-y-4">

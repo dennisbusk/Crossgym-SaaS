@@ -7,10 +7,12 @@ namespace App\Livewire\Admin\Roles;
 use App\Models\Role;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class RoleShow extends Component
 {
     use AuthorizesRequests;
+    use WithPagination;
 
     public Role $role;
 
@@ -24,6 +26,7 @@ class RoleShow extends Component
     {
         return view('livewire.admin.roles.show', [
             'role' => $this->role,
+            'users' => $this->role->users()->paginate(10),
         ]);
     }
 }

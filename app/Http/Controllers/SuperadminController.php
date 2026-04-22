@@ -7,15 +7,15 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 
-class SuperadminController extends Controller {
-
-    public function switchTenant( Request $request)
+class SuperadminController extends Controller
+{
+    public function switchTenant(Request $request)
     {
-        if ( !$request->crypt_key ) {
+        if (! $request->crypt_key) {
             abort(403, 'Invalid or expired token.');
         }
         $key = Crypt::decrypt($request->crypt_key);
-        if(Carbon::parse($key)->isPast()){
+        if (Carbon::parse($key)->isPast()) {
             abort(403, 'Invalid or expired token.');
         }
 
@@ -23,12 +23,12 @@ class SuperadminController extends Controller {
         $superadmin = \App\Models\User::withoutGlobalScopes()->where('email', $request->email)->whereHas('role', function ($query) {
             $query->where('slug', 'superadmin');
         })->first();
-        if ( !$superadmin ) {
+        if (! $superadmin) {
             abort(403, 'Superadmin not found.');
         }
-if($superadmin->tenant_id != $request->tenant_id){
-    $superadmin->update(['tenant_id' => $request->tenant_id]);
-}
+        if ($superadmin->tenant_id != $request->tenant_id) {
+            $superadmin->update(['tenant_id' => $request->tenant_id]);
+        }
         // Log in as superadmin on this tenant
         Auth::login($superadmin);
 

@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class StripeWebhookLog extends Model
 {
-
     protected $fillable = [
-        'tenant_id', 'event_type', 'payload', 'processed_at', 'status', 'error'
+        'tenant_id', 'event_type', 'payload', 'processed_at', 'status', 'error',
     ];
 
     protected $casts = [

@@ -12,6 +12,8 @@ This app integrates Stripe Connect to onboard Tenants using Stripe’s Hosted On
 
 
 ## Environment
+Validate required keys: `php artisan env:validate` (use `--strict` to fail on missing keys).
+
 Add these to your `.env` (Test Mode values):
 
 ```
@@ -66,6 +68,33 @@ npm run dev
 ```
 
 
+## Scheduler & Queue (Class attendance seat release)
+This app automatically frees seats for participants who did not check in by class start.
+
+- A queued job `App\Jobs\ReleaseUncheckedSeatsJob` runs every minute via the scheduler and detaches all non–checked-in participants for classes that have just started (with a small lookback window):
+
+  - Scheduler wiring is in `routes/console.php`.
+  - Requires the Laravel scheduler to be running: `php artisan schedule:work`.
+  - Requires a queue worker in non-sync environments: e.g. `php artisan queue:work`.
+
+- Local/dev defaults
+  - Tests use the `sync` queue driver (see `phpunit.xml`).
+  - For development you can also run `composer run dev` which includes a queue listener.
+
+- Production recommendations
+  - Use a robust queue driver like Redis or database (set `QUEUE_CONNECTION=redis` or `database`).
+  - Ensure a process supervisor (e.g. Supervisor, systemd) manages both `schedule:work` and the queue worker.
+
+### Manual backfill/trigger command
+You can trigger seat release on demand with an Artisan command:
+
+```
+php artisan classes:release-unchecked --lookback=10
+```
+
+The `--lookback` option (minutes) controls how far back from "now" to scan for classes that just started. Default is 10 minutes.
+
+
 ## Stripe Connect — Hosted Onboarding Flow
 Routes are defined in `routes/web.php` under the `stripe/connect` prefix:
 
@@ -99,8 +128,8 @@ A central webhook endpoint exists for all Stripe events:
 Both are wired to `App\Http\Controllers\Stripe\StripeWebhookController@handle`.
 
 Logging:
-- Dedicated log channel: `storage/logs/stripe.log`
-- DB log table: `stripe_webhook_logs` (via model `StripeWebhookLog`)
+- Dedicated log channel: `storage/logs/stripe.log` — all Stripe-related errors, rate limits, and payment failures
+- DB log table: `stripe_webhook_logs` — each webhook event with payload, status, and error (key for debugging retries/failures)
 
 Handled events include (among others):
 - `account.updated` — Updates tenant flags: charges/payouts enabled, onboarded

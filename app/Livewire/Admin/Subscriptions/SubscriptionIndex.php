@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Admin\Subscriptions;
 
 use App\Models\Subscription;
+use App\Traits\WithSorting;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 class SubscriptionIndex extends Component
 {
     use WithPagination;
+    use WithSorting;
 
     public string $search = '';
 
@@ -25,16 +27,16 @@ class SubscriptionIndex extends Component
 
     protected function subscriptions(): LengthAwarePaginator
     {
-        return Subscription::query()
-            ->with(['user'])
+        $subscriptions = Subscription::query()
+            ->with(['user', 'plan'])
             ->when($this->search !== '', function ($q) {
                 $q->where(function ($qq) {
                     $qq->where('stripe_subscription_id', 'like', "%{$this->search}%")
-                       ->orWhere('stripe_price_id', 'like', "%{$this->search}%")
-                       ->orWhere('status', 'like', "%{$this->search}%");
+                        ->orWhere('stripe_price_id', 'like', "%{$this->search}%")
+                        ->orWhere('status', 'like', "%{$this->search}%");
                 });
-            })
-            ->orderByDesc('id')
-            ->paginate(10);
+            });
+
+        return $this->applySorting($subscriptions)->paginate(10);
     }
 }

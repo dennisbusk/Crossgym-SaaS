@@ -2,27 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\User as AuthUser;
 use App\Models\User;
+use App\Models\User as AuthUser;
 
 class UserPolicy
 {
-    /**
-     * Grant all abilities to SuperAdmin before other checks.
-     */
-//    public function before(AuthUser $user, string $ability): ?bool
-//    {
-//        // When impersonating, do not grant superadmin bypass
-//        if (method_exists($user, 'isImpersonated') && $user->isImpersonated()) {
-//            return null;
-//        }
-//        if ($user->role && $user->role->slug === 'superadmin') {
-//            return true;
-//        }
-//
-//        return null;
-//    }
-
     public function viewAny(AuthUser $user): bool
     {
         return $user->hasPermission('User', 'viewAny');
@@ -52,12 +36,24 @@ class UserPolicy
     {
         return $user->hasPermission('User', 'view_admin_dashboard');
     }
+
     public function view_calendar(AuthUser $user, User $model): bool
     {
         return $user->hasPermission('User', 'view_calendar');
     }
+
     public function impersonate(AuthUser $user, User $model): bool
     {
         return $user->hasPermission('User', 'impersonate');
+    }
+
+    public function view_stripe_status(AuthUser $user, User $model): User|bool
+    {
+        return $user->hasPermission('User', 'view_stripe_status');
+    }
+
+    public function view_tenant_stats(AuthUser $user, User $model): User|bool
+    {
+        return $user->hasPermission('User', 'view_tenant_stats');
     }
 }
