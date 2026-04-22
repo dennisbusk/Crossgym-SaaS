@@ -30,11 +30,11 @@
             @if(auth()->user()?->can('view_revenue', $dashboard)
  || auth()->user()?->can('view_bookings', $dashboard) || auth()->user()?->can('view_charts', $dashboard))
             <flux:select wire:model.live="period" class="min-w-[140px]">
-                <option value="today">{{ __('Today') }}</option>
-                <option value="week">{{ __('This week') }}</option>
-                <option value="month">{{ __('This month') }}</option>
-                <option value="quarter">{{ __('This quarter') }}</option>
-                <option value="year">{{ __('This year') }}</option>
+                <flux:select.option value="today">{{ __('Today') }}</flux:select.option>
+                <flux:select.option value="week">{{ __('This week') }}</flux:select.option>
+                <flux:select.option value="month">{{ __('This month') }}</flux:select.option>
+                <flux:select.option value="quarter">{{ __('This quarter') }}</flux:select.option>
+                <flux:select.option value="year">{{ __('This year') }}</flux:select.option>
             </flux:select>
             @endif
             @can('view_export', $dashboard)

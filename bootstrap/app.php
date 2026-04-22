@@ -29,12 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\EnsureTenantOnboarded::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->shouldReport(function (\Throwable $e) {
-            if ($e instanceof ServiceUnavailableHttpException) {
-                return true;
-            }
-        });
-
         $exceptions->reportable(function (ServiceUnavailableHttpException $e) {
             Log::error('System hit 503 Service Unavailable (Maintenance Mode)');
         });

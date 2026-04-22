@@ -88,18 +88,20 @@ class TenantDashboardService
     }
 
     /**
-     * Bookings stats. Active = future class bookings; Completed = check-ins (all-time).
+     * Bookings stats. Active = future class bookings in period; Completed = check-ins in period.
      */
     public function getBookingsStats(string $period = 'month'): array
     {
-        $cacheKey = "dashboard.bookings.{$this->tenantId}";
+        $cacheKey = "dashboard.bookings.{$this->tenantId}.{$period}";
 
-        return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () {
+        return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($period) {
             $now = now();
+            [$start, $end] = $this->getDateRange($period);
 
             $activeBookings = (int) DB::table('gym_class_user')
                 ->join('classes', 'gym_class_user.gym_class_id', '=', 'classes.id')
                 ->where('classes.tenant_id', $this->tenantId)
+                ->whereBetween('classes.class_start', [$start, $end])
                 ->where('classes.class_start', '>=', $now)
                 ->count();
 
@@ -107,6 +109,7 @@ class TenantDashboardService
                 ->where('tenant_id', $this->tenantId)
                 ->whereNotNull('gym_class_id')
                 ->whereNotNull('checked_at')
+                ->whereBetween('checked_at', [$start, $end])
                 ->count();
 
             return [

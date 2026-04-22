@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../node_modules/@fullcalendar/core/locales/da.js"],
+  "sourcesContent": ["var l15 = {\n    code: 'da',\n    week: {\n        dow: 1,\n        doy: 4, // The week that contains Jan 4th is the first week of the year.\n    },\n    buttonText: {\n        prev: 'Forrige',\n        next: 'Næste',\n        today: 'I dag',\n        year: 'År',\n        month: 'Måned',\n        week: 'Uge',\n        day: 'Dag',\n        list: 'Agenda',\n    },\n    weekText: 'Uge',\n    allDayText: 'Hele dagen',\n    moreLinkText: 'flere',\n    noEventsText: 'Ingen arrangementer at vise',\n};\n\nexport { l15 as default };\n"],
+  "mappings": ";;;AAAA,IAAI,MAAM;AAAA,EACN,MAAM;AAAA,EACN,MAAM;AAAA,IACF,KAAK;AAAA,IACL,KAAK;AAAA;AAAA,EACT;AAAA,EACA,YAAY;AAAA,IACR,MAAM;AAAA,IACN,MAAM;AAAA,IACN,OAAO;AAAA,IACP,MAAM;AAAA,IACN,OAAO;AAAA,IACP,MAAM;AAAA,IACN,KAAK;AAAA,IACL,MAAM;AAAA,EACV;AAAA,EACA,UAAU;AAAA,EACV,YAAY;AAAA,EACZ,cAAc;AAAA,EACd,cAAc;AAClB;",
+  "names": []
+}

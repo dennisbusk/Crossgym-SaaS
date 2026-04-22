@@ -1,0 +1,64 @@
+{
+  "hash": "d20cec64",
+  "configHash": "0b801ec4",
+  "lockfileHash": "25e88323",
+  "browserHash": "d83d3381",
+  "optimized": {
+    "@fullcalendar/core": {
+      "src": "../../node_modules/@fullcalendar/core/index.js",
+      "file": "@fullcalendar_core.js",
+      "fileHash": "b1f41e16",
+      "needsInterop": false
+    },
+    "@fullcalendar/daygrid": {
+      "src": "../../node_modules/@fullcalendar/daygrid/index.js",
+      "file": "@fullcalendar_daygrid.js",
+      "fileHash": "fb7ee8fa",
+      "needsInterop": false
+    },
+    "@fullcalendar/timegrid": {
+      "src": "../../node_modules/@fullcalendar/timegrid/index.js",
+      "file": "@fullcalendar_timegrid.js",
+      "fileHash": "03de948b",
+      "needsInterop": false
+    },
+    "@fullcalendar/list": {
+      "src": "../../node_modules/@fullcalendar/list/index.js",
+      "file": "@fullcalendar_list.js",
+      "fileHash": "0537fa27",
+      "needsInterop": false
+    },
+    "@fullcalendar/core/locales/da": {
+      "src": "../../node_modules/@fullcalendar/core/locales/da.js",
+      "file": "@fullcalendar_core_locales_da.js",
+      "fileHash": "bb879501",
+      "needsInterop": false
+    },
+    "@fullcalendar/core/locales/en-gb": {
+      "src": "../../node_modules/@fullcalendar/core/locales/en-gb.js",
+      "file": "@fullcalendar_core_locales_en-gb.js",
+      "fileHash": "920eed98",
+      "needsInterop": false
+    },
+    "moment/min/moment-with-locales.js": {
+      "src": "../../node_modules/moment/min/moment-with-locales.js",
+      "file": "moment_min_moment-with-locales__js.js",
+      "fileHash": "07139297",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-Q6PY3P4R": {
+      "file": "chunk-Q6PY3P4R.js"
+    },
+    "chunk-WDB6TZF7": {
+      "file": "chunk-WDB6TZF7.js"
+    },
+    "chunk-W3YZMXZM": {
+      "file": "chunk-W3YZMXZM.js"
+    },
+    "chunk-VUNV25KB": {
+      "file": "chunk-VUNV25KB.js"
+    }
+  }
+}
