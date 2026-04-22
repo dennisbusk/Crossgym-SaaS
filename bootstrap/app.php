@@ -4,6 +4,8 @@ use App\Models\Tenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,7 +29,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\EnsureTenantOnboarded::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->shouldReport(function (\Throwable $e) {
+            if ($e instanceof ServiceUnavailableHttpException) {
+                return true;
+            }
+        });
+
+        $exceptions->reportable(function (ServiceUnavailableHttpException $e) {
+            Log::error('System hit 503 Service Unavailable (Maintenance Mode)');
+        });
     })
     ->withProviders([
         App\Providers\AuthServiceProvider::class,
