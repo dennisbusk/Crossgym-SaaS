@@ -23,12 +23,12 @@
 @if(auth()->user()?->can('view_revenue', $dashboard)
  || auth()->user()?->can('view_bookings', $dashboard)
   || auth()->user()?->can('view_charts', $dashboard)
-   || auth()->user()?->can('view_export', $dashboard)
    || auth()->user()?->can('view_stripe_status', $dashboard))
     <div class="flex flex-wrap justify-between items-center gap-4">
-        <div class="flex flex-wrap items-center gap-2">
+{{--        <div class="flex flex-wrap items-center gap-2">--}}
             @if(auth()->user()?->can('view_revenue', $dashboard)
  || auth()->user()?->can('view_bookings', $dashboard) || auth()->user()?->can('view_charts', $dashboard))
+                <div>
             <flux:select wire:model.live="period" class="min-w-[140px]">
                 <flux:select.option value="today">{{ __('Today') }}</flux:select.option>
                 <flux:select.option value="week">{{ __('This week') }}</flux:select.option>
@@ -36,23 +36,23 @@
                 <flux:select.option value="quarter">{{ __('This quarter') }}</flux:select.option>
                 <flux:select.option value="year">{{ __('This year') }}</flux:select.option>
             </flux:select>
+                </div>
             @endif
-            @can('view_export', $dashboard)
-            <flux:button wire:click="export" variant="primary">{{ __('Export') }}</flux:button>
-            @endcan
             @can('view_stripe_status', $dashboard)
             @php($tenant = tenant())
             @if(auth()->check() && $tenant && !($tenant->stripe_connect_onboarded))
+                <div>
                 <a href="{{ route('stripe.connect.start') }}" class="inline-flex items-center px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/80 transition">
                     {{ __('Forbind med Stripe') }}
                 </a>
+                </div>
             @elseif($tenant && $tenant->stripe_connect_onboarded)
-                <div class="text-green-500 font-semibold">
+                <div class="inline-flex text-green-500 font-semibold">
                     {{ __('Stripe er forbundet!') }}
                 </div>
             @endif
             @endcan
-        </div>
+{{--        </div>--}}
     </div>
 @endif
     @if(auth()->user()?->can('view_revenue', $dashboard) || auth()->user()?->can('view_bookings', $dashboard))

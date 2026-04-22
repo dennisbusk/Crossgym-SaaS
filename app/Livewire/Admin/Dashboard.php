@@ -146,23 +146,23 @@ class Dashboard extends Component
         }
     }
 
-    public function export()
-    {
-        $this->authorize('view_export', app(DashboardModel::class));
-
-        $service = TenantDashboardService::forTenant();
-        $revenue = $service->getRevenueStats($this->period);
-        $bookings = $service->getBookingsStats($this->period);
-        $subscribers = $service->getSubscribersByPlan();
-
-        return Excel::download(new DashboardStatsExport([
-            'total_transactions' => $revenue['total_transactions'],
-            'total_revenue_dkk' => $revenue['total_revenue_dkk'],
-            'total_bookings_active' => $bookings['total_bookings_active'],
-            'total_bookings_completed' => $bookings['total_bookings_completed'],
-            'subscribers_by_plan' => $subscribers,
-        ]), 'dashboard-stats.xlsx');
-    }
+//    public function export()
+//    {
+//        $this->authorize('view_export', app(DashboardModel::class));
+//
+//        $service = TenantDashboardService::forTenant();
+//        $revenue = $service->getRevenueStats($this->period);
+//        $bookings = $service->getBookingsStats($this->period);
+//        $subscribers = $service->getSubscribersByPlan();
+//
+//        return Excel::download(new DashboardStatsExport([
+//            'total_transactions' => $revenue['total_transactions'],
+//            'total_revenue_dkk' => $revenue['total_revenue_dkk'],
+//            'total_bookings_active' => $bookings['total_bookings_active'],
+//            'total_bookings_completed' => $bookings['total_bookings_completed'],
+//            'subscribers_by_plan' => $subscribers,
+//        ]), 'dashboard-stats.xlsx');
+//    }
 
     public function completeSubscription()
     {
