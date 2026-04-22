@@ -30,8 +30,6 @@ it('user without explicit permissions can access auth-only routes', function () 
 
     // Routes that only require authentication (no policy checks)
     $authOnlyRoutes = [
-        'dashboard',
-        'calendar',
         'profile.settings',
         'profile.password',
         'profile.bookings',

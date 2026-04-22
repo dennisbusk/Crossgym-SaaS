@@ -9,26 +9,44 @@ use App\Models\User;
 
 class ClassTypePolicy
 {
+    /**
+     * Se en liste over alle holdtyper.
+     * Eksempel: /admin/class-types
+     */
     public function viewAny(User $user): bool
     {
         return $user->hasPermission('ClassType', 'viewAny');
     }
 
+    /**
+     * Se detaljer for en specifik holdtype.
+     */
     public function view(User $user, ClassType $classType): bool
     {
         return $user->hasPermission('ClassType', 'view');
     }
 
+    /**
+     * Opret en ny holdtype.
+     * Eksempel: /admin/class-types/create
+     */
     public function create(User $user): bool
     {
         return $user->hasPermission('ClassType', 'create');
     }
 
+    /**
+     * Rediger en eksisterende holdtype.
+     * Eksempel: /admin/class-types/{id}/edit
+     */
     public function update(User $user, ClassType $classType): bool
     {
         return $user->hasPermission('ClassType', 'update');
     }
 
+    /**
+     * Slet en holdtype fra systemet.
+     */
     public function delete(User $user, ClassType $classType): bool
     {
         return $user->hasPermission('ClassType', 'delete');

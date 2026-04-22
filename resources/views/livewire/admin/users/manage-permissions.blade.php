@@ -1,11 +1,11 @@
 <div class="space-y-6">
   <h2 class="text-xl font-bold">{{ __('Manage Permissions for') }} {{ $user->name }}</h2>
-  
+
   <p class="text-gray-500">
     <span class="font-semibold">{{ __('Role:') }}</span>
     {{ $user->role?->name ?? __('None') }}
   </p>
-  
+
   @foreach ($permissionsGrouped as $model => $permissions)
     <div
         class="border rounded-2xl p-4 bg-gray-800 shadow"
@@ -42,7 +42,7 @@
           <span>{{ __('Toggle all') }}</span>
         </label>
       </div>
-      
+
       <div class="grid grid-cols-1 gap-2">
         @foreach ($permissions as $perm)
           <label class="flex items-center gap-2 cursor-pointer"
@@ -52,14 +52,19 @@
                    data-id="{{ $perm['id'] }}"
                    wire:click="togglePermission({{ $perm['id'] }})"
                 @checked($perm['effective'])>
-            <span>
-                            @php($parts = explode('.', $perm['ability']))
-              @if(count($parts) === 2)
-                {{ __($parts[1]) }} {{ __($parts[0]) }}
-              @else
-                {{ __($perm['ability']) }}
+            <div class="flex flex-col">
+              <span class="font-medium">
+                @php($parts = explode('.', $perm['ability']))
+                @if(count($parts) === 2)
+                  {{ __($parts[1]) }} {{ __($parts[0]) }}
+                @else
+                  {{ __($perm['ability']) }}
+                @endif
+              </span>
+              @if($perm['description'])
+                <span class="text-xs text-gray-400">{{ $perm['description'] }}</span>
               @endif
-                        </span>
+            </div>
           </label>
         @endforeach
       </div>

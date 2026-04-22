@@ -28,6 +28,13 @@ class Role extends Model
 
     protected array $translatable = ['name'];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('exclude_superadmin', function (Builder $builder) {
+            $builder->where('slug', '!=', 'superadmin');
+        });
+    }
+
     /**
      * A role has many users.
      */

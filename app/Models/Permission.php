@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Permission extends Model
 {
-    protected $fillable = ['model', 'ability'];
+    protected $fillable = ['model', 'ability', 'description'];
 
     // Spec says no timestamps, but our migration has timestamps. We'll keep Eloquent timestamps enabled by default.
     // If needed, uncomment next line to disable timestamps.

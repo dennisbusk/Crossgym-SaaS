@@ -35,28 +35,45 @@ class SyncPermissions extends Command
 
         foreach ($policies as $policy) {
             $reflection = new ReflectionClass($policy);
-            $methods = collect($reflection->getMethods(ReflectionMethod::IS_PUBLIC))
-                ->reject(fn ($m) => in_array($m->name, ['__construct', 'before']))
-                ->pluck('name');
-
             $model = str_replace('Policy', '', class_basename($policy));
 
-            foreach ($methods as $ability) {
-                $found->push(['model' => $model, 'ability' => $ability]);
+            foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                if (in_array($method->name, ['__construct', 'before'])) {
+                    continue;
+                }
+
+                $docComment = $method->getDocComment();
+                $description = null;
+                if ($docComment !== false) {
+                    $description = $this->parseDescription($docComment);
+                }
+
+                $found->push([
+                    'model' => $model,
+                    'ability' => $method->name,
+                    'description' => $description,
+                ]);
             }
         }
 
-        $existing = Permission::all()->map(fn ($p) => "{$p->model}.{$p->ability}");
+        $existing = Permission::all();
+        $existingNames = $existing->map(fn ($p) => "{$p->model}.{$p->ability}");
 
         foreach ($found as $perm) {
             $name = "{$perm['model']}.{$perm['ability']}";
-            if (! $existing->contains($name)) {
-                Permission::create($perm);
+            $permission = Permission::updateOrCreate(
+                ['model' => $perm['model'], 'ability' => $perm['ability']],
+                ['description' => $perm['description']]
+            );
+
+            if ($permission->wasRecentlyCreated) {
                 $this->line("Added: {$name}");
+            } elseif ($permission->wasChanged('description')) {
+                $this->line("Updated description for: {$name}");
             }
         }
 
-        $toDelete = $existing->reject(fn ($name) => $found->contains(fn ($p) => "{$p['model']}.{$p['ability']}" === $name)
+        $toDelete = $existingNames->reject(fn ($name) => $found->contains(fn ($p) => "{$p['model']}.{$p['ability']}" === $name)
         );
 
         foreach ($toDelete as $name) {
@@ -68,5 +85,20 @@ class SyncPermissions extends Command
         $this->info('Permissions synchronized successfully ✅');
 
         return self::SUCCESS;
+    }
+
+    private function parseDescription(string $docComment): string
+    {
+        $lines = explode("\n", $docComment);
+        $descriptionLines = [];
+        foreach ($lines as $line) {
+            $line = trim($line, "/* \t\r\n");
+            if (empty($line) || str_starts_with($line, '@')) {
+                continue;
+            }
+            $descriptionLines[] = $line;
+        }
+
+        return implode(' ', $descriptionLines);
     }
 }

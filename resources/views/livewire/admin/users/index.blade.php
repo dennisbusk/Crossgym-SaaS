@@ -11,34 +11,32 @@
         </div>
     </div>
 
-    <div class="flex flex-wrap gap-4 items-end mb-4">
-        <div class="w-full md:w-64">
-            <flux:input wire:model.live="search" placeholder="{{ __('Search users...') }}" icon="magnifying-glass" />
-        </div>
+    <x-banners/>
 
-        <flux:select wire:model.live="roleFilter" placeholder="{{ __('All Roles') }}">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <flux:input label="{{ __('Search') }}" wire:model.live="search" placeholder="{{ __('Search users...') }}" icon="magnifying-glass" />
+
+        <flux:select label="{{ __('Role') }}" wire:model.live="roleFilter" placeholder="{{ __('All Roles') }}">
             <flux:select.option value="">{{ __('All Roles') }}</flux:select.option>
             @foreach($roles as $role)
                 <flux:select.option value="{{ $role->id }}">{{ $role->name }}</flux:select.option>
             @endforeach
         </flux:select>
 
-        <flux:select wire:model.live="planFilter" placeholder="{{ __('All Plans') }}">
+        <flux:select label="{{ __('Plan') }}" wire:model.live="planFilter" placeholder="{{ __('All Plans') }}">
             <flux:select.option value="">{{ __('All Plans') }}</flux:select.option>
             @foreach($plans as $plan)
                 <flux:select.option value="{{ $plan->stripe_price_id }}">{{ $plan->name }}</flux:select.option>
             @endforeach
         </flux:select>
 
-        <flux:select wire:model.live="statusFilter" placeholder="{{ __('All Statuses') }}">
+        <flux:select label="{{ __('Status') }}" wire:model.live="statusFilter" placeholder="{{ __('All Statuses') }}">
             <flux:select.option value="">{{ __('All Statuses') }}</flux:select.option>
             @foreach($statuses as $status)
                 <flux:select.option value="{{ $status }}">{{ $status }}</flux:select.option>
             @endforeach
         </flux:select>
     </div>
-
-    <x-banners/>
 
     <div class="relative overflow-x-auto ">
 

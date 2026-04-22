@@ -52,6 +52,12 @@
                         {{ __('Calendar') }}
                     </flux:navlist.item>
             @endcan
+
+            @can('viewAny', \App\Models\WorkoutLog::class)
+            <flux:navlist.item icon="clipboard-document-list" :href="route('workout-logs.index')" :current="request()->routeIs('workout-logs.*')" wire:navigate>
+                {{ __('Workout Log') }}
+            </flux:navlist.item>
+            @endcan
             @can('viewAny', \App\Models\User::class)
             <flux:navlist.group :heading="__('Users')" class="grid" expandable remember >
                 <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{__('Index')}}</flux:navlist.item>

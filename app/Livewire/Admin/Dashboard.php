@@ -15,6 +15,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 
+use App\Models\UserDashboardWidget;
+use App\Models\Exercise;
+
 class Dashboard extends Component
 {
     public string $period = 'month';
@@ -47,6 +50,28 @@ class Dashboard extends Component
 
     public ?array $subscriptionNotice = null;
 
+    protected $listeners = ['widget-removed' => '$refresh'];
+
+    public function addExerciseWidget(int $exerciseId): void
+    {
+        auth()->user()?->dashboardWidgets()->create([
+            'type' => 'exercise_progress',
+            'settings' => ['exercise_id' => $exerciseId],
+            'order' => auth()->user()->dashboardWidgets()->count(),
+        ]);
+        $this->dispatch('widget-added');
+    }
+
+    public function addPrWidget(): void
+    {
+        auth()->user()?->dashboardWidgets()->create([
+            'type' => 'personal_record',
+            'settings' => [],
+            'order' => auth()->user()->dashboardWidgets()->count(),
+        ]);
+        $this->dispatch('widget-added');
+    }
+
     public function mount(): void
     {
         $this->loadData();
@@ -74,36 +99,36 @@ class Dashboard extends Component
         $this->bookingsChartData = ['labels' => [], 'data' => []];
 
         try {
-            if ($user?->hasPermission('Dashboard', 'view_revenue')) {
+            if ($user?->can('view_revenue', $dashboard)) {
                 $revenue = $service->getRevenueStats($this->period);
                 $this->totalTransactions = $revenue['total_transactions'];
                 $this->totalRevenueDkk = $revenue['total_revenue_dkk'];
             }
 
-            if ($user?->hasPermission('Dashboard', 'view_bookings')) {
+            if ($user?->can('view_bookings', $dashboard)) {
                 $bookings = $service->getBookingsStats($this->period);
                 $this->totalBookingsActive = $bookings['total_bookings_active'];
                 $this->totalBookingsCompleted = $bookings['total_bookings_completed'];
             }
 
-            if ($user?->hasPermission('Dashboard', 'view_subscribers')) {
+            if ($user?->can('view_subscribers', $dashboard)) {
                 $this->subscribersByPlan = $service->getSubscribersByPlan();
             }
 
-            if ($user?->hasPermission('Dashboard', 'view_upcoming_classes')) {
+            if ($user?->can('view_upcoming_classes', $dashboard)) {
                 $this->upcomingClasses = $service->getUpcomingClasses(7)->all();
             }
 
-            if ($user?->hasPermission('Dashboard', 'view_recent_activity')) {
+            if ($user?->can('view_recent_activity', $dashboard)) {
                 $this->recentActivity = $service->getRecentActivity(10)->all();
             }
 
-            if ($user?->hasPermission('Dashboard', 'view_charts')) {
+            if ($user?->can('view_charts', $dashboard)) {
                 $this->revenueChartData = $service->getRevenueChartData($this->period);
                 $this->bookingsChartData = $service->getBookingsChartData($this->period);
             }
 
-            if ($user?->hasPermission('Dashboard', 'view_trainer_widget') && $user) {
+            if ($user?->can('view_trainer_widget', $dashboard) && $user) {
                 $this->trainerClassesToday = $service->getTrainerClassesToday($user)->all();
             }
         } catch (\Throwable $e) {
@@ -123,6 +148,8 @@ class Dashboard extends Component
 
     public function export()
     {
+        $this->authorize('view_export', app(DashboardModel::class));
+
         $service = TenantDashboardService::forTenant();
         $revenue = $service->getRevenueStats($this->period);
         $bookings = $service->getBookingsStats($this->period);
@@ -186,6 +213,8 @@ class Dashboard extends Component
     {
         return view('livewire.admin.dashboard', [
             'dashboard' => app(DashboardModel::class),
+            'availableExercises' => Exercise::orderBy('name')->get(),
+            'userWidgets' => auth()->user()?->dashboardWidgets ?? collect(),
         ]);
     }
 }

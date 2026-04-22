@@ -13,7 +13,7 @@ class ManagePermissions extends Component
     public User $user;
 
     /**
-     * @var array<string, array<int, array{id:int, ability:string, role_granted:bool, user_override:bool|null, effective:bool}>>
+     * @var array<string, array<int, array{id:int, ability:string, description:?string, role_granted:bool, user_override:bool|null, effective:bool}>>
      */
     public array $permissionsGrouped = [];
 
@@ -40,6 +40,7 @@ class ManagePermissions extends Component
                 return [
                     'id' => $perm->id,
                     'ability' => $perm->ability,
+                    'description' => $perm->description,
                     'role_granted' => false,
                     'user_override' => $override,
                     'effective' => (bool) $effective,

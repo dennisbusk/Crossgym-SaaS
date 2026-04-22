@@ -85,7 +85,7 @@ class User extends Authenticatable
      */
     public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class)->withGlobalRoles();
+        return $this->belongsTo(Role::class)->withoutGlobalScope('exclude_superadmin')->withGlobalRoles();
     }
 
     /**
@@ -181,5 +181,10 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function dashboardWidgets(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(UserDashboardWidget::class)->orderBy('order');
     }
 }

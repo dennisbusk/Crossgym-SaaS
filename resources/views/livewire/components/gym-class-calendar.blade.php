@@ -198,7 +198,7 @@
             events: this.events,
             eventDisplay: 'block',
             eventTextColor: 'black',
-            initialView: 'dayGridMonth',
+            initialView: 'timeGridWeek',
             navLinks: true,
               height: 'calc(100vh - 135px)',
             // aspectRatio: (window.screen.width / window.screen.height) - .17,

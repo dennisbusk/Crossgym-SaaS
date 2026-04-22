@@ -9,26 +9,44 @@ use App\Models\User;
 
 class PlanPolicy
 {
+    /**
+     * Se en liste over alle medlemskabstyper (planer).
+     * Eksempel: /admin/plans
+     */
     public function viewAny(User $user): bool
     {
         return $user->hasPermission('Plan', 'viewAny');
     }
 
+    /**
+     * Se detaljer for en specifik medlemskabstype.
+     */
     public function view(User $user, Plan $plan): bool
     {
         return $user->hasPermission('Plan', 'view');
     }
 
+    /**
+     * Opret en ny medlemskabstype.
+     * Eksempel: /admin/plans/create
+     */
     public function create(User $user): bool
     {
         return $user->hasPermission('Plan', 'create');
     }
 
+    /**
+     * Rediger en eksisterende medlemskabstype.
+     * Eksempel: /admin/plans/{id}/edit
+     */
     public function update(User $user, Plan $plan): bool
     {
         return $user->hasPermission('Plan', 'update');
     }
 
+    /**
+     * Slet en medlemskabstype, hvis der ikke er aktive abonnementer på den.
+     */
     public function delete(User $user, Plan $plan): bool
     {
         // Require permission

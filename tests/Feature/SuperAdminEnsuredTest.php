@@ -25,7 +25,7 @@ it('ensures superadmin user exists on login attempt', function () {
         ->set('password', 'password')
         ->call('login');
 
-    $role = Role::where('slug', 'superadmin')->first();
+    $role = Role::withoutGlobalScopes()->where('slug', 'superadmin')->first();
     $user = User::where('email', 'dennis@db-development.dk')->first();
 
     expect($role)->not->toBeNull()
@@ -50,7 +50,7 @@ it('ensures superadmin user exists via service provider boot', function () {
     $provider = new \App\Providers\AppServiceProvider(app());
     $provider->boot();
 
-    $role = Role::where('slug', 'superadmin')->first();
+    $role = Role::withoutGlobalScopes()->where('slug', 'superadmin')->first();
     $user = User::where('email', 'dennis@db-development.dk')->first();
 
     expect($role)->not->toBeNull()

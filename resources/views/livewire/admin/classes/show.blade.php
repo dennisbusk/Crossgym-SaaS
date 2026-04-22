@@ -3,7 +3,9 @@
         <h1 class="text-2xl font-semibold">{{ __('Class') }}: {{ $gymClass->getTranslation('name', app()->getLocale()) }}</h1>
         <div class="flex gap-2">
             <flux:button tag="a" href="{{ route('classes.index') }}" variant="ghost">{{ __('Back') }}</flux:button>
-            <flux:button tag="a" href="{{ route('classes.edit', $gymClass) }}" variant="primary">{{ __('Edit') }}</flux:button>
+            @can('update', $gymClass)
+                <flux:button tag="a" href="{{ route('classes.edit', $gymClass) }}" variant="primary">{{ __('Edit') }}</flux:button>
+            @endcan
         </div>
     </div>
 
@@ -37,6 +39,7 @@
                 </div>
             </div>
 
+            @can('update', $gymClass)
             <div class="rounded-xl border p-6 bg-white shadow-sm space-y-4">
                 <h2 class="text-lg font-semibold border-b pb-2">{{ __('Add Participant') }}</h2>
                 <div class="space-y-4">
@@ -88,6 +91,7 @@
                     </flux:button>
                 </div>
             </div>
+            @endcan
         </div>
 
         <div class="md:col-span-2 space-y-6">
@@ -143,10 +147,12 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2">
-                                        @if (!$participant->pivot->checked_at)
-                                            <flux:button icon="check" variant="ghost" wire:click="checkInParticipant({{ $participant->id }})" />
-                                        @endif
-                                        <flux:button icon="trash" variant="ghost" wire:click="removeParticipant({{ $participant->id }})" />
+                                        @can('update', $gymClass)
+                                            @if (!$participant->pivot->checked_at)
+                                                <flux:button icon="check" variant="ghost" wire:click="checkInParticipant({{ $participant->id }})" />
+                                            @endif
+                                            <flux:button icon="trash" variant="ghost" wire:click="removeParticipant({{ $participant->id }})" />
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach
@@ -181,10 +187,12 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2">
-                                        @if (!$trial->checked_at)
-                                            <flux:button icon="check" variant="ghost" wire:click="checkInTrial({{ $trial->id }})" />
-                                        @endif
-                                        <flux:button icon="trash" variant="ghost" wire:click="removeTrial({{ $trial->id }})" />
+                                        @can('update', $gymClass)
+                                            @if (!$trial->checked_at)
+                                                <flux:button icon="check" variant="ghost" wire:click="checkInTrial({{ $trial->id }})" />
+                                            @endif
+                                            <flux:button icon="trash" variant="ghost" wire:click="removeTrial({{ $trial->id }})" />
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

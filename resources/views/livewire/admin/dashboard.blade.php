@@ -20,11 +20,15 @@
             </div>
         </div>
     @endif
-
-    <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-        <h1 class="text-2xl font-semibold">{{ __('Dashboard') }}</h1>
+@if(auth()->user()?->can('view_revenue', $dashboard)
+ || auth()->user()?->can('view_bookings', $dashboard)
+  || auth()->user()?->can('view_charts', $dashboard)
+   || auth()->user()?->can('view_export', $dashboard)
+   || auth()->user()?->can('view_stripe_status', $dashboard))
+    <div class="flex flex-wrap justify-between items-center gap-4">
         <div class="flex flex-wrap items-center gap-2">
-            @if(auth()->user()?->hasPermission('Dashboard', 'view_revenue') || auth()->user()?->hasPermission('Dashboard', 'view_bookings') || auth()->user()?->hasPermission('Dashboard', 'view_charts'))
+            @if(auth()->user()?->can('view_revenue', $dashboard)
+ || auth()->user()?->can('view_bookings', $dashboard) || auth()->user()?->can('view_charts', $dashboard))
             <flux:select wire:model.live="period" class="min-w-[140px]">
                 <option value="today">{{ __('Today') }}</option>
                 <option value="week">{{ __('This week') }}</option>
@@ -50,8 +54,8 @@
             @endcan
         </div>
     </div>
-
-    @if(auth()->user()?->hasPermission('Dashboard', 'view_revenue') || auth()->user()?->hasPermission('Dashboard', 'view_bookings'))
+@endif
+    @if(auth()->user()?->can('view_revenue', $dashboard) || auth()->user()?->can('view_bookings', $dashboard))
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         @can('view_revenue', $dashboard)
         <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
@@ -91,6 +95,59 @@
         </div>
     </div>
     @endcan
+    <div class="border-t border-neutral-200 dark:border-neutral-800">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold">{{ __('My Training Dashboard') }}</h2>
+            <div class="flex items-center gap-2">
+                <flux:dropdown>
+                    <flux:button variant="primary" icon="plus" size="sm">{{ __('Add Widget') }}</flux:button>
+                    <flux:menu class="min-w-[200px]">
+                        <flux:menu.item wire:click="addPrWidget" icon="trophy">{{ __('Personal Records') }}</flux:menu.item>
+                        <flux:menu.separator />
+                        <flux:menu.heading>{{ __('Exercise Progress') }}</flux:menu.heading>
+                        @foreach($availableExercises as $exercise)
+                            <flux:menu.item wire:click="addExerciseWidget({{ $exercise->id }})">
+                                {{ $exercise->getTranslation('name', app()->getLocale()) }}
+                            </flux:menu.item>
+                        @endforeach
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
+        </div>
+
+        @if($userWidgets->isEmpty())
+            <div class="rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-800 p-12 text-center">
+                <div class="text-neutral-500 mb-4">
+                    {{ __('You haven\'t added any training widgets yet.') }}
+                </div>
+                <flux:dropdown>
+                    <flux:button variant="filled">{{ __('Add your first widget') }}</flux:button>
+                    <flux:menu class="min-w-[200px]">
+                        <flux:menu.item wire:click="addPrWidget" icon="trophy">{{ __('Personal Records') }}</flux:menu.item>
+                        <flux:menu.separator />
+                        <flux:menu.heading>{{ __('Exercise Progress') }}</flux:menu.heading>
+                        @foreach($availableExercises as $exercise)
+                            <flux:menu.item wire:click="addExerciseWidget({{ $exercise->id }})">
+                                {{ $exercise->getTranslation('name', app()->getLocale()) }}
+                            </flux:menu.item>
+                        @endforeach
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
+        @else
+            <div class="flex justify-start flex-wrap gap-6">
+                @foreach($userWidgets as $widget)
+                    <div wire:key="widget-{{ $widget->id }}" class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4">
+                        @if($widget->type === 'exercise_progress')
+                            <livewire:components.exercise-progress-widget :widgetId="$widget->id" :key="'exercise-'.$widget->id" />
+                        @elseif($widget->type === 'personal_record')
+                            <livewire:components.personal-record-widget :widgetId="$widget->id" :key="'pr-'.$widget->id" />
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
 
     @can('view_upcoming_classes', $dashboard)
     <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
@@ -130,6 +187,9 @@
     </div>
     @endcan
 
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    @endpush
     @can('view_charts', $dashboard)
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="dashboard-charts-container" data-revenue="{{ json_encode($revenueChartData) }}" data-bookings="{{ json_encode($bookingsChartData) }}" wire:key="charts-{{ $period }}">
         <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
@@ -146,7 +206,6 @@
         </div>
     </div>
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
         function initDashboardCharts() {
             const container = document.getElementById('dashboard-charts-container');
@@ -187,9 +246,9 @@
     @endcan
 
     @can('view_trainer_widget', $dashboard)
-    @if(count($trainerClassesToday) > 0)
     <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
         <h2 class="text-lg font-semibold mb-3">{{ __('My Classes Today') }}</h2>
+        @if(count($trainerClassesToday) > 0)
         <div class="space-y-2">
             @foreach($trainerClassesToday as $class)
                 <a href="{{ route('calendar') }}" wire:navigate class="block rounded bg-neutral-50 dark:bg-neutral-800 p-3 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition">
@@ -198,8 +257,11 @@
                 </a>
             @endforeach
         </div>
+        @else
+            <p class="text-neutral-500 dark:text-neutral-400 text-sm italic">{{ __('No classes scheduled for today.') }}</p>
+        @endif
         <a href="{{ route('calendar') }}" wire:navigate class="mt-3 inline-block text-sm text-primary hover:underline">{{ __('Open calendar') }}</a>
     </div>
-    @endif
     @endcan
+
 </div>

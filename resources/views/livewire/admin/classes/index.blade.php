@@ -61,8 +61,12 @@
                         </x-flowbite.table.body.cell>
                         <x-flowbite.table.body.cell class="text-right space-x-2">
                             <flux:button icon="eye" tag="a" href="{{ route('classes.show', $class) }}" variant="ghost" />
-                            <flux:button icon="pencil-square" tag="a" href="{{ route('classes.edit', $class) }}" variant="ghost" />
-                            <flux:button icon="trash" wire:click="delete({{ $class->id }})" variant="ghost" />
+                            @can('update', $class)
+                                <flux:button icon="pencil-square" tag="a" href="{{ route('classes.edit', $class) }}" variant="ghost" />
+                            @endcan
+                            @can('delete', $class)
+                                <flux:button icon="trash" wire:click="delete({{ $class->id }})" variant="ghost" />
+                            @endcan
                         </x-flowbite.table.body.cell>
                     </x-flowbite.table.body.row>
                 @empty

@@ -32,6 +32,8 @@ use App\Livewire\Profile\Bookings;
 use App\Livewire\Profile\Password;
 use App\Livewire\Profile\Settings;
 use App\Livewire\Profile\TwoFactor;
+use App\Livewire\Profile\WorkoutLogForm;
+use App\Livewire\Profile\WorkoutLogIndex;
 use App\Livewire\SuperAdmin\Dashboard as SuperAdminDashboard;
 use App\Livewire\SuperAdmin\Settings\General as SuperAdminSettingsGeneral;
 use App\Models\ClassType;
@@ -82,6 +84,12 @@ Route::middleware(['auth', 'terms.accepted'])->group(function () {
     Route::middleware('can:viewAny,App\\Models\\Calendar')->group(function () {
         Route::get('calendar', \App\Livewire\Admin\Calendar::class)->name('calendar');
     });
+
+    // Workout Logs
+    Route::get('workout-logs', WorkoutLogIndex::class)->name('workout-logs.index');
+    Route::get('workout-logs/create', WorkoutLogForm::class)->name('workout-logs.create');
+    Route::get('workout-logs/{workoutLog}', \App\Livewire\Profile\WorkoutLogShow::class)->name('workout-logs.show');
+    Route::get('workout-logs/{workoutLog}/edit', WorkoutLogForm::class)->name('workout-logs.edit');
 });
 
 Route::middleware(['auth'])->group(function () {

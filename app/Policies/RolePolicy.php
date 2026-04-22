@@ -8,7 +8,8 @@ use App\Models\User;
 class RolePolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Se en liste over alle roller og deres rettigheder.
+     * Eksempel: /admin/roles
      */
     public function viewAny(User $user): bool
     {
@@ -16,7 +17,8 @@ class RolePolicy
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Se detaljer for en specifik rolle.
+     * Eksempel: /admin/roles/{id}
      */
     public function view(User $user, Role $role): bool
     {
@@ -24,7 +26,8 @@ class RolePolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Opret en ny rolle.
+     * Eksempel: /admin/roles/create
      */
     public function create(User $user): bool
     {
@@ -32,7 +35,8 @@ class RolePolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Rediger en eksisterende rolle og dens tilladelser.
+     * Eksempel: /admin/roles/{id}/edit
      */
     public function update(User $user, Role $role): bool
     {
@@ -40,7 +44,7 @@ class RolePolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Slet en rolle fra systemet.
      */
     public function delete(User $user, Role $role): bool
     {

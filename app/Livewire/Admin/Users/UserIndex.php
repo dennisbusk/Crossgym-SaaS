@@ -112,7 +112,7 @@ class UserIndex extends Component
             });
         }
 
-        if (auth()->user()->role->name != 'superadmin') {
+        if (auth()->user()->role?->slug != 'superadmin') {
             $query->whereHas('role', function ($query) {
                 $query->where('slug', '!=', 'superadmin');
             });

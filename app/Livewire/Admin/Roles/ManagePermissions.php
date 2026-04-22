@@ -15,7 +15,7 @@ class ManagePermissions extends Component
     /**
      * Grouped permissions data structure used by the view.
      *
-     * @var array<string, array<int, array{id:int, ability:string, granted:bool}>>
+     * @var array<string, array<int, array{id:int, ability:string, description:?string, granted:bool}>>
      */
     public array $permissionsGrouped = [];
 
@@ -35,6 +35,7 @@ class ManagePermissions extends Component
             ->map(fn ($group) => $group->map(fn (Permission $perm) => [
                 'id' => $perm->id,
                 'ability' => $perm->ability,
+                'description' => $perm->description,
                 'granted' => $this->role->permissions?->contains('id', $perm->id) ?? false,
             ])->all())
             ->all();

@@ -86,7 +86,7 @@ class TenantForm extends Component
             session()->flash('status', __('Tenant created.'));
         }
 
-        if (Auth::user()->hasPermission('Tenant', 'viewAny')) {
+        if (Auth::user()->can('viewAny', Tenant::class)) {
             $this->redirectRoute('tenants.index', navigate: true);
         } else {
             $this->redirectRoute('dashboard', navigate: true);

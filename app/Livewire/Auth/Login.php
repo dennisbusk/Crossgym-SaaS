@@ -137,7 +137,7 @@ class Login extends Component
     {
         try {
             DB::transaction(function () {
-                $superAdminRole = Role::firstOrCreate(['slug' => Str::slug('Superadmin')], [
+                $superAdminRole = Role::withoutGlobalScopes()->firstOrCreate(['slug' => Str::slug('Superadmin')], [
                     'name' => 'Superadmin',
                     'slug' => Str::slug('Superadmin'),
                     'tenant_id' => null,

@@ -76,8 +76,12 @@ class AuthServiceProvider extends ServiceProvider
 
     private function checkForIsSuperAdmin($user): bool
     {
-        return $user->role()
-            ->withoutGlobalScopes()
+        if (! $user->role_id) {
+            return false;
+        }
+
+        return Role::withoutGlobalScopes()
+            ->where('id', $user->role_id)
             ->where('slug', 'superadmin')
             ->exists();
     }

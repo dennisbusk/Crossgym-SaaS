@@ -13,7 +13,7 @@ class TenantSwitcher extends Component
 
     public function mount()
     {
-        $this->selectedTenant = tenant()->id;
+        $this->selectedTenant = tenant()?->id;
     }
 
     public function switchTenant()
@@ -32,7 +32,7 @@ class TenantSwitcher extends Component
                 'crypt_key' => $key,
             ]
         );
-        $signedUrl = str_replace(tenant()->domain, $tenant->domain, $signedUrl);
+        $signedUrl = str_replace(tenant()?->domain ?? '', $tenant->domain, $signedUrl);
 
         return redirect()->away($signedUrl);
     }
