@@ -9,6 +9,7 @@ use App\Traits\WithSorting;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentIndex extends Component
 {

@@ -1,16 +1,16 @@
 <div class="space-y-6">
     <div class="flex justify-between items-center mb-4">
         <div class="flex justify-self-start">
-        <h1 class="text-2xl font-semibold">{{ __('Roles') }}</h1>
+            <h1 class="text-2xl font-semibold">{{ __('Roles') }}</h1>
         </div>
         <div class="p-4 flex w-full justify-end items-center">
             <div class="flex items-center gap-2 justify-self-end">
-                <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="ghost">
+                <flux:button class="hover:cursor-pointer" wire:click="export" variant="ghost" icon="document-arrow-down" wire:loading.attr="disabled">
                     {{ __('Export') }}
-                </x-flowbite.button>
-                <x-flowbite.link href="{{ route('roles.create') }}" variant="ghost">
+                </flux:button>
+                <flux:button tag="a" href="{{ route('roles.create') }}" variant="ghost" icon="plus">
                     {{ __('New Role') }}
-                </x-flowbite.link>
+                </flux:button>
             </div>
         </div>
     </div>

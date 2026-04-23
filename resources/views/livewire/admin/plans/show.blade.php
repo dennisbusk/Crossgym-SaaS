@@ -52,7 +52,7 @@
         <div class="flex justify-between items-center mb-2">
             <h2 class="text-xl font-semibold">{{ __('Users on this plan') }}</h2>
             <div class="flex items-center gap-2">
-                <flux:button wire:click="export" variant="primary">{{ __('Export') }}</flux:button>
+                <flux:button wire:click="export" variant="ghost" icon="document-arrow-down" wire:loading.attr="disabled">{{ __('Export') }}</flux:button>
             </div>
         </div>
         <div class="flex justify-between items-center mb-4 gap-3">

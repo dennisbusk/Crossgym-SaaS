@@ -10,6 +10,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SubscriptionsExport;
 
 class SubscriptionIndex extends Component
 {
@@ -23,6 +25,21 @@ class SubscriptionIndex extends Component
         return view('livewire.admin.subscriptions.index', [
             'subscriptions' => $this->subscriptions(),
         ]);
+    }
+
+    public function export()
+    {
+        $query = Subscription::query()
+            ->with(['user', 'plan'])
+            ->when($this->search !== '', function ($q) {
+                $q->where(function ($qq) {
+                    $qq->where('stripe_subscription_id', 'like', "%{$this->search}%")
+                        ->orWhere('stripe_price_id', 'like', "%{$this->search}%")
+                        ->orWhere('status', 'like', "%{$this->search}%");
+                });
+            });
+
+        return Excel::download(new SubscriptionsExport($query), 'subscriptions.xlsx');
     }
 
     protected function subscriptions(): LengthAwarePaginator

@@ -35,6 +35,15 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Handle manifest and icons separately to ensure they are always fresh if possible
+  // but also available offline
+  if (event.request.url.includes('manifest.json') || event.request.url.includes('favicon')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   // Do not intercept HTML requests to avoid caching old CSRF tokens
   if (event.request.headers.get('accept')?.includes('text/html')) {
     return;

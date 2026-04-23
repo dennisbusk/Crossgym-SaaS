@@ -12,12 +12,12 @@
             </flux:select>
         </div>
         <div class="flex items-center gap-2">
-            <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="ghost">
+            <flux:button class="hover:cursor-pointer" wire:click="export" variant="ghost" icon="document-arrow-down" wire:loading.attr="disabled">
                 {{ __('Export') }}
-            </x-flowbite.button>
-            <x-flowbite.button class="hover:cursor-pointer" wire:click="openManualPaymentModal" variant="primary">
+            </flux:button>
+            <flux:button class="hover:cursor-pointer" wire:click="openManualPaymentModal" variant="ghost" icon="plus">
                 {{ __('New Manual Payment') }}
-            </x-flowbite.button>
+            </flux:button>
         </div>
     </div>
 

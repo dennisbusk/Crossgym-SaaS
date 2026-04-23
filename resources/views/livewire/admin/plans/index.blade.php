@@ -5,14 +5,14 @@
         </div>
         <div class="p-4 flex w-full justify-end items-center">
             <div class="flex items-center gap-2 justify-self-end">
-                @can('create', \App\Models\Plan::class)
-                    <x-flowbite.link href="{{ route('plans.create') }}" variant="primary">
-                        {{ __('Create Plan') }}
-                    </x-flowbite.link>
-                @endcan
-                <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="ghost">
+                <flux:button class="hover:cursor-pointer" wire:click="export" variant="ghost" icon="document-arrow-down" wire:loading.attr="disabled">
                     {{ __('Export') }}
-                </x-flowbite.button>
+                </flux:button>
+                @can('create', \App\Models\Plan::class)
+                    <flux:button tag="a" href="{{ route('plans.create') }}" variant="ghost" icon="plus">
+                        {{ __('Create Plan') }}
+                    </flux:button>
+                @endcan
             </div>
         </div>
     </div>

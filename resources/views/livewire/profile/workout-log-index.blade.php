@@ -5,10 +5,10 @@
         </div>
         <div class="p-4 flex w-full justify-end items-center">
             <div class="flex items-center gap-2 justify-self-end">
-                <flux:button class="hover:cursor-pointer" wire:click="export" variant="primary">
+                <flux:button class="hover:cursor-pointer" wire:click="export" variant="ghost" icon="document-arrow-down" wire:loading.attr="disabled">
                     {{ __('Export') }}
                 </flux:button>
-                <flux:button icon="plus" href="{{ route('workout-logs.create') }}" variant="primary" tag="a">
+                <flux:button icon="plus" href="{{ route('workout-logs.create') }}" variant="ghost" tag="a">
                     {{ __('New Entry') }}
                 </flux:button>
             </div>

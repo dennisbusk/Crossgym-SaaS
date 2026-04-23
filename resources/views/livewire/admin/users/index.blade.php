@@ -2,12 +2,12 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-semibold">{{ __('Users') }}</h1>
         <div class="flex items-center gap-2">
-            <x-flowbite.button class="hover:cursor-pointer" wire:click="export" variant="ghost">
+            <flux:button class="hover:cursor-pointer" wire:click="export" variant="ghost" icon="document-arrow-down" wire:loading.attr="disabled">
                 {{ __('Export') }}
-            </x-flowbite.button>
-            <x-flowbite.link href="{{ route('users.create') }}" variant="ghost">
+            </flux:button>
+            <flux:button tag="a" href="{{ route('users.create') }}" variant="ghost" icon="plus">
                 {{ __('New User') }}
-            </x-flowbite.link>
+            </flux:button>
         </div>
     </div>
 

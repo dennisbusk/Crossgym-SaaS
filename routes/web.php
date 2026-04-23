@@ -105,6 +105,7 @@ Route::get('/manifest.json', function () {
     $backgroundColor = $tenant?->background_color ?? '#ffffff';
 
     return response()->json([
+        'id' => '/',
         'name' => $appName,
         'short_name' => $tenant?->app_name ?? $tenant?->name ?? 'CrossGym',
         'description' => 'Crossgym SaaS Platform',
@@ -113,13 +114,25 @@ Route::get('/manifest.json', function () {
                 'src' => $iconUrl,
                 'sizes' => '192x192',
                 'type' => $tenant && $tenant->icon_path ? 'image/'.pathinfo($tenant->icon_path, PATHINFO_EXTENSION) : 'image/svg+xml',
-                'purpose' => 'any maskable',
+                'purpose' => 'any',
             ],
             [
                 'src' => $iconUrl,
                 'sizes' => '512x512',
                 'type' => $tenant && $tenant->icon_path ? 'image/'.pathinfo($tenant->icon_path, PATHINFO_EXTENSION) : 'image/svg+xml',
-                'purpose' => 'any maskable',
+                'purpose' => 'any',
+            ],
+            [
+                'src' => $iconUrl,
+                'sizes' => '192x192',
+                'type' => $tenant && $tenant->icon_path ? 'image/'.pathinfo($tenant->icon_path, PATHINFO_EXTENSION) : 'image/svg+xml',
+                'purpose' => 'maskable',
+            ],
+            [
+                'src' => $iconUrl,
+                'sizes' => '512x512',
+                'type' => $tenant && $tenant->icon_path ? 'image/'.pathinfo($tenant->icon_path, PATHINFO_EXTENSION) : 'image/svg+xml',
+                'purpose' => 'maskable',
             ],
         ],
         'start_url' => '/',
@@ -127,6 +140,7 @@ Route::get('/manifest.json', function () {
         'theme_color' => $themeColor,
         'background_color' => $backgroundColor,
         'orientation' => 'portrait',
+        'scope' => '/',
     ]);
 })->name('manifest');
 
