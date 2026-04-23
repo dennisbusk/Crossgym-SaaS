@@ -29,7 +29,7 @@
 
             <flux:navbar class="me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
                 <x-theme-toggle />
-                
+
 {{--                <flux:tooltip :content="__('Search')" position="bottom">--}}
 {{--                    <flux:navbar.item class="!h-10 [&>div>svg]:size-5" icon="magnifying-glass" href="#" :label="__('Search')" />--}}
 {{--                </flux:tooltip>--}}
@@ -113,11 +113,11 @@
                         class="inline-flex items-center justify-center h-10 w-10 rounded-md hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60 focus:outline-none"
                         aria-label="{{ __('Toggle theme') }}">
                     <!-- Sun icon (light mode) -->
-                    <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="20" height="20">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5z" />
                     </svg>
                     <!-- Moon icon (dark mode) -->
-                    <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
                         <path d="M21.752 15.002A9.718 9.718 0 0 1 12.004 22C6.478 22 2 17.523 2 11.996 2 7.37 4.942 3.5 9.12 2.16a.75.75 0 0 1 .967.967 8.25 8.25 0 0 0 10.506 10.506.75.75 0 0 1 .159 1.37z"/>
                     </svg>
                     <span class="sr-only">{{ __('Toggle theme') }}</span>
@@ -146,10 +146,10 @@
         </flux:sidebar>
 
         {{ $slot }}
-        
+
         @fluxScripts
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
         @stack('scripts')
-    
+
     </body>
 </html>

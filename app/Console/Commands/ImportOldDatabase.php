@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\FetchStripePaymentIntent;
+use App\Jobs\SyncStripeSubscriptionStatus;
 use App\Models\CheckIn;
 use App\Models\EmailLog;
 use App\Models\Payment;
@@ -313,18 +315,32 @@ class ImportOldDatabase extends Command
             $status = 'expired';
         }
 
-        DB::table('subscriptions')->updateOrInsert(
-            ['stripe_subscription_id' => $stripeId],
-            [
-                'tenant_id' => $this->tenant->id,
-                'user_id' => $newUserId,
-                'stripe_price_id' => $stripePlan,
-                'status' => $status,
-                'current_period_end' => $endsAt,
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt,
-            ]
-        );
+        $subData = [
+            'tenant_id' => $this->tenant->id,
+            'user_id' => $newUserId,
+            'stripe_subscription_id' => $stripeId,
+            'stripe_price_id' => $stripePlan,
+            'status' => $status,
+            'current_period_end' => $endsAt,
+            'created_at' => $createdAt,
+            'updated_at' => $updatedAt,
+        ];
+
+        $existing = DB::table('subscriptions')
+            ->where('tenant_id', $this->tenant->id)
+            ->where('stripe_subscription_id', $stripeId)
+            ->first();
+
+        if ($existing) {
+            DB::table('subscriptions')->where('id', $existing->id)->update($subData);
+            $newSubId = $existing->id;
+        } else {
+            $newSubId = DB::table('subscriptions')->insertGetId($subData);
+        }
+
+        if ($stripeId) {
+            SyncStripeSubscriptionStatus::dispatch((int) $newSubId, $stripeId);
+        }
     }
 
     protected function processUsersAndMembers()
@@ -516,6 +532,7 @@ class ImportOldDatabase extends Command
         $createdAt = $data['created_at'] ?? $data[6] ?? now();
         $updatedAt = $data['updated_at'] ?? $data[11] ?? now();
         $id = $data['id'] ?? $data[0] ?? null;
+        $chargeId = $data['charge_id'] ?? $data[8] ?? null;
 
         $paymentData = [
             'tenant_id' => $this->tenant->id,
@@ -530,10 +547,17 @@ class ImportOldDatabase extends Command
             'updated_at' => $updatedAt,
         ];
 
+        $newPaymentId = null;
+
         if ($id && is_numeric($id)) {
             DB::table('payments')->updateOrInsert(['id' => $id], $paymentData);
+            $newPaymentId = (int) $id;
         } else {
-            DB::table('payments')->insert($paymentData);
+            $newPaymentId = DB::table('payments')->insertGetId($paymentData);
+        }
+
+        if ($type === 'Stripe' && $chargeId) {
+            FetchStripePaymentIntent::dispatch($newPaymentId, $chargeId);
         }
     }
 
