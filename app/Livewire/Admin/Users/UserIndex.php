@@ -65,8 +65,6 @@ class UserIndex extends Component
             'checked_at' => $now,
         ]);
 
-        $user->update(['last_check_in_at' => $now]);
-
         session()->flash('status', __('Check-in registered for :name', ['name' => $user->name]));
     }
 
@@ -123,7 +121,8 @@ class UserIndex extends Component
 
     public function render()
     {
-        $users = User::query()->with(['subscription', 'subscription.plan', 'role']);
+        $users = User::query()->with(['subscription', 'subscription.plan', 'role'])
+            ->withMax('checkIns as last_check_in_at', 'checked_at');
 
         $users = $this->applyFilters($users);
 

@@ -39,6 +39,25 @@
             </div>
         </form>
 
+        @if(count($this->availableWidgets) > 0)
+            <div class="mt-10 space-y-6">
+                <div>
+                    <flux:heading size="lg">{{ __('Dashboard Widgets') }}</flux:heading>
+                    <flux:subheading>{{ __('Choose which widgets you want to see on your dashboard.') }}</flux:subheading>
+                </div>
+
+                <div class="space-y-4">
+                    @foreach($this->availableWidgets as $key => $widget)
+                        <flux:switch wire:model="dashboardSettings.{{ $key }}" :label="$widget['label']" />
+                    @endforeach
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <flux:button variant="primary" wire:click="updateProfileInformation">{{ __('Save Widgets') }}</flux:button>
+                </div>
+            </div>
+        @endif
+
         <!-- Current plan/credits -->
         @php($sub = auth()->user()?->subscription)
         @php($plan = $sub?->stripe_price_id ? \App\Models\Plan::query()->where('stripe_price_id', $sub->stripe_price_id)->first() : null)

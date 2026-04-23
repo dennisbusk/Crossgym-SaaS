@@ -53,6 +53,7 @@ class User extends Authenticatable
         'stripe_customer_id',
         'card_brand',
         'card_last_four',
+        'dashboard_settings',
     ];
 
     /**
@@ -75,6 +76,12 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_check_in_at' => 'datetime',
+            'joined_at' => 'datetime',
+            'left_at' => 'datetime',
+            'birthday' => 'date',
+            'terms_accepted_at' => 'datetime',
+            'dashboard_settings' => 'array',
         ];
     }
 
@@ -181,6 +188,16 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function getLastCheckInAtAttribute()
+    {
+        return $this->checkIns()->latest()->first()?->checked_at;
+    }
+
+    public function checkIns(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CheckIn::class);
     }
 
     public function dashboardWidgets(): \Illuminate\Database\Eloquent\Relations\HasMany

@@ -461,8 +461,6 @@ class GymClassCalendar extends Component
             $event->participants()->updateExistingPivot($user->id, ['check_in_id' => $checkIn->id]);
         }
 
-        $user->update(['last_check_in_at' => $now]);
-
         session()->flash('success', __('Checked in successfully'));
         $this->loadEvents();
     }
@@ -524,9 +522,6 @@ class GymClassCalendar extends Component
             ]);
             $event->participants()->updateExistingPivot($userId, ['check_in_id' => $checkIn->id]);
         }
-
-        // Update user's last check-in
-        User::query()->where('id', $userId)->update(['last_check_in_at' => $now]);
 
         session()->flash('success', __('Participant checked in'));
         $this->loadEvents();

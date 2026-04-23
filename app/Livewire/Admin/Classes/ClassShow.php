@@ -58,9 +58,6 @@ class ClassShow extends Component
             $this->gymClass->participants()->updateExistingPivot($userId, ['check_in_id' => $checkIn->id]);
         }
 
-        // Update user's last check-in
-        \App\Models\User::query()->where('id', $userId)->update(['last_check_in_at' => $now]);
-
         $this->refreshClass($this->gymClass);
         session()->flash('success', __('Participant checked in'));
     }

@@ -20,14 +20,14 @@
             </div>
         </div>
     @endif
-@if(auth()->user()?->can('view_revenue', $dashboard)
- || auth()->user()?->can('view_bookings', $dashboard)
-  || auth()->user()?->can('view_charts', $dashboard)
+@if((auth()->user()?->can('view_revenue', $dashboard) && (auth()->user()->dashboard_settings['revenue'] ?? true))
+ || (auth()->user()?->can('view_bookings', $dashboard) && (auth()->user()->dashboard_settings['bookings'] ?? true))
+  || (auth()->user()?->can('view_charts', $dashboard) && (auth()->user()->dashboard_settings['charts'] ?? true))
    || auth()->user()?->can('view_stripe_status', $dashboard))
     <div class="flex flex-wrap justify-between items-center gap-4">
 {{--        <div class="flex flex-wrap items-center gap-2">--}}
-            @if(auth()->user()?->can('view_revenue', $dashboard)
- || auth()->user()?->can('view_bookings', $dashboard) || auth()->user()?->can('view_charts', $dashboard))
+            @if((auth()->user()?->can('view_revenue', $dashboard) && (auth()->user()->dashboard_settings['revenue'] ?? true))
+ || (auth()->user()?->can('view_bookings', $dashboard) && (auth()->user()->dashboard_settings['bookings'] ?? true)) || (auth()->user()?->can('view_charts', $dashboard) && (auth()->user()->dashboard_settings['charts'] ?? true)))
                 <div>
             <flux:select wire:model.live="period" class="min-w-[140px]">
                 <flux:select.option value="today">{{ __('Today') }}</flux:select.option>
@@ -55,9 +55,9 @@
 {{--        </div>--}}
     </div>
 @endif
-    @if(auth()->user()?->can('view_revenue', $dashboard) || auth()->user()?->can('view_bookings', $dashboard))
+    @if((auth()->user()?->can('view_revenue', $dashboard) && (auth()->user()->dashboard_settings['revenue'] ?? true)) || (auth()->user()?->can('view_bookings', $dashboard) && (auth()->user()->dashboard_settings['bookings'] ?? true)))
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        @can('view_revenue', $dashboard)
+        @if(auth()->user()->can('view_revenue', $dashboard) && (auth()->user()->dashboard_settings['revenue'] ?? true))
         <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
             <div class="text-neutral-500 text-sm">{{ __('Total Transactions') }}</div>
             <div class="text-3xl font-semibold mt-1">{{ number_format($totalTransactions) }}</div>
@@ -66,8 +66,8 @@
             <div class="text-neutral-500 text-sm">{{ __('Total Revenue (DKK)') }}</div>
             <div class="text-3xl font-semibold mt-1">{{ number_format($totalRevenueDkk / 100, 2, ',', '.') }}</div>
         </div>
-        @endcan
-        @can('view_bookings', $dashboard)
+        @endif
+        @if(auth()->user()->can('view_bookings', $dashboard) && (auth()->user()->dashboard_settings['bookings'] ?? true))
         <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
             <div class="text-neutral-500 text-sm">{{ __('Total Bookings (Active)') }}</div>
             <div class="text-3xl font-semibold mt-1">{{ number_format($totalBookingsActive) }}</div>
@@ -76,11 +76,11 @@
             <div class="text-neutral-500 text-sm">{{ __('Total Bookings (Completed)') }}</div>
             <div class="text-3xl font-semibold mt-1">{{ number_format($totalBookingsCompleted) }}</div>
         </div>
-        @endcan
+        @endif
     </div>
     @endif
 
-    @can('view_subscribers', $dashboard)
+    @if(auth()->user()->can('view_subscribers', $dashboard) && (auth()->user()->dashboard_settings['subscribers'] ?? true))
     <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
         <h2 class="text-lg font-semibold mb-3">{{ __('Total Subscribers (per Plan)') }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -94,7 +94,8 @@
             @endforelse
         </div>
     </div>
-    @endcan
+    @endif
+    @if(auth()->user()->dashboard_settings['training_dashboard'] ?? true)
     <div class="border-t border-neutral-200 dark:border-neutral-800">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-xl font-bold">{{ __('My Training Dashboard') }}</h2>
@@ -137,6 +138,7 @@
         @else
             <div class="flex justify-start flex-wrap gap-6">
                 @foreach($userWidgets as $widget)
+                    @if(auth()->user()->dashboard_settings['dw_'.$widget->id] ?? true)
                     <div wire:key="widget-{{ $widget->id }}" class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4">
                         @if($widget->type === 'exercise_progress')
                             <livewire:components.exercise-progress-widget :widgetId="$widget->id" :key="'exercise-'.$widget->id" />
@@ -144,12 +146,14 @@
                             <livewire:components.personal-record-widget :widgetId="$widget->id" :key="'pr-'.$widget->id" />
                         @endif
                     </div>
+                    @endif
                 @endforeach
             </div>
         @endif
     </div>
+    @endif
 
-    @can('view_upcoming_classes', $dashboard)
+    @if(auth()->user()->can('view_upcoming_classes', $dashboard) && (auth()->user()->dashboard_settings['upcoming_classes'] ?? true))
     <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
         <h2 class="text-lg font-semibold mb-3">{{ __('Upcoming Classes') }}</h2>
         <div class="space-y-2">
@@ -166,9 +170,9 @@
         <a href="{{ route('calendar') }}" wire:navigate class="mt-3 inline-block text-sm text-primary hover:underline">{{ __('View calendar') }}</a>
         @endif
     </div>
-    @endcan
+    @endif
 
-    @can('view_recent_activity', $dashboard)
+    @if(auth()->user()->can('view_recent_activity', $dashboard) && (auth()->user()->dashboard_settings['recent_activity'] ?? true))
     <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
         <h2 class="text-lg font-semibold mb-3">{{ __('Recent Activity') }}</h2>
         <div class="space-y-2">
@@ -185,13 +189,30 @@
             @endforelse
         </div>
     </div>
-    @endcan
+    @endif
 
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     @endpush
-    @can('view_charts', $dashboard)
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="dashboard-charts-container" data-revenue="{{ json_encode($revenueChartData) }}" data-bookings="{{ json_encode($bookingsChartData) }}" wire:key="charts-{{ $period }}">
+    @if(auth()->user()->can('view_charts', $dashboard) && (auth()->user()->dashboard_settings['charts'] ?? true))
+    <div
+        x-data="{
+            init() {
+                this.initCharts();
+            },
+            initCharts() {
+                if (typeof initDashboardCharts === 'function') {
+                    initDashboardCharts();
+                }
+            }
+        }"
+        x-on:charts-updated.window="initCharts()"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-4"
+        id="dashboard-charts-container"
+        data-revenue="{{ json_encode($revenueChartData) }}"
+        data-bookings="{{ json_encode($bookingsChartData) }}"
+        wire:key="charts-{{ $period }}"
+    >
         <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
             <h2 class="text-lg font-semibold mb-3">{{ __('Revenue (DKK)') }}</h2>
             <div class="h-64">
@@ -236,16 +257,17 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor } }, y: { ticks: { color: textColor } } } }
             });
         }
-        document.addEventListener('livewire:navigated', initDashboardCharts);
-        document.addEventListener('DOMContentLoaded', initDashboardCharts);
-        document.addEventListener('livewire:commit', () => {
-            if (document.getElementById('dashboard-charts-container')) initDashboardCharts();
+        document.addEventListener('livewire:navigated', () => {
+            if (typeof initDashboardCharts === 'function') initDashboardCharts();
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initDashboardCharts === 'function') initDashboardCharts();
         });
     </script>
     @endpush
-    @endcan
+    @endif
 
-    @can('view_trainer_widget', $dashboard)
+    @if(auth()->user()->can('view_trainer_widget', $dashboard) && (auth()->user()->dashboard_settings['trainer_widget'] ?? true))
     <div class="rounded border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
         <h2 class="text-lg font-semibold mb-3">{{ __('My Classes Today') }}</h2>
         @if(count($trainerClassesToday) > 0)
@@ -262,6 +284,6 @@
         @endif
         <a href="{{ route('calendar') }}" wire:navigate class="mt-3 inline-block text-sm text-primary hover:underline">{{ __('Open calendar') }}</a>
     </div>
-    @endcan
+    @endif
 
 </div>

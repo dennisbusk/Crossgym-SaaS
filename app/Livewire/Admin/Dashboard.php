@@ -6,6 +6,7 @@ namespace App\Livewire\Admin;
 
 use App\Exports\DashboardStatsExport;
 use App\Models\Dashboard as DashboardModel;
+use App\Models\Exercise;
 use App\Services\Dashboard\TenantDashboardService;
 use App\Services\Stripe\StripeTenantClient;
 use App\Services\UserSubscriptionService;
@@ -14,9 +15,6 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
-
-use App\Models\UserDashboardWidget;
-use App\Models\Exercise;
 
 class Dashboard extends Component
 {
@@ -80,6 +78,7 @@ class Dashboard extends Component
     public function updatedPeriod(): void
     {
         $this->loadData();
+        $this->dispatch('charts-updated');
     }
 
     protected function loadData(): void
@@ -98,37 +97,39 @@ class Dashboard extends Component
         $this->revenueChartData = ['labels' => [], 'data' => []];
         $this->bookingsChartData = ['labels' => [], 'data' => []];
 
+        $settings = $user->dashboard_settings ?? [];
+
         try {
-            if ($user?->can('view_revenue', $dashboard)) {
+            if ($user?->can('view_revenue', $dashboard) && ($settings['revenue'] ?? true)) {
                 $revenue = $service->getRevenueStats($this->period);
                 $this->totalTransactions = $revenue['total_transactions'];
                 $this->totalRevenueDkk = $revenue['total_revenue_dkk'];
             }
 
-            if ($user?->can('view_bookings', $dashboard)) {
+            if ($user?->can('view_bookings', $dashboard) && ($settings['bookings'] ?? true)) {
                 $bookings = $service->getBookingsStats($this->period);
                 $this->totalBookingsActive = $bookings['total_bookings_active'];
                 $this->totalBookingsCompleted = $bookings['total_bookings_completed'];
             }
 
-            if ($user?->can('view_subscribers', $dashboard)) {
+            if ($user?->can('view_subscribers', $dashboard) && ($settings['subscribers'] ?? true)) {
                 $this->subscribersByPlan = $service->getSubscribersByPlan();
             }
 
-            if ($user?->can('view_upcoming_classes', $dashboard)) {
+            if ($user?->can('view_upcoming_classes', $dashboard) && ($settings['upcoming_classes'] ?? true)) {
                 $this->upcomingClasses = $service->getUpcomingClasses(7)->all();
             }
 
-            if ($user?->can('view_recent_activity', $dashboard)) {
+            if ($user?->can('view_recent_activity', $dashboard) && ($settings['recent_activity'] ?? true)) {
                 $this->recentActivity = $service->getRecentActivity(10)->all();
             }
 
-            if ($user?->can('view_charts', $dashboard)) {
+            if ($user?->can('view_charts', $dashboard) && ($settings['charts'] ?? true)) {
                 $this->revenueChartData = $service->getRevenueChartData($this->period);
                 $this->bookingsChartData = $service->getBookingsChartData($this->period);
             }
 
-            if ($user?->can('view_trainer_widget', $dashboard) && $user) {
+            if ($user?->can('view_trainer_widget', $dashboard) && $user && ($settings['trainer_widget'] ?? true)) {
                 $this->trainerClassesToday = $service->getTrainerClassesToday($user)->all();
             }
         } catch (\Throwable $e) {
@@ -146,23 +147,23 @@ class Dashboard extends Component
         }
     }
 
-//    public function export()
-//    {
-//        $this->authorize('view_export', app(DashboardModel::class));
-//
-//        $service = TenantDashboardService::forTenant();
-//        $revenue = $service->getRevenueStats($this->period);
-//        $bookings = $service->getBookingsStats($this->period);
-//        $subscribers = $service->getSubscribersByPlan();
-//
-//        return Excel::download(new DashboardStatsExport([
-//            'total_transactions' => $revenue['total_transactions'],
-//            'total_revenue_dkk' => $revenue['total_revenue_dkk'],
-//            'total_bookings_active' => $bookings['total_bookings_active'],
-//            'total_bookings_completed' => $bookings['total_bookings_completed'],
-//            'subscribers_by_plan' => $subscribers,
-//        ]), 'dashboard-stats.xlsx');
-//    }
+    //    public function export()
+    //    {
+    //        $this->authorize('view_export', app(DashboardModel::class));
+    //
+    //        $service = TenantDashboardService::forTenant();
+    //        $revenue = $service->getRevenueStats($this->period);
+    //        $bookings = $service->getBookingsStats($this->period);
+    //        $subscribers = $service->getSubscribersByPlan();
+    //
+    //        return Excel::download(new DashboardStatsExport([
+    //            'total_transactions' => $revenue['total_transactions'],
+    //            'total_revenue_dkk' => $revenue['total_revenue_dkk'],
+    //            'total_bookings_active' => $bookings['total_bookings_active'],
+    //            'total_bookings_completed' => $bookings['total_bookings_completed'],
+    //            'subscribers_by_plan' => $subscribers,
+    //        ]), 'dashboard-stats.xlsx');
+    //    }
 
     public function completeSubscription()
     {

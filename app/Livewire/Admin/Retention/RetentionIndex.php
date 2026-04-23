@@ -44,9 +44,11 @@ class RetentionIndex extends Component
     {
         // Users who haven't checked in for 14 days
         $inactiveUsersQuery = User::query()
+            ->withMax('checkIns as last_check_in_at', 'checked_at')
             ->where(function ($q) {
-                $q->where('last_check_in_at', '<', now()->subDays(14))
-                    ->orWhereNull('last_check_in_at')
+                $q->whereDoesntHave('checkIns', function ($sq) {
+                    $sq->where('checked_at', '>=', now()->subDays(14));
+                })
                     ->where('created_at', '<', now()->subDays(14));
             })
             ->with(['role']);
