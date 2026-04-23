@@ -1,7 +1,7 @@
 # Project Development Guidelines (CrossGym SaaS)
 
 ## Scope
-These notes capture project-specific practices that speed up local setup, testing, and day-to-day development for this Laravel 12 + Livewire/Volt + Flux UI app.  
+These notes capture project-specific practices that speed up local setup, testing, and day-to-day development for this Laravel 12 + Livewire/Volt + Flux UI app.
 They assume familiarity with Laravel and PHP ecosystems and focus on what is unique or easy to miss in this codebase.
 
 ---
@@ -10,7 +10,7 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
 - **PHP/Composer**
     - PHP 8.2 is required (`composer.json: "php": "^8.2"`).
     - Install dependencies: `composer install`
-    - Post-install scripts will copy `.env` if needed and run package discovery.  
+    - Post-install scripts will copy `.env` if needed and run package discovery.
       No DB migrations are run automatically on `composer install`; see below.
 
 - **Environment**
@@ -23,7 +23,7 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
     - App dev DB is defined in `.env`. Use sqlite/mysql as preferred in dev.
     - Tests are configured to use sqlite in-memory by default, via `phpunit.xml`:
         - `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`
-    - Migrations: `php artisan migrate`.  
+    - Migrations: `php artisan migrate`.
       If using sqlite file locally, ensure the file exists (see composer `post-create-project-cmd` for the pattern).
 
 - **Frontend/Vite/Tailwind**
@@ -42,7 +42,7 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
 ## Testing
 - **Framework**
     - Test runner is Pest v3 with `pest-plugin-laravel`.
-    - `phpunit.xml` config sets a clean test environment (array cache, array mailer, sync queue, sqlite :memory: database).  
+    - `phpunit.xml` config sets a clean test environment (array cache, array mailer, sync queue, sqlite :memory: database).
       No external services should be needed for unit/feature tests.
 
 - **Running tests**
@@ -57,8 +57,8 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
     - Authentication helpers are available (`actingAs`, `assertAuthenticated`, `assertGuest`).
 
 - **Database behavior in tests**
-    - Transactions are not globally wrapped.  
-      If a test needs persistence across multiple requests, rely on the in-memory sqlite and model factories.  
+    - Transactions are not globally wrapped.
+      If a test needs persistence across multiple requests, rely on the in-memory sqlite and model factories.
       Use `DatabaseTransactions` if you add stateful integration tests against a file-based database.
 
 - **Example minimal test**
@@ -76,21 +76,21 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
 ---
 
 ## Adding New Tests
-- Use Pest style by default:  
+- Use Pest style by default:
   `php artisan make:test --pest Feature/UserCanXyzTest`
 - Prefer Feature tests for HTTP and Livewire flows; Unit tests for pure PHP logic.
 - **Data setup**
     - Use Model factories; check `Database\Factories` for existing patterns.
     - Avoid hitting external APIs; mock where necessary (`pest-plugin-laravel` mocking helpers are available).
 - **Livewire tips**
-    - For Livewire v3: state updates are deferred by default; use `wire:model.live` in Blade when you need real-time updates.  
+    - For Livewire v3: state updates are deferred by default; use `wire:model.live` in Blade when you need real-time updates.
       In tests, `set()` mirrors server-side property updates.
     - Dispatch events with `$this->dispatch()` (not `emit` / `dispatchBrowserEvent`).
 
 ---
 
 ## Code Style & Tooling
-- **Formatting:** Run Pint (PSR-12) before committing.  
+- **Formatting:** Run Pint (PSR-12) before committing.
   For staged changes only: `vendor/bin/pint --dirty`
 - **Naming:** Use descriptive methods and properties (see conventions in `app/` and `tests/`).
 - **Enums:** TitleCase for enum keys if/when used.
@@ -107,7 +107,7 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
 ---
 
 ## Flux UI + Tailwind Conventions
-- Prefer Flux UI components (free edition) for Livewire UIs:  
+- Prefer Flux UI components (free edition) for Livewire UIs:
   Example: `<flux:button variant="primary" />`.
 - Tailwind v4 utility replacements apply (e.g., `bg-black/50` instead of `bg-opacity-50`).
 - Keep dark mode parity with existing pages if you add new UI.
@@ -138,11 +138,11 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
             </div>
         </div>
     </div>
-    
+
     <x-banners/>
-    
+
     <div class="relative overflow-x-auto ">
-        
+
         <x-flowbite.table>
             <x-flowbite.table.head class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <x-flowbite.table.head.row>
@@ -163,10 +163,28 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
                     <x-flowbite.table.body.cell>{{ $user->email }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $user->role?->name }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $user->tenant?->name }}</x-flowbite.table.body.cell>
-                    <x-flowbite.table.body.cell class="text-right space-x-2">
-                            <flux:button icon="eye" tag="a" href="{{ route('users.show', $user) }}" variant="ghost" />
-                            <flux:button icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}" variant="ghost" />
-                            <flux:button icon="trash" wire:click="delete({{ $user->id }})" variant="ghost" />
+                    <x-flowbite.table.body.cell class="text-right">
+                        <div class="flex justify-end items-center gap-2">
+                            {{-- Primary actions visible on desktop --}}
+                            <div class="hidden sm:flex items-center gap-2">
+                                <flux:button icon="eye" tag="a" href="{{ route('users.show', $user) }}" variant="ghost" />
+                                <flux:button icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}" variant="ghost" />
+                            </div>
+
+                            {{-- All actions in dropdown for mobile, and secondary actions for desktop --}}
+                            <flux:dropdown align="end" aria-label="{{ __('Actions') }}">
+                                <flux:button icon="ellipsis-horizontal" variant="ghost" />
+
+                                <flux:menu>
+                                    <div class="sm:hidden">
+                                        <flux:menu.item icon="eye" tag="a" href="{{ route('users.show', $user) }}">{{ __('Show') }}</flux:menu.item>
+                                        <flux:menu.item icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}">{{ __('Edit') }}</flux:menu.item>
+                                        <flux:menu.separator />
+                                    </div>
+                                    <flux:menu.item icon="trash" wire:click="delete({{ $user->id }})" variant="danger">{{ __('Delete') }}</flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
+                        </div>
                     </x-flowbite.table.body.cell>
                 </x-flowbite.table.body.row>
             @empty
@@ -192,13 +210,13 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
       ```php
       use Maatwebsite\Excel\Facades\Excel;
       use App\Exports\UsersExport;
-  
+
       public function export()
       {
           return Excel::download(new UsersExport, 'users.xlsx');
       }
       ```
-      
+
 ## Design rules
 - Use `variant="ghost"` for inline buttons.
 - Use `text-right` for the actions column.
@@ -221,7 +239,7 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
 - **Default language:** da
 - Always wrap display text in `{{ __('...') }}` — in Blade, Livewire, and PHP.
 - Add new strings to `resources/lang/da.json` automatically when new UI text is introduced.
-- **Model fields:**  
+- **Model fields:**
   All fields like `name`, `description`, `title`, `content`, etc. must be translatable using a JSON or table-based translation system (e.g., `spatie/laravel-translatable`).
 
 ## Performance/Queues
@@ -233,7 +251,7 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
 - Browser/live reload issues typically resolve with `npm run dev` restart; Vite manifest errors usually mean a missing build.
 
 ## CI and Misc
-- GitHub workflows: see `.github/workflows/lint.yml` for code style checks.  
+- GitHub workflows: see `.github/workflows/lint.yml` for code style checks.
   If you add a tests workflow, create `.github/workflows/tests.yml` and match its PHP and dependency matrix accordingly.
 
 ## Operational Notes for Contributors

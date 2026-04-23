@@ -163,10 +163,28 @@ They assume familiarity with Laravel and PHP ecosystems and focus on what is uni
                     <x-flowbite.table.body.cell>{{ $user->email }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $user->role?->name }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $user->tenant?->name }}</x-flowbite.table.body.cell>
-                    <x-flowbite.table.body.cell class="text-right space-x-2">
-                            <flux:button icon="eye" tag="a" href="{{ route('users.show', $user) }}" variant="ghost" />
-                            <flux:button icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}" variant="ghost" />
-                            <flux:button icon="trash" wire:click="delete({{ $user->id }})" variant="ghost" />
+                    <x-flowbite.table.body.cell class="text-right">
+                        <div class="flex justify-end items-center gap-2">
+                            {{-- Primary actions visible on desktop --}}
+                            <div class="hidden sm:flex items-center gap-2">
+                                <flux:button icon="eye" tag="a" href="{{ route('users.show', $user) }}" variant="ghost" />
+                                <flux:button icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}" variant="ghost" />
+                            </div>
+
+                            {{-- All actions in dropdown for mobile, and secondary actions for desktop --}}
+                            <flux:dropdown align="end" aria-label="{{ __('Actions') }}">
+                                <flux:button icon="ellipsis-horizontal" variant="ghost" />
+
+                                <flux:menu>
+                                    <div class="sm:hidden">
+                                        <flux:menu.item icon="eye" tag="a" href="{{ route('users.show', $user) }}">{{ __('Show') }}</flux:menu.item>
+                                        <flux:menu.item icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}">{{ __('Edit') }}</flux:menu.item>
+                                        <flux:menu.separator />
+                                    </div>
+                                    <flux:menu.item icon="trash" wire:click="delete({{ $user->id }})" variant="danger">{{ __('Delete') }}</flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
+                        </div>
                     </x-flowbite.table.body.cell>
                 </x-flowbite.table.body.row>
             @empty

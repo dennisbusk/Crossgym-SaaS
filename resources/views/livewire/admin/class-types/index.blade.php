@@ -30,10 +30,26 @@
                 @forelse ($classTypes as $type)
                     <x-flowbite.table.body.row>
                         <x-flowbite.table.body.cell>{{ $type->getTranslation('name', app()->getLocale()) }}</x-flowbite.table.body.cell>
-                        <x-flowbite.table.body.cell class="text-right space-x-2">
-                            <flux:button icon="eye" tag="a" href="{{ route('class-types.show', $type) }}" variant="ghost" />
-                            <flux:button icon="pencil-square" tag="a" href="{{ route('class-types.edit', $type) }}" variant="ghost" />
-                            <flux:button icon="trash" wire:click="delete({{ $type->id }})" variant="ghost" />
+                        <x-flowbite.table.body.cell class="text-right">
+                            <div class="flex justify-end items-center gap-2">
+                                <div class="hidden sm:flex items-center gap-2">
+                                    <flux:button icon="eye" tag="a" href="{{ route('class-types.show', $type) }}" variant="ghost" />
+                                    <flux:button icon="pencil-square" tag="a" href="{{ route('class-types.edit', $type) }}" variant="ghost" />
+                                </div>
+
+                                <flux:dropdown align="end" aria-label="{{ __('Actions') }}">
+                                    <flux:button icon="ellipsis-horizontal" variant="ghost" />
+
+                                    <flux:menu>
+                                        <div class="sm:hidden">
+                                            <flux:menu.item icon="eye" tag="a" href="{{ route('class-types.show', $type) }}">{{ __('Show') }}</flux:menu.item>
+                                            <flux:menu.item icon="pencil-square" tag="a" href="{{ route('class-types.edit', $type) }}">{{ __('Edit') }}</flux:menu.item>
+                                            <flux:menu.separator />
+                                        </div>
+                                        <flux:menu.item icon="trash" wire:click="delete({{ $type->id }})" variant="danger">{{ __('Delete') }}</flux:menu.item>
+                                    </flux:menu>
+                                </flux:dropdown>
+                            </div>
                         </x-flowbite.table.body.cell>
                     </x-flowbite.table.body.row>
                 @empty

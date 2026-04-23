@@ -31,10 +31,26 @@
                             </div>
                         </x-flowbite.table.body.cell>
                         <x-flowbite.table.body.cell>{{ $color->classes_count }}</x-flowbite.table.body.cell>
-                        <x-flowbite.table.body.cell class="text-right space-x-2">
-                            <flux:button icon="arrow-path" wire:click="openMoveModal({{ $color->id }})" variant="ghost" :title="__('Move classes to another color')" />
-                            <flux:button icon="pencil-square" wire:click="edit({{ $color->id }})" variant="ghost" :title="__('Edit')" />
-                            <flux:button icon="trash" wire:click="confirmDelete({{ $color->id }})" variant="ghost" :title="__('Delete')" />
+                        <x-flowbite.table.body.cell class="text-right">
+                            <div class="flex justify-end items-center gap-2">
+                                <div class="hidden sm:flex items-center gap-2">
+                                    <flux:button icon="arrow-path" wire:click="openMoveModal({{ $color->id }})" variant="ghost" :title="__('Move classes to another color')" />
+                                    <flux:button icon="pencil-square" wire:click="edit({{ $color->id }})" variant="ghost" :title="__('Edit')" />
+                                </div>
+
+                                <flux:dropdown align="end" aria-label="{{ __('Actions') }}">
+                                    <flux:button icon="ellipsis-horizontal" variant="ghost" />
+
+                                    <flux:menu>
+                                        <div class="sm:hidden">
+                                            <flux:menu.item icon="arrow-path" wire:click="openMoveModal({{ $color->id }})">{{ __('Move') }}</flux:menu.item>
+                                            <flux:menu.item icon="pencil-square" wire:click="edit({{ $color->id }})">{{ __('Edit') }}</flux:menu.item>
+                                            <flux:menu.separator />
+                                        </div>
+                                        <flux:menu.item icon="trash" wire:click="confirmDelete({{ $color->id }})" variant="danger">{{ __('Delete') }}</flux:menu.item>
+                                    </flux:menu>
+                                </flux:dropdown>
+                            </div>
                         </x-flowbite.table.body.cell>
                     </x-flowbite.table.body.row>
                 @empty

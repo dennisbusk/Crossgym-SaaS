@@ -20,7 +20,7 @@
             </a>
 
             <flux:navbar class="-mb-px max-lg:hidden">
-                <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate width="24" height="24">
                     {{ __('Dashboard') }}
                 </flux:navbar.item>
             </flux:navbar>
@@ -28,6 +28,19 @@
             <flux:spacer />
 
             <flux:navbar class="me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
+                <div x-data="{ canInstall: false }"
+                     @pwa-installable.window="canInstall = true"
+                     @pwa-installed.window="canInstall = false"
+                     x-show="canInstall"
+                     class="flex items-center">
+                    <flux:button icon="arrow-down-tray"
+                                 variant="ghost"
+                                 class="h-10!"
+                                 @click="installPwa()"
+                                 aria-label="{{ __('Install App') }}">
+                        <span class="max-sm:hidden" id="pwa-install-label">{{ __('Install') }}</span>
+                    </flux:button>
+                </div>
                 <x-theme-toggle />
 
 {{--                <flux:tooltip :content="__('Search')" position="bottom">--}}
@@ -125,8 +138,21 @@
             </div>
 
             <flux:navlist variant="outline">
+                <div x-data="{ canInstall: false }"
+                     @pwa-installable.window="canInstall = true"
+                     @pwa-installed.window="canInstall = false"
+                     x-show="canInstall"
+                     class="px-2 mb-4">
+                    <flux:button icon="arrow-down-tray"
+                                 variant="outline"
+                                 class="w-full justify-start"
+                                 @click="installPwa()"
+                                 aria-label="{{ __('Install App') }}">
+                        {{ __('Install App') }}
+                    </flux:button>
+                </div>
                 <flux:navlist.group :heading="__('Platform')">
-                    <flux:navlist.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <flux:navlist.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate width="24" height="24">
                       {{ __('Dashboard') }}
                     </flux:navlist.item>
                 </flux:navlist.group>

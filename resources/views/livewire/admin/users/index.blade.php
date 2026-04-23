@@ -3,10 +3,10 @@
         <h1 class="text-2xl font-semibold">{{ __('Users') }}</h1>
         <div class="flex items-center gap-2">
             <flux:button class="hover:cursor-pointer" wire:click="export" variant="ghost" icon="document-arrow-down" wire:loading.attr="disabled">
-                {{ __('Export') }}
+                <span class="hidden sm:inline">{{ __('Export') }}</span>
             </flux:button>
             <flux:button tag="a" href="{{ route('users.create') }}" variant="ghost" icon="plus">
-                {{ __('New User') }}
+                <span class="hidden sm:inline">{{ __('New User') }}</span>
             </flux:button>
         </div>
     </div>
@@ -64,15 +64,33 @@
                     <x-flowbite.table.body.cell>{{ $user->subscription?->plan->name ?? __('No subscription') }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $user->subscription?->status ?? '' }}</x-flowbite.table.body.cell>
                     <x-flowbite.table.body.cell>{{ $user->last_check_in_at?->diffForHumans() ?? __('Never') }}</x-flowbite.table.body.cell>
-                    <x-flowbite.table.body.cell class="text-right space-x-2">
-                        <flux:button icon="check-circle" wire:click="checkIn({{ $user->id }})" variant="ghost" :title="__('Check-in')" />
-                        <flux:button icon="eye" tag="a" href="{{ route('users.show', $user) }}" variant="ghost" />
-                        <flux:button icon="lock-closed" tag="a" href="{{ route('users.permissions', $user) }}" variant="ghost" />
-                        @if (function_exists('can_impersonate') && function_exists('can_be_impersonated') && can_impersonate() && can_be_impersonated($user))
-                            <flux:button icon="lock-open" tag="a" href="{{ route('impersonate', $user->id) }}" variant="ghost" :label="__('Impersonate')" />
-                        @endif
-                        <flux:button icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}" variant="ghost" />
-                        <flux:button icon="trash" wire:click="delete({{ $user->id }})" variant="ghost" />
+                    <x-flowbite.table.body.cell class="text-right">
+                        <div class="flex justify-end items-center gap-2">
+                            <div class="hidden sm:flex items-center gap-2">
+                                <flux:button icon="check-circle" wire:click="checkIn({{ $user->id }})" variant="ghost" :title="__('Check-in')" />
+                                <flux:button icon="eye" tag="a" href="{{ route('users.show', $user) }}" variant="ghost" />
+                                <flux:button icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}" variant="ghost" />
+                            </div>
+
+                            <flux:dropdown align="end" aria-label="{{ __('Actions') }}">
+                                <flux:button icon="ellipsis-horizontal" variant="ghost" />
+
+                                <flux:menu>
+                                    <div class="sm:hidden">
+                                        <flux:menu.item icon="check-circle" wire:click="checkIn({{ $user->id }})">{{ __('Check-in') }}</flux:menu.item>
+                                        <flux:menu.item icon="eye" tag="a" href="{{ route('users.show', $user) }}">{{ __('Show') }}</flux:menu.item>
+                                        <flux:menu.item icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}">{{ __('Edit') }}</flux:menu.item>
+                                        <flux:menu.separator />
+                                    </div>
+                                    <flux:menu.item icon="lock-closed" tag="a" href="{{ route('users.permissions', $user) }}">{{ __('Permissions') }}</flux:menu.item>
+                                    @if (function_exists('can_impersonate') && function_exists('can_be_impersonated') && can_impersonate() && can_be_impersonated($user))
+                                        <flux:menu.item icon="lock-open" tag="a" href="{{ route('impersonate', $user->id) }}">{{ __('Impersonate') }}</flux:menu.item>
+                                    @endif
+                                    <flux:menu.separator />
+                                    <flux:menu.item icon="trash" wire:click="delete({{ $user->id }})" variant="danger">{{ __('Delete') }}</flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
+                        </div>
                     </x-flowbite.table.body.cell>
                 </x-flowbite.table.body.row>
             @empty

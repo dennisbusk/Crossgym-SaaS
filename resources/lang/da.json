@@ -120,6 +120,8 @@
   "delete": "slet",
   "restore": "gendan",
   "forceDelete": "slet permanent",
+  "Install App": "Installer app",
+  "Install": "Installer",
   "assign": "tildel",
   "unassign": "fjern tildeling",
   "manage": "administrer",

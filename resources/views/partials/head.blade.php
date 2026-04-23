@@ -25,6 +25,35 @@
             navigator.serviceWorker.register('/sw.js');
         });
     }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Dispatch custom event to notify Livewire/Alpine
+        window.dispatchEvent(new CustomEvent('pwa-installable'));
+    });
+
+    window.addEventListener('appinstalled', (event) => {
+        // Clear the deferredPrompt so it can be garbage collected
+        deferredPrompt = null;
+        console.log('PWA was installed');
+        window.dispatchEvent(new CustomEvent('pwa-installed'));
+    });
+
+    async function installPwa() {
+        if (!deferredPrompt) return;
+        // Show the install prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        // Optionally, send analytics event with outcome of user choice
+        console.log(`User response to the install prompt: ${outcome}`);
+        // We've used the prompt, and can't use it again, throw it away
+        deferredPrompt = null;
+    }
 </script>
 
 <style>

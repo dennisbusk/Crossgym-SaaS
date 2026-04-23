@@ -6,10 +6,10 @@
         <div class="p-4 flex w-full justify-end items-center">
             <div class="flex items-center gap-2 justify-self-end">
                 <flux:button class="hover:cursor-pointer" wire:click="export" variant="ghost" icon="document-arrow-down" wire:loading.attr="disabled">
-                    {{ __('Export') }}
+                    <span class="hidden sm:inline">{{ __('Export') }}</span>
                 </flux:button>
                 <flux:button icon="plus" href="{{ route('workout-logs.create') }}" variant="ghost" tag="a">
-                    {{ __('New Entry') }}
+                    <span class="hidden sm:inline">{{ __('New Entry') }}</span>
                 </flux:button>
             </div>
         </div>
@@ -58,10 +58,26 @@
                                 @endif
                             </div>
                         </x-flowbite.table.body.cell>
-                        <x-flowbite.table.body.cell class="text-right space-x-2">
-                            <flux:button icon="eye" tag="a" href="{{ route('workout-logs.show', $log) }}" variant="ghost" />
-                            <flux:button icon="pencil-square" tag="a" href="{{ route('workout-logs.edit', $log) }}" variant="ghost" />
-                            <flux:button icon="trash" wire:click="delete({{ $log->id }})" variant="ghost" wire:confirm="{{ __('Are you sure?') }}" />
+                        <x-flowbite.table.body.cell class="text-right">
+                            <div class="flex justify-end items-center gap-2">
+                                <div class="hidden sm:flex items-center gap-2">
+                                    <flux:button icon="eye" tag="a" href="{{ route('workout-logs.show', $log) }}" variant="ghost" />
+                                    <flux:button icon="pencil-square" tag="a" href="{{ route('workout-logs.edit', $log) }}" variant="ghost" />
+                                </div>
+
+                                <flux:dropdown align="end" aria-label="{{ __('Actions') }}">
+                                    <flux:button icon="ellipsis-horizontal" variant="ghost" />
+
+                                    <flux:menu>
+                                        <div class="sm:hidden">
+                                            <flux:menu.item icon="eye" tag="a" href="{{ route('workout-logs.show', $log) }}">{{ __('Show') }}</flux:menu.item>
+                                            <flux:menu.item icon="pencil-square" tag="a" href="{{ route('workout-logs.edit', $log) }}">{{ __('Edit') }}</flux:menu.item>
+                                            <flux:menu.separator />
+                                        </div>
+                                        <flux:menu.item icon="trash" wire:click="delete({{ $log->id }})" variant="danger" wire:confirm="{{ __('Are you sure?') }}">{{ __('Delete') }}</flux:menu.item>
+                                    </flux:menu>
+                                </flux:dropdown>
+                            </div>
                         </x-flowbite.table.body.cell>
                     </x-flowbite.table.body.row>
                 @empty

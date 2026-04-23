@@ -23,6 +23,12 @@
         'mini' => 2.25,
         'micro' => 2.5,
     };
+    $widthHeight = match ($variant) {
+        'outline' => 24,
+        'solid' => 24,
+        'mini' => 20,
+        'micro' => 16,
+    };
 @endphp
 
 <svg
@@ -37,6 +43,8 @@
     stroke-linejoin="round"
     aria-hidden="true"
     data-slot="icon"
+    width="{{ $widthHeight }}"
+    height="{{ $widthHeight }}"
 >
     <rect width="7" height="7" x="3" y="3" rx="1" />
     <rect width="7" height="7" x="14" y="3" rx="1" />

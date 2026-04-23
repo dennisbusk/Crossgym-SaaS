@@ -37,7 +37,7 @@ class PwaTest extends TestCase
         $tenant = Tenant::factory()->create([
             'domain' => 'test.localhost',
             'app_name' => 'Test App',
-            'theme_color' => '#123456'
+            'theme_color' => '#123456',
         ]);
 
         // Simulating the IdentifyTenant middleware behavior or helper
@@ -64,5 +64,28 @@ class PwaTest extends TestCase
         $content = file_get_contents($path);
         $this->assertStringContainsString('self.addEventListener(\'install\'', $content);
         $this->assertStringContainsString('manifest.json', $content);
+    }
+
+    public function test_head_contains_pwa_install_logic()
+    {
+        $user = \App\Models\User::factory()->create();
+        $this->actingAs($user)
+            ->get('/workout-logs')
+            ->assertStatus(200)
+            ->assertSee('let deferredPrompt;', false)
+            ->assertSee('window.addEventListener(\'beforeinstallprompt\'', false)
+            ->assertSee('function installPwa()', false);
+    }
+
+    public function test_header_contains_install_button_markup()
+    {
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)
+            ->get('/workout-logs');
+
+        $response->assertStatus(200);
+        $response->assertSee('pwa-installable', false);
+        $response->assertSee('installPwa', false);
+        $response->assertSee('pwa-install-label', false);
     }
 }
