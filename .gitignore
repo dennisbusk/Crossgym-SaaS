@@ -51,3 +51,4 @@ Thumbs.db
 .env
 
 bootstrap/cache/.
+/public/build/
