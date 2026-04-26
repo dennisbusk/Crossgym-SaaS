@@ -9,6 +9,15 @@ use App\Models\User;
 
 class AICoachSettingsPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     public function viewAny(User $user): bool
     {
         return $user->hasPermission('AICoachSettings', 'viewAny');
@@ -16,7 +25,11 @@ class AICoachSettingsPolicy
 
     public function view(User $user, AICoachSettings $settings): bool
     {
-        return $user->hasPermission('AICoachSettings', 'view') && $user->tenant_id === $settings->tenant_id;
+        if ($user->tenant_id !== $settings->tenant_id) {
+            return false;
+        }
+
+        return $user->hasPermission('AICoachSettings', 'view');
     }
 
     public function create(User $user): bool
@@ -26,11 +39,19 @@ class AICoachSettingsPolicy
 
     public function update(User $user, AICoachSettings $settings): bool
     {
-        return $user->hasPermission('AICoachSettings', 'update') && $user->tenant_id === $settings->tenant_id;
+        if ($user->tenant_id !== $settings->tenant_id) {
+            return false;
+        }
+
+        return $user->hasPermission('AICoachSettings', 'update');
     }
 
     public function delete(User $user, AICoachSettings $settings): bool
     {
-        return $user->hasPermission('AICoachSettings', 'delete') && $user->tenant_id === $settings->tenant_id;
+        if ($user->tenant_id !== $settings->tenant_id) {
+            return false;
+        }
+
+        return $user->hasPermission('AICoachSettings', 'delete');
     }
 }

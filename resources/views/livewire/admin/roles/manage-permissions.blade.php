@@ -1,7 +1,18 @@
 <div class="space-y-6">
   <div class="flex items-center justify-between">
     <h2 class="text-xl font-bold">{{ __('Manage Permissions for Role:') }} {{ $role->name }}</h2>
-    <div class="flex items-center gap-2" x-data>
+    <div class="flex items-center gap-4" x-data>
+      <div class="flex items-center gap-2">
+        <flux:select wire:model="copyFromRoleId" placeholder="{{ __('Copy from role...') }}">
+          @foreach (\App\Models\Role::where('id', '!=', $role->id)->get() as $otherRole)
+            <flux:select.option value="{{ $otherRole->id }}">{{ $otherRole->name }}</flux:select.option>
+          @endforeach
+        </flux:select>
+        <flux:button wire:click="copyPermissionsFromRole" variant="outline" icon="arrow-path">
+          {{ __('Copy') }}
+        </flux:button>
+      </div>
+
       <flux:button wire:click="syncUsersForRole" variant="primary">
         {{ __('Sync all users with this role') }}
       </flux:button>

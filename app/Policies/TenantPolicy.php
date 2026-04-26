@@ -7,6 +7,15 @@ use App\Models\User;
 
 class TenantPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Se en liste over alle centre (tenants).
      * Eksempel: /admin/tenants
@@ -21,6 +30,10 @@ class TenantPolicy
      */
     public function view(User $user, Tenant $tenant): bool
     {
+        if ($user->tenant_id !== $tenant->id) {
+            return false;
+        }
+
         return $user->hasPermission('Tenant', 'view');
     }
 
@@ -39,6 +52,10 @@ class TenantPolicy
      */
     public function update(User $user, Tenant $tenant): bool
     {
+        if ($user->tenant_id !== $tenant->id) {
+            return false;
+        }
+
         return $user->hasPermission('Tenant', 'update');
     }
 
@@ -47,6 +64,10 @@ class TenantPolicy
      */
     public function delete(User $user, Tenant $tenant): bool
     {
+        if ($user->tenant_id !== $tenant->id) {
+            return false;
+        }
+
         return $user->hasPermission('Tenant', 'delete');
     }
 }

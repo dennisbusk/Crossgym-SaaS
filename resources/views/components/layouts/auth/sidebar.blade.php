@@ -18,7 +18,20 @@
         <a href="{{ route('home') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
             <x-app-logo/>
         </a>
-        <x-theme-toggle/>
+        <div class="flex items-center gap-2">
+            <div x-data="{ canInstall: false }"
+                 @pwa-installable.window="canInstall = true"
+                 @pwa-installed.window="canInstall = false"
+                 x-show="canInstall">
+                <flux:button icon="arrow-down-tray"
+                             variant="ghost"
+                             @click="installPwa()"
+                             aria-label="{{ __('Install App') }}">
+                    <span class="max-sm:hidden" id="pwa-install-label">{{ __('Install') }}</span>
+                </flux:button>
+            </div>
+            <x-theme-toggle/>
+        </div>
     </div>
     @if(function_exists('hasRole') && hasRole('superadmin'))
         @livewire('components.tenant-switcher')
@@ -128,6 +141,27 @@
 
     <flux:spacer/>
 
+    <div x-data="{ canInstall: false }"
+         @pwa-installable.window="canInstall = true"
+         @pwa-installed.window="canInstall = false"
+         x-show="canInstall"
+         class="lg:hidden px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-t border-zinc-200 dark:border-zinc-700">
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-white dark:bg-zinc-700 rounded-lg shadow-sm">
+                    <x-app-logo class="size-8" />
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ __('Add to Home Screen') }}</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Install for a better experience') }}</p>
+                </div>
+            </div>
+            <flux:button variant="primary" size="sm" @click="installPwa()">
+                {{ __('Install') }}
+            </flux:button>
+        </div>
+    </div>
+
     <!-- Desktop User Menu -->
     <flux:dropdown class="hidden lg:block" position="bottom" align="start">
         <flux:profile
@@ -180,6 +214,17 @@
 
     <flux:spacer/>
 
+    <div x-data="{ canInstall: false }"
+         @pwa-installable.window="canInstall = true"
+         @pwa-installed.window="canInstall = false"
+         x-show="canInstall"
+         class="flex items-center me-2">
+        <flux:button icon="arrow-down-tray"
+                     variant="ghost"
+                     @click="installPwa()"
+                     aria-label="{{ __('Install App') }}" />
+    </div>
+
     <flux:dropdown position="top" align="end">
         <flux:profile
             :initials="auth()->user()->initials()"
@@ -228,7 +273,58 @@
 
 @fluxScripts
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-@stack('scripts')
+    @stack('scripts')
+
+    <!-- Global Toast Notifications -->
+    <div
+        x-data="{
+            notifications: [],
+            add(e) {
+                const id = Date.now();
+                const content = typeof e.detail === 'string' ? e.detail : (e.detail.message || e.detail[0]?.message || 'Success');
+                const type = e.detail.type || 'success';
+
+                this.notifications.push({ id, content, type });
+                setTimeout(() => this.remove(id), 5000);
+            },
+            remove(id) {
+                this.notifications = this.notifications.filter(n => n.id !== id);
+            }
+        }"
+        @notify.window="add($event)"
+        class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"
+    >
+        <template x-for="notification in notifications" :key="notification.id">
+            <div
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-x-8"
+                x-transition:enter-end="opacity-100 transform translate-x-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform translate-x-0"
+                x-transition:leave-end="opacity-0 transform translate-x-8"
+                class="pointer-events-auto p-4 rounded-lg shadow-lg border flex items-center gap-3 min-w-[300px] max-w-md"
+                :class="{
+                    'bg-green-100 border-green-200 text-green-800 dark:bg-green-900 dark:border-green-800 dark:text-green-100': notification.type === 'success',
+                    'bg-red-100 border-red-200 text-red-800 dark:bg-red-900 dark:border-red-800 dark:text-red-100': notification.type === 'error',
+                    'bg-blue-100 border-blue-200 text-blue-800 dark:bg-blue-900 dark:border-blue-800 dark:text-blue-100': notification.type === 'info'
+                }"
+            >
+                <div x-show="notification.type === 'success'" class="shrink-0 text-green-500">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                </div>
+                <div x-show="notification.type === 'error'" class="shrink-0 text-red-500">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                </div>
+                <div x-show="notification.type === 'info'" class="shrink-0 text-blue-500">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>
+                </div>
+                <div class="text-sm font-medium" x-text="notification.content"></div>
+                <button @click="remove(notification.id)" class="ml-auto shrink-0 hover:opacity-75">
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+        </template>
+    </div>
 
 </body>
 </html>

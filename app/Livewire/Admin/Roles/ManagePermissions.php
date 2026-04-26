@@ -12,6 +12,8 @@ class ManagePermissions extends Component
 {
     public Role $role;
 
+    public ?int $copyFromRoleId = null;
+
     /**
      * Grouped permissions data structure used by the view.
      *
@@ -65,6 +67,8 @@ class ManagePermissions extends Component
         $this->role->unsetRelation('permissions');
         $this->role->load('permissions');
         $this->loadPermissions();
+
+        $this->dispatch('notify', message: __('Permissions updated.'));
     }
 
     public function syncUsersForRole(): void
@@ -73,7 +77,29 @@ class ManagePermissions extends Component
         foreach ($this->role->users as $user) {
             $user->syncPermissionsFromRole($this->role);
         }
-        session()->flash('status', __('Users synced to role permissions.'));
+        $this->dispatch('notify', message: __('Users synced to role permissions.'));
+    }
+
+    public function copyPermissionsFromRole(): void
+    {
+        if (! $this->copyFromRoleId) {
+            return;
+        }
+
+        $sourceRole = Role::find($this->copyFromRoleId);
+
+        if (! $sourceRole) {
+            return;
+        }
+
+        $permissionIds = $sourceRole->permissions()->pluck('permissions.id')->toArray();
+        $this->role->permissions()->sync($permissionIds);
+
+        $this->role->unsetRelation('permissions');
+        $this->role->load('permissions');
+        $this->loadPermissions();
+
+        $this->dispatch('notify', message: __('Permissions copied from :role.', ['role' => $sourceRole->name]));
     }
 
     //    public function toggleAll(string $model): void

@@ -9,6 +9,15 @@ use App\Models\User;
 
 class WorkoutLogPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     public function viewAny(User $user): bool
     {
         return true;
@@ -16,6 +25,10 @@ class WorkoutLogPolicy
 
     public function view(User $user, WorkoutLog $workoutLog): bool
     {
+        if ($user->tenant_id !== $workoutLog->tenant_id && $user->id !== $workoutLog->user_id) {
+            return false;
+        }
+
         return $user->id === $workoutLog->user_id || $user->hasPermission('WorkoutLog', 'viewAny');
     }
 

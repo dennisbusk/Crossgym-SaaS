@@ -8,6 +8,15 @@ use App\Models\User;
 
 class CalendarPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Se kalenderoversigten over alle hold.
      * Eksempel: /admin/calendar

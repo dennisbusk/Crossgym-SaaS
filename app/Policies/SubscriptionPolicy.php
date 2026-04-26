@@ -9,6 +9,15 @@ use App\Models\User;
 
 class SubscriptionPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Se en liste over alle abonnementer.
      * Eksempel: /admin/subscriptions
@@ -23,7 +32,11 @@ class SubscriptionPolicy
      */
     public function view(User $user, Subscription $subscription): bool
     {
-        return $user->hasPermission('Subscription', 'view');
+        if ($user->tenant_id !== $subscription->tenant_id && $user->id !== $subscription->user_id) {
+            return false;
+        }
+
+        return $user->hasPermission('Subscription', 'view') || $user->id === $subscription->user_id;
     }
 
     /**
@@ -39,6 +52,10 @@ class SubscriptionPolicy
      */
     public function update(User $user, Subscription $subscription): bool
     {
+        if ($user->tenant_id !== $subscription->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('Subscription', 'update');
     }
 
@@ -47,6 +64,10 @@ class SubscriptionPolicy
      */
     public function delete(User $user, Subscription $subscription): bool
     {
+        if ($user->tenant_id !== $subscription->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('Subscription', 'delete');
     }
 }

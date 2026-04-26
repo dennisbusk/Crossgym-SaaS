@@ -9,6 +9,15 @@ use App\Models\User;
 
 class ClassTypePolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Se en liste over alle holdtyper.
      * Eksempel: /admin/class-types
@@ -23,6 +32,10 @@ class ClassTypePolicy
      */
     public function view(User $user, ClassType $classType): bool
     {
+        if ($user->tenant_id !== $classType->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('ClassType', 'view');
     }
 
@@ -41,6 +54,10 @@ class ClassTypePolicy
      */
     public function update(User $user, ClassType $classType): bool
     {
+        if ($user->tenant_id !== $classType->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('ClassType', 'update');
     }
 
@@ -49,6 +66,10 @@ class ClassTypePolicy
      */
     public function delete(User $user, ClassType $classType): bool
     {
+        if ($user->tenant_id !== $classType->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('ClassType', 'delete');
     }
 }

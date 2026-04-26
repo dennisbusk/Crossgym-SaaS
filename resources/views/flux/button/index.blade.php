@@ -92,6 +92,7 @@ $classes = Flux::classes()
         'danger' => 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500',
         'ghost' => 'bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15',
         'subtle' => 'bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15',
+        default => '',
     })
     ->add(match ($variant) { // Text color...
         'primary' => 'text-[var(--color-accent-foreground)]',
@@ -100,6 +101,7 @@ $classes = Flux::classes()
         'danger' => 'text-white',
         'ghost' => 'text-zinc-800 dark:text-white',
         'subtle' => 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white',
+        default => '',
     })
     ->add(match ($variant) { // Border color...
         'primary' => 'border border-black/10 dark:border-0',
@@ -123,6 +125,7 @@ $classes = Flux::classes()
         'filled' => '[[data-flux-button-group]_&]:border-e [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-0 [[data-flux-button-group]_&]:border-zinc-200/80 dark:[[data-flux-button-group]_&]:border-zinc-900/50',
         'danger' => '[[data-flux-button-group]_&]:border-e [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-0 [[data-flux-button-group]_&]:border-red-600 dark:[[data-flux-button-group]_&]:border-red-900/25',
         'primary' => '[[data-flux-button-group]_&]:border-e-0 [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-[1px] dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-0 dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-s-[1px] [:is([data-flux-button-group]>&:not(:first-child),_[data-flux-button-group]_:not(:first-child)>&)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]',
+        default => '',
     })
     ->add($loading ? [ // Loading states...
         '*:transition-opacity',

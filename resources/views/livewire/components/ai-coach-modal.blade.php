@@ -2,7 +2,7 @@
     <div class="space-y-6">
         <flux:heading size="lg">{{ __('Generate WOD with AI Coach') }}</flux:heading>
 
-        @if($step === 'parameters')
+        @if(($this->step ?? null) === 'parameters')
             <form wire:submit="generate" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-2">{{ __('Intensity') }}</label>
@@ -51,9 +51,9 @@
                     <flux:input type="number" wire:model="duration" min="{{ $this->settings->duration_min ?? 5 }}" max="{{ $this->settings->duration_max ?? 90 }}" />
                 </div>
 
-                @if($error)
+                @if($this->error)
                     <div class="rounded-lg bg-red-50 dark:bg-red-900/20 p-3 text-red-700 dark:text-red-400 text-sm">
-                        {{ $error }}
+                        {{ $this->error }}
                     </div>
                 @endif
 
@@ -70,14 +70,14 @@
         @else
             <div class="space-y-4">
                 <div class="rounded-lg border p-4 min-h-[200px] bg-zinc-50 dark:bg-zinc-900 prose dark:prose-invert max-w-none">
-                    @if($wodHtml)
-                        {!! $wodHtml !!}
+                    @if($this->wodHtml)
+                        {!! $this->wodHtml !!}
                     @endif
                 </div>
 
-                @if($error)
+                @if($this->error)
                     <div class="rounded-lg bg-red-50 dark:bg-red-900/20 p-3 text-red-700 dark:text-red-400 text-sm">
-                        {{ $error }}
+                        {{ $this->error }}
                     </div>
                 @endif
 

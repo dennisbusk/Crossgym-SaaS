@@ -7,6 +7,15 @@ use App\Models\User as AuthUser;
 
 class UserPolicy
 {
+    public function before(AuthUser $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Se en liste over alle brugere i systemet.
      * Eksempel: /admin/users
@@ -22,7 +31,11 @@ class UserPolicy
      */
     public function view(AuthUser $user, User $model): bool
     {
-        return $user->hasPermission('User', 'view');
+        if ($user->tenant_id !== $model->tenant_id && $user->id !== $model->id) {
+            return false;
+        }
+
+        return $user->hasPermission('User', 'view') || $user->id === $model->id;
     }
 
     /**
@@ -40,7 +53,15 @@ class UserPolicy
      */
     public function update(AuthUser $user, User $model): bool
     {
-        return $user->hasPermission('User', 'update');
+        if ($user->tenant_id !== $model->tenant_id && $user->id !== $model->id) {
+            return false;
+        }
+
+        if ($user->hasPermission('User', 'update')) {
+            return true;
+        }
+
+        return $user->id === $model->id;
     }
 
     /**
@@ -48,6 +69,10 @@ class UserPolicy
      */
     public function delete(AuthUser $user, User $model): bool
     {
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('User', 'delete');
     }
 
@@ -56,6 +81,10 @@ class UserPolicy
      */
     public function impersonate(AuthUser $user, User $model): bool
     {
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('User', 'impersonate');
     }
 }

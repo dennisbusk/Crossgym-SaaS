@@ -9,6 +9,15 @@ use App\Models\User;
 
 class StripePolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     public function updateSubscription(User $user, Subscription $subscription): bool
     {
         return $this->isAdmin($user) || $user->hasPermission('Stripe', 'updateSubscription');

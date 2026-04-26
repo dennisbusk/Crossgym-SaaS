@@ -22,6 +22,7 @@ $resizeStyle = match ($resize) {
     'both' => 'resize: both',
     'horizontal' => 'resize: horizontal',
     'vertical' => 'resize: vertical',
+    default => 'resize: vertical',
 };
 @endphp
 

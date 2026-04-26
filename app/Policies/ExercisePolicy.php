@@ -9,6 +9,15 @@ use App\Models\User;
 
 class ExercisePolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Se en liste over alle øvelser i biblioteket.
      * Eksempel: /admin/exercises
@@ -31,6 +40,10 @@ class ExercisePolicy
      */
     public function update(User $user, Exercise $exercise): bool
     {
+        if ($exercise->tenant_id !== null && $user->tenant_id !== $exercise->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('Exercise', 'update');
     }
 
@@ -39,6 +52,10 @@ class ExercisePolicy
      */
     public function delete(User $user, Exercise $exercise): bool
     {
+        if ($exercise->tenant_id !== null && $user->tenant_id !== $exercise->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('Exercise', 'delete');
     }
 }

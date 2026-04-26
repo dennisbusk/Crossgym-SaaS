@@ -51,6 +51,9 @@
                             <x-flowbite.table.body.cell>{{ $user->name }}</x-flowbite.table.body.cell>
                             <x-flowbite.table.body.cell>{{ $user->email }}</x-flowbite.table.body.cell>
                             <x-flowbite.table.body.cell class="text-right space-x-2">
+                                @can('impersonate', $user)
+                                    <flux:button icon="identification" wire:click="impersonate({{ $user->id }})" variant="ghost" />
+                                @endcan
                                 <flux:button icon="eye" tag="a" href="{{ route('users.show', $user) }}" variant="ghost" />
                                 <flux:button icon="pencil-square" tag="a" href="{{ route('users.edit', $user) }}" variant="ghost" />
                             </x-flowbite.table.body.cell>

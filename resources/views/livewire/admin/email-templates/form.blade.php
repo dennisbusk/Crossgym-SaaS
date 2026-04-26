@@ -24,7 +24,7 @@
                     </flux:field>
 
                     <div class="flex justify-end space-x-2">
-                        <flux:button wire:click="generatePreview" variant="secondary">{{ __('Preview') }}</flux:button>
+                        <flux:button wire:click="generatePreview" variant="filled">{{ __('Preview') }}</flux:button>
                         <flux:button type="submit" variant="primary">{{ __('Save Template') }}</flux:button>
                     </div>
                 </form>
@@ -50,7 +50,7 @@
                         <flux:error name="testEmail" />
                     </flux:field>
 
-                    <flux:button wire:click="sendTestEmail" class="w-full" variant="secondary">{{ __('Send Test') }}</flux:button>
+                    <flux:button wire:click="sendTestEmail" class="w-full" variant="filled">{{ __('Send Test') }}</flux:button>
 
                     @if (session('test-status'))
                         <div class="mt-2 text-sm text-green-600">

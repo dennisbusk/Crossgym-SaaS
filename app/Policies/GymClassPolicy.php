@@ -9,6 +9,15 @@ use App\Models\User;
 
 class GymClassPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Se en liste over alle hold.
      * Eksempel: /admin/classes
@@ -24,6 +33,10 @@ class GymClassPolicy
      */
     public function view(User $user, GymClass $class): bool
     {
+        if ($user->tenant_id !== $class->tenant_id) {
+            return false;
+        }
+
         if ($user->hasPermission('GymClass', 'view')) {
             return true;
         }
@@ -54,11 +67,15 @@ class GymClassPolicy
      */
     public function update(User $user, GymClass $class): bool
     {
+        if ($user->tenant_id !== $class->tenant_id) {
+            return false;
+        }
+
         if (! $user->hasPermission('GymClass', 'update')) {
             return false;
         }
 
-        if ($user->role && in_array($user->role->slug, ['superadmin', 'administrator', 'admin'])) {
+        if ($user->role && in_array($user->role->slug, ['administrator', 'admin'])) {
             return true;
         }
 
@@ -74,11 +91,15 @@ class GymClassPolicy
      */
     public function delete(User $user, GymClass $class): bool
     {
+        if ($user->tenant_id !== $class->tenant_id) {
+            return false;
+        }
+
         if (! $user->hasPermission('GymClass', 'delete')) {
             return false;
         }
 
-        if ($user->role && in_array($user->role->slug, ['superadmin', 'administrator', 'admin'])) {
+        if ($user->role && in_array($user->role->slug, ['administrator', 'admin'])) {
             return true;
         }
 

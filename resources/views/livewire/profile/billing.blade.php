@@ -19,7 +19,7 @@
                             </div>
                             <div class="mt-4">
                                 @if($currentPlanId === $plan->stripe_price_id)
-                                    <flux:button class="w-full" disabled variant="secondary">{{ __('Your current choice') }}</flux:button>
+                                    <flux:button class="w-full" disabled variant="filled">{{ __('Your current choice') }}</flux:button>
                                 @else
                                     @if(tenant()->allow_member_billing_management)
                                         <flux:button class="w-full" wire:click="subscribe({{ $plan->id }})" variant="primary">{{ __('Select') }}</flux:button>

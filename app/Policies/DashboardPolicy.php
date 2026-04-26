@@ -9,6 +9,15 @@ use App\Models\User;
 
 class DashboardPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Giver adgang til at se kontrolpanelet.
      * Eksempel: /admin/dashboard

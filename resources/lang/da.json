@@ -548,5 +548,9 @@
   "Are you sure?": "Er du sikker?",
   "strength": "styrke",
   "cardio": "kondition",
-  "biometric": "biometri"
+  "biometric": "biometri",
+  "Copy from role...": "Kopier fra rolle...",
+  "Copy": "Kopier",
+  "Permissions copied from :role.": "Tilladelser kopieret fra :role.",
+  "Permissions updated.": "Tilladelser opdateret."
 }

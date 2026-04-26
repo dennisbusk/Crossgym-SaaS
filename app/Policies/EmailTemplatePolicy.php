@@ -7,6 +7,15 @@ use App\Models\User;
 
 class EmailTemplatePolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->role && $user->role->slug === 'superadmin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Determine whether the user can view any models.
      */
@@ -20,6 +29,10 @@ class EmailTemplatePolicy
      */
     public function view(User $user, EmailTemplate $emailTemplate): bool
     {
+        if ($emailTemplate->tenant_id !== null && $user->tenant_id !== $emailTemplate->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('EmailTemplate', 'view');
     }
 
@@ -36,6 +49,10 @@ class EmailTemplatePolicy
      */
     public function update(User $user, EmailTemplate $emailTemplate): bool
     {
+        if ($emailTemplate->tenant_id !== null && $user->tenant_id !== $emailTemplate->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('EmailTemplate', 'update');
     }
 
@@ -44,6 +61,10 @@ class EmailTemplatePolicy
      */
     public function delete(User $user, EmailTemplate $emailTemplate): bool
     {
+        if ($emailTemplate->tenant_id !== null && $user->tenant_id !== $emailTemplate->tenant_id) {
+            return false;
+        }
+
         return $user->hasPermission('EmailTemplate', 'delete');
     }
 }
