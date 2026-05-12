@@ -2,7 +2,7 @@
     <div class="space-y-6">
         <flux:heading size="lg">{{ __('Generate WOD with AI Coach') }}</flux:heading>
 
-        @if(($this->step ?? null) === 'parameters')
+        @if(($this->step ?? 'parameters') === 'parameters')
             <form wire:submit="generate" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-2">{{ __('Intensity') }}</label>

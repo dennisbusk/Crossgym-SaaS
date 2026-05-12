@@ -38,7 +38,7 @@
             <textarea wire:model.defer="description" class="mt-1 w-full rounded-md border px-3 py-2 min-h-[120px]"></textarea>
         </div>
 
-        @livewire('components.ai-coach-modal')
+        @livewire(\App\Livewire\Components\AICoachModal::class)
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
