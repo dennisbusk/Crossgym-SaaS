@@ -106,6 +106,12 @@ class ClassForm extends Component
         return $luminance > 0.5 ? '#000000' : '#ffffff';
     }
 
+    #[On('wod-accepted')]
+    public function updateDescription(string $html): void
+    {
+        $this->description = strip_tags(str_replace(['<br>', '<br />', '</p>'], "\n", $html));
+    }
+
     public function save()
     {
         $this->validate();
@@ -137,7 +143,7 @@ class ClassForm extends Component
     public function render()
     {
         return view('livewire.admin.classes.form', [
-            'trainers' => User::query()->whereHas('role', fn ($q) => $q->where('name', 'Trainer'))->get(),
+            'trainers' => User::query()->whereHas('role', fn ($q) => $q->whereIn('name', ['Trainer', 'Admin']))->get(),
             'classTypes' => ClassType::query()->latest()->get(),
             'colors' => \App\Models\Color::query()->latest()->get(),
         ]);

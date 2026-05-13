@@ -69,10 +69,19 @@
             </form>
         @else
             <div class="space-y-4">
-                <div class="rounded-lg border p-4 min-h-[200px] bg-zinc-50 dark:bg-zinc-900 prose dark:prose-invert max-w-none">
-                    @if($this->wodHtml)
-                        {!! $this->wodHtml !!}
-                    @endif
+                <div class="relative">
+                    <div class="rounded-lg border p-4 min-h-[200px] bg-zinc-50 dark:bg-zinc-900 prose dark:prose-invert max-w-none">
+                        @if($this->wodHtml)
+                            {!! $this->wodHtml !!}
+                        @endif
+                    </div>
+
+                    <div wire:loading wire:target="refine" class="absolute inset-0 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm flex items-center justify-center rounded-lg">
+                        <div class="flex flex-col items-center gap-3">
+                            <flux:icon.loading class="w-8 h-8 text-primary-600" />
+                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('Refining...') }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 @if($this->error)

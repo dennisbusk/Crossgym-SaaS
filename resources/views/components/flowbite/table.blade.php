@@ -1,10 +1,14 @@
-<table id="table" {{$attributes->merge(['class'=>'w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'])}}>
+@props(['useDataTables' => false])
+<table @if($useDataTables) id="table" @endif {{$attributes->merge(['class'=>'w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'])}}>
   {{$slot}}
 </table>
-@push('scripts')
+@if($useDataTables)
+@pushonce('scripts')
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
+@endpushonce
+@push('scripts')
   <script>
-  if (document.getElementById("table") && typeof simpleDatatables.DataTable !== 'undefined') {
+  if (document.getElementById("table") && typeof simpleDatatables !== 'undefined') {
   const dataTable = new simpleDatatables.DataTable("#table", {
   searchable: false,
   sortable: false,
@@ -17,3 +21,4 @@
   }
   </script>
   @endpush
+@endif

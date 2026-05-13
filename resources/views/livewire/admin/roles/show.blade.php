@@ -33,8 +33,8 @@
     <div class="space-y-4">
         <h2 class="text-xl font-semibold">{{ __('Users with this role') }}</h2>
 
-        <div class="relative overflow-x-auto">
-            <x-flowbite.table>
+        <div class="relative overflow-x-auto overflow-y-visible">
+            <x-flowbite.table :useDataTables="false">
                 <x-flowbite.table.head class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <x-flowbite.table.head.row>
                         <x-flowbite.table.head.cell>{{ __('ID') }}</x-flowbite.table.head.cell>

@@ -47,8 +47,8 @@
         <!-- Tidligere bookinger -->
         <div class="space-y-4">
             <h2 class="text-xl font-semibold">{{ __('Past bookings') }}</h2>
-            <div class="relative overflow-x-auto">
-                <x-flowbite.table>
+            <div class="relative overflow-x-auto overflow-y-visible">
+                <x-flowbite.table :useDataTables="false">
                     <x-flowbite.table.head>
                         <x-flowbite.table.head.row>
                             <x-flowbite.table.head.cell>{{ __('Class') }}</x-flowbite.table.head.cell>
@@ -82,8 +82,8 @@
         <!-- Fremtidige bookinger -->
         <div class="space-y-4">
             <h2 class="text-xl font-semibold">{{ __('Upcoming bookings') }}</h2>
-            <div class="relative overflow-x-auto">
-                <x-flowbite.table>
+            <div class="relative overflow-x-auto overflow-y-visible">
+                <x-flowbite.table :useDataTables="false">
                     <x-flowbite.table.head>
                         <x-flowbite.table.head.row>
                             <x-flowbite.table.head.cell>{{ __('Class') }}</x-flowbite.table.head.cell>

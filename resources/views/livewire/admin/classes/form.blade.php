@@ -35,10 +35,8 @@
                     </flux:button>
                 </span>
             </div>
-            <textarea wire:model.defer="description" class="mt-1 w-full rounded-md border px-3 py-2 min-h-[120px]"></textarea>
+            <textarea wire:model="description" class="mt-1 w-full rounded-md border px-3 py-2 min-h-[120px]"></textarea>
         </div>
-
-        @livewire(\App\Livewire\Components\AICoachModal::class)
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -117,4 +115,6 @@
             <a href="{{ route('classes.index') }}" class="inline-flex items-center rounded-md bg-yellow-600 px-3 py-2 hover:bg-yellow-800">{{ __('Cancel') }}</a>
         </div>
     </form>
+
+    @livewire(\App\Livewire\Components\AICoachModal::class)
 </div>

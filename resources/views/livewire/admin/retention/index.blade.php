@@ -7,10 +7,10 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="md:col-span-2 space-y-6">
-            <flux:card>
+            <flux:card class="overflow-y-visible">
                 <flux:heading size="lg" class="mb-4">{{ __('Inaktive medlemmer (over 14 dage)') }}</flux:heading>
 
-                <x-flowbite.table>
+                <x-flowbite.table :useDataTables="false">
                     <x-flowbite.table.head>
                         <x-flowbite.table.head.row>
                             <x-flowbite.table.head.sortable field="name" :$sortField :$sortDirection>{{ __('Name') }}</x-flowbite.table.head.sortable>

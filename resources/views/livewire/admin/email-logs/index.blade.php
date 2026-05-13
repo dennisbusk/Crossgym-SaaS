@@ -8,8 +8,8 @@
 
     <x-banners/>
 
-    <flux:card>
-        <x-flowbite.table>
+    <flux:card class="overflow-y-visible">
+        <x-flowbite.table :useDataTables="false">
             <x-flowbite.table.head>
                 <x-flowbite.table.head.row>
                     <x-flowbite.table.head.sortable field="sent_at" :$sortField :$sortDirection>{{ __('Sent At') }}</x-flowbite.table.head.sortable>
