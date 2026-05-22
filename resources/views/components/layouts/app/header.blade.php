@@ -28,7 +28,8 @@
             <flux:spacer />
 
             <flux:navbar class="me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
-                <div x-data="{ canInstall: false }"
+                <div x-data="{ canInstall: !!window.deferredPrompt }"
+                     x-init="if (window.deferredPrompt) canInstall = true"
                      @pwa-installable.window="canInstall = true"
                      @pwa-installed.window="canInstall = false"
                      x-show="canInstall"
@@ -138,7 +139,8 @@
             </div>
 
             <flux:navlist variant="outline">
-                <div x-data="{ canInstall: false }"
+                <div x-data="{ canInstall: !!window.deferredPrompt }"
+                     x-init="if (window.deferredPrompt) canInstall = true"
                      @pwa-installable.window="canInstall = true"
                      @pwa-installed.window="canInstall = false"
                      x-show="canInstall"

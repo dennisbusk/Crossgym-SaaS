@@ -72,7 +72,7 @@ class PwaTest extends TestCase
         $this->actingAs($user)
             ->get('/workout-logs')
             ->assertStatus(200)
-            ->assertSee('let deferredPrompt;', false)
+            ->assertSee('window.deferredPrompt = null;', false)
             ->assertSee('window.addEventListener(\'beforeinstallprompt\'', false)
             ->assertSee('function installPwa()', false);
     }

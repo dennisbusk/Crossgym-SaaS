@@ -134,6 +134,12 @@ Route::get('/manifest.json', function () {
                 'type' => $tenant && $tenant->icon_path ? 'image/'.pathinfo($tenant->icon_path, PATHINFO_EXTENSION) : 'image/svg+xml',
                 'purpose' => 'maskable',
             ],
+            [
+                'src' => '/apple-touch-icon.png',
+                'sizes' => '180x180',
+                'type' => 'image/png',
+                'purpose' => 'any',
+            ],
         ],
         'start_url' => '/',
         'display' => 'standalone',
