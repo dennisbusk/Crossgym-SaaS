@@ -17,9 +17,10 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Lab404\Impersonate\Models\Impersonate as ImpersonateTrait;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 #[ObservedBy([UserObserver::class])]
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
     use BelongsToTenant, HasFactory, ImpersonateTrait, Notifiable, TwoFactorAuthenticatable;
@@ -203,5 +204,25 @@ class User extends Authenticatable
     public function dashboardWidgets(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(UserDashboardWidget::class)->orderBy('order');
+    }
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

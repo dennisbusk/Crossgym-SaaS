@@ -1,0 +1,67 @@
+{
+	"info": {
+		"name": "CrossGym SaaS API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@crossgym.dk\",\n    \"password\": \"password\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{base_url}}/auth/login" }
+					}
+				},
+				{
+					"name": "Me",
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+						"url": { "raw": "{{base_url}}/auth/me" }
+					}
+				}
+			]
+		},
+		{
+			"name": "V1 Resources",
+			"item": [
+				{ "name": "Users", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/users" } } ] },
+				{ "name": "Tenants", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/tenants" } } ] },
+				{ "name": "Roles", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/roles" } } ] },
+				{ "name": "Gym Classes", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/gym-classes" } } ] },
+				{ "name": "Class Types", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/class-types" } } ] },
+				{ "name": "Exercises", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/exercises" } } ] },
+				{ "name": "Workout Logs", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/workout-logs" } } ] },
+				{ "name": "Check Ins", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/check-ins" } } ] },
+				{ "name": "Payments", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/payments" } } ] },
+				{ "name": "Plans", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/plans" } } ] },
+				{ "name": "Subscriptions", "item": [ { "name": "List", "request": { "method": "GET", "url": "{{base_url}}/v1/subscriptions" } } ] }
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"if (pm.response.code === 200 && pm.request.url.path.includes('login')) {",
+					"    var jsonData = pm.response.json();",
+					"    pm.environment.set(\"token\", jsonData.access_token);",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{ "key": "base_url", "value": "http://localhost:8000/api" },
+		{ "key": "token", "value": "" }
+	]
+}
