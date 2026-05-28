@@ -3,6 +3,8 @@
 use App\Http\Controllers\Stripe\StripeConnectController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\SuperadminController;
+use App\Livewire\Admin\Achievements\AchievementForm;
+use App\Livewire\Admin\Achievements\AchievementIndex;
 use App\Livewire\Admin\Classes\ClassForm;
 use App\Livewire\Admin\Classes\ClassIndex;
 use App\Livewire\Admin\Classes\ClassShow;
@@ -90,6 +92,9 @@ Route::middleware(['auth', 'terms.accepted'])->group(function () {
     Route::get('workout-logs/create', WorkoutLogForm::class)->name('workout-logs.create');
     Route::get('workout-logs/{workoutLog}', \App\Livewire\Profile\WorkoutLogShow::class)->name('workout-logs.show');
     Route::get('workout-logs/{workoutLog}/edit', WorkoutLogForm::class)->name('workout-logs.edit');
+
+    // Challenges
+    Route::get('challenges', \App\Livewire\Pages\Challenges\Index::class)->name('challenges.index');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -259,6 +264,13 @@ Route::middleware(['auth', 'terms.accepted'])->group(function () {
     // Colors Overview
     Route::middleware('can:viewAny,App\\Models\\Color')->group(function () {
         Route::get('/colors', ColorIndex::class)->name('colors.index');
+    });
+
+    // Achievements CRUD
+    Route::middleware('can:viewAny,App\\Models\\Achievement')->group(function () {
+        Route::get('/achievements', AchievementIndex::class)->name('achievements.index');
+        Route::get('/achievements/create', AchievementForm::class)->name('achievements.create')->can('create', \App\Models\Achievement::class);
+        Route::get('/achievements/{achievement}/edit', AchievementForm::class)->name('achievements.edit')->can('update', 'achievement');
     });
 
 });

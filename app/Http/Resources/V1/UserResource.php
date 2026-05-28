@@ -31,7 +31,9 @@ class UserResource extends JsonResource
             'joined_at' => $this->joined_at,
             'left_at' => $this->left_at,
             'is_approved_for_closed_classes' => $this->is_approved_for_closed_classes,
-            'image_url' => $this->image ? asset('storage/' . $this->image) : null,
+            'image_url' => $this->image ? asset('storage/'.$this->image) : null,
+            'xp' => $this->xp ?? 0,
+            'level' => $this->level ?? 1,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

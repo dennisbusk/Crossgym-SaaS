@@ -22,8 +22,7 @@ class SyncStripeSubscriptionStatus implements ShouldQueue
     public function __construct(
         public int $subscriptionId,
         public string $stripeSubscriptionId
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.
@@ -48,7 +47,7 @@ class SyncStripeSubscriptionStatus implements ShouldQueue
                 'cancel_at_period_end' => (bool) $stripeSub->cancel_at_period_end,
             ]);
         } catch (\Exception $e) {
-            Log::error("Kunne ikke synkronisere Stripe status for Subscription {$this->stripeSubscriptionId}: " . $e->getMessage());
+            Log::error("Kunne ikke synkronisere Stripe status for Subscription {$this->stripeSubscriptionId}: ".$e->getMessage());
         }
     }
 }

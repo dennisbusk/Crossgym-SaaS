@@ -22,8 +22,7 @@ class FetchStripePaymentIntent implements ShouldQueue
     public function __construct(
         public int $paymentId,
         public string $chargeId
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.
@@ -49,7 +48,7 @@ class FetchStripePaymentIntent implements ShouldQueue
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error("Kunne ikke hente Payment Intent for Charge {$this->chargeId}: " . $e->getMessage());
+            Log::error("Kunne ikke hente Payment Intent for Charge {$this->chargeId}: ".$e->getMessage());
         }
     }
 }

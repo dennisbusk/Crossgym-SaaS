@@ -45,12 +45,18 @@ class GymClassFactory extends Factory
             ['domain' => str_replace(['http://', 'https://'], '', config('app.url'))],
             ['name' => config('app.name', 'Crossgym Saas')]
         );
+
         $name = [
             'da' => fake()->sentence(3),
             'en' => fake()->sentence(3),
         ];
         $start = $this->nearestFifteen(fake()->dateTimeBetween('-2 month', '+12 months'));
         $end = (clone $start)->modify('+1 hour');
+
+        $trainerRole = Role::where('slug', 'trainer')->where('tenant_id', $tenant->id)->first();
+        $trainerId = $trainerRole
+            ? User::where('role_id', $trainerRole->id)->where('tenant_id', $tenant->id)->inRandomOrder()->value('id')
+            : null;
 
         return [
             'tenant_id' => $tenant->id,
@@ -59,12 +65,15 @@ class GymClassFactory extends Factory
                 'da' => fake()->paragraph(),
                 'en' => fake()->paragraph(),
             ],
-            'trainer_id' => User::where('role_id', Role::where('slug', 'trainer')->where('tenant_id', $tenant->id)->value('id'))->where('tenant_id', $tenant->id)->inRandomOrder()->value('id'),
-            'class_type_id' => ClassType::inRandomOrder()->value('id'),
+            'trainer_id' => $trainerId,
+            'class_type_id' => ClassType::where('tenant_id', $tenant->id)->inRandomOrder()->value('id') ?? ClassType::factory(['tenant_id' => $tenant->id]),
             'max_participants' => fake()->numberBetween(5, 30),
             'class_start' => $start,
             'class_end' => $end,
             'recurring_id' => null,
+            'featured' => fake()->boolean(20),
+            'all_day_event' => false,
+            'color_id' => \App\Models\Color::where('tenant_id', $tenant->id)->inRandomOrder()->value('id') ?? \App\Models\Color::factory(['tenant_id' => $tenant->id]),
         ];
     }
 

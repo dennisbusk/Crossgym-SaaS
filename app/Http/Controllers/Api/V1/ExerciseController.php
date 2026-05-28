@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Exercise;
 use App\Http\Resources\V1\ExerciseResource;
+use App\Models\Exercise;
 use Illuminate\Http\Request;
 
 class ExerciseController extends Controller
@@ -12,9 +12,28 @@ class ExerciseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $exercises = Exercise::paginate();
+        $query = Exercise::query();
+
+        if ($request->has('tenant_id')) {
+            $query->where('tenant_id', $request->tenant_id);
+        }
+
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->has('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('category', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        $exercises = $query->get();
+
         return ExerciseResource::collection($exercises);
     }
 

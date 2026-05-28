@@ -31,22 +31,96 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-t pt-4" x-data="{
+            weight: @entangle('weight').live,
+            reps: @entangle('reps').live,
+            sets: @entangle('sets').live,
+            distance: @entangle('distance').live,
+            duration: @entangle('duration_minutes').live
+        }">
             @if($category === 'strength')
-                <flux:input type="number" step="0.01" label="{{ __('Weight (kg)') }}" wire:model="weight" icon="scale" />
-                <flux:input type="number" label="{{ __('Reps') }}" wire:model="reps" icon="arrow-path" />
-                <flux:input type="number" label="{{ __('Sets') }}" wire:model="sets" icon="hashtag" />
+                <div class="space-y-2">
+                    <flux:label>{{ __('Weight (kg)') }}</flux:label>
+                    <div class="flex items-center gap-2">
+                        <flux:button icon="minus" variant="ghost" @click="weight = Math.max(0, (parseFloat(weight) || 0) - 2.5).toFixed(1)" />
+                        <flux:input type="number" step="0.5" x-model="weight" class="text-center text-xl font-bold" />
+                        <flux:button icon="plus" variant="ghost" @click="weight = ((parseFloat(weight) || 0) + 2.5).toFixed(1)" />
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <flux:label>{{ __('Reps') }}</flux:label>
+                    <div class="flex items-center gap-2">
+                        <flux:button icon="minus" variant="ghost" @click="reps = Math.max(0, (parseInt(reps) || 0) - 1)" />
+                        <flux:input type="number" x-model="reps" class="text-center text-xl font-bold" />
+                        <flux:button icon="plus" variant="ghost" @click="reps = (parseInt(reps) || 0) + 1" />
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <flux:label>{{ __('Sets') }}</flux:label>
+                    <div class="flex items-center gap-2">
+                        <flux:button icon="minus" variant="ghost" @click="sets = Math.max(0, (parseInt(sets) || 0) - 1)" />
+                        <flux:input type="number" x-model="sets" class="text-center text-xl font-bold" />
+                        <flux:button icon="plus" variant="ghost" @click="sets = (parseInt(sets) || 0) + 1" />
+                    </div>
+                </div>
             @elseif($category === 'cardio')
-                <flux:input type="number" step="0.01" label="{{ __('Distance (km)') }}" wire:model="distance" icon="map-pin" />
-                <flux:input type="number" label="{{ __('Duration (minutes)') }}" wire:model="duration_minutes" icon="clock" />
+                <div class="space-y-2">
+                    <flux:label>{{ __('Distance (km)') }}</flux:label>
+                    <div class="flex items-center gap-2">
+                        <flux:button icon="minus" variant="ghost" @click="distance = Math.max(0, (parseFloat(distance) || 0) - 0.5).toFixed(1)" />
+                        <flux:input type="number" step="0.1" x-model="distance" class="text-center text-xl font-bold" />
+                        <flux:button icon="plus" variant="ghost" @click="distance = ((parseFloat(distance) || 0) + 0.5).toFixed(1)" />
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <flux:label>{{ __('Duration (minutes)') }}</flux:label>
+                    <div class="flex items-center gap-2">
+                        <flux:button icon="minus" variant="ghost" @click="duration = Math.max(0, (parseInt(duration) || 0) - 1)" />
+                        <flux:input type="number" x-model="duration" class="text-center text-xl font-bold" />
+                        <flux:button icon="plus" variant="ghost" @click="duration = (parseInt(duration) || 0) + 1" />
+                    </div>
+                </div>
             @elseif($category === 'biometric')
-                <flux:input type="number" step="0.01" label="{{ __('Body Weight (kg)') }}" wire:model="weight" icon="scale" />
+                <div class="space-y-2 col-span-1">
+                    <flux:label>{{ __('Body Weight (kg)') }}</flux:label>
+                    <div class="flex items-center gap-2">
+                        <flux:button icon="minus" variant="ghost" @click="weight = Math.max(0, (parseFloat(weight) || 0) - 0.1).toFixed(1)" />
+                        <flux:input type="number" step="0.1" x-model="weight" class="text-center text-xl font-bold" />
+                        <flux:button icon="plus" variant="ghost" @click="weight = ((parseFloat(weight) || 0) + 0.1).toFixed(1)" />
+                    </div>
+                </div>
                 <flux:input label="{{ __('Mood') }}" wire:model="mood" placeholder="{{ __('e.g. Happy, Tired') }}" icon="face-smile" />
             @endif
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
-            <flux:input type="number" min="1" max="10" label="{{ __('Intensity / Difficulty (1-10)') }}" wire:model="intensity" icon="bolt" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4" x-data="{
+            intensity: @entangle('intensity').live,
+            restTime: 0,
+            timer: null,
+            startRest() {
+                this.restTime = 90;
+                if (this.timer) clearInterval(this.timer);
+                this.timer = setInterval(() => {
+                    if (this.restTime > 0) this.restTime--;
+                    else clearInterval(this.timer);
+                }, 1000);
+            }
+        }">
+            <div class="space-y-4">
+                <flux:input type="number" min="1" max="10" label="{{ __('Intensity / Difficulty (1-10)') }}" wire:model="intensity" icon="bolt" />
+
+                <div class="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-600 dark:text-blue-400">{{ __('Rest Timer') }}</div>
+                        <div class="text-2xl font-bold tabular-nums" x-text="Math.floor(restTime / 60) + ':' + (restTime % 60).toString().padStart(2, '0')">0:00</div>
+                    </div>
+                    <flux:button icon="play" variant="ghost" @click="startRest()">{{ __('Start Rest') }}</flux:button>
+                </div>
+            </div>
+
             <flux:textarea label="{{ __('Notes') }}" wire:model="notes" placeholder="{{ __('Any comments...') }}" />
         </div>
 

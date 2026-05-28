@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
 use App\Http\Resources\V1\RoleResource;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -12,9 +12,20 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Role::paginate();
+        $query = Role::query();
+
+        if ($request->has('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('slug', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        $roles = $query->get();
+
         return RoleResource::collection($roles);
     }
 
@@ -48,7 +59,7 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:roles,slug,' . $role->id,
+            'slug' => 'sometimes|string|max:255|unique:roles,slug,'.$role->id,
         ]);
 
         $role->update($validated);

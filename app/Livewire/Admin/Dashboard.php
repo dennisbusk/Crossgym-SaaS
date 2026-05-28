@@ -7,10 +7,12 @@ namespace App\Livewire\Admin;
 use App\Exports\DashboardStatsExport;
 use App\Models\Dashboard as DashboardModel;
 use App\Models\Exercise;
+use App\Models\GymClass;
 use App\Services\Dashboard\TenantDashboardService;
 use App\Services\Stripe\StripeTenantClient;
 use App\Services\UserSubscriptionService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -46,6 +48,16 @@ class Dashboard extends Component
     /** @var array<int, object> */
     public array $trainerClassesToday = [];
 
+    public array $checkInsChartData = ['labels' => [], 'data' => []];
+
+    public Collection $popularClasses;
+
+    public array $membershipStatus = [];
+
+    public Collection $recentCheckIns;
+
+    public Collection $todaysSchedule;
+
     public ?array $subscriptionNotice = null;
 
     protected $listeners = ['widget-removed' => '$refresh'];
@@ -72,6 +84,9 @@ class Dashboard extends Component
 
     public function mount(): void
     {
+        $this->popularClasses = collect();
+        $this->recentCheckIns = collect();
+        $this->todaysSchedule = collect();
         $this->loadData();
     }
 
@@ -96,6 +111,11 @@ class Dashboard extends Component
         $this->recentActivity = [];
         $this->revenueChartData = ['labels' => [], 'data' => []];
         $this->bookingsChartData = ['labels' => [], 'data' => []];
+        $this->checkInsChartData = ['labels' => [], 'data' => []];
+        $this->popularClasses = collect();
+        $this->membershipStatus = [];
+        $this->recentCheckIns = collect();
+        $this->todaysSchedule = collect();
 
         $settings = $user->dashboard_settings ?? [];
 
@@ -127,11 +147,23 @@ class Dashboard extends Component
             if ($user?->can('view_charts', $dashboard) && ($settings['charts'] ?? true)) {
                 $this->revenueChartData = $service->getRevenueChartData($this->period);
                 $this->bookingsChartData = $service->getBookingsChartData($this->period);
+                $this->checkInsChartData = $service->getCheckInsChartData($this->period);
             }
 
             if ($user?->can('view_trainer_widget', $dashboard) && $user && ($settings['trainer_widget'] ?? true)) {
                 $this->trainerClassesToday = $service->getTrainerClassesToday($user)->all();
             }
+
+            $this->popularClasses = $service->getPopularClasses($this->period);
+            $this->membershipStatus = $service->getMembershipStatusCounts();
+            $this->recentCheckIns = $service->getRecentCheckIns(5);
+
+            $this->todaysSchedule = GymClass::query()
+                ->with(['trainer', 'participants'])
+                ->where('tenant_id', $user?->tenant_id)
+                ->whereDate('class_start', now()->toDateString())
+                ->orderBy('class_start')
+                ->get();
         } catch (\Throwable $e) {
             Log::warning('Admin Dashboard stats failed', ['error' => $e->getMessage()]);
         }
@@ -147,23 +179,23 @@ class Dashboard extends Component
         }
     }
 
-    //    public function export()
-    //    {
-    //        $this->authorize('view_export', app(DashboardModel::class));
-    //
-    //        $service = TenantDashboardService::forTenant();
-    //        $revenue = $service->getRevenueStats($this->period);
-    //        $bookings = $service->getBookingsStats($this->period);
-    //        $subscribers = $service->getSubscribersByPlan();
-    //
-    //        return Excel::download(new DashboardStatsExport([
-    //            'total_transactions' => $revenue['total_transactions'],
-    //            'total_revenue_dkk' => $revenue['total_revenue_dkk'],
-    //            'total_bookings_active' => $bookings['total_bookings_active'],
-    //            'total_bookings_completed' => $bookings['total_bookings_completed'],
-    //            'subscribers_by_plan' => $subscribers,
-    //        ]), 'dashboard-stats.xlsx');
-    //    }
+    public function export()
+    {
+        $this->authorize('view_export', app(DashboardModel::class));
+
+        $service = TenantDashboardService::forTenant();
+        $revenue = $service->getRevenueStats($this->period);
+        $bookings = $service->getBookingsStats($this->period);
+        $subscribers = $service->getSubscribersByPlan();
+
+        return Excel::download(new DashboardStatsExport([
+            'total_transactions' => $revenue['total_transactions'],
+            'total_revenue_dkk' => $revenue['total_revenue_dkk'],
+            'total_bookings_active' => $bookings['total_bookings_active'],
+            'total_bookings_completed' => $bookings['total_bookings_completed'],
+            'subscribers_by_plan' => $subscribers,
+        ]), 'dashboard-stats.xlsx');
+    }
 
     public function completeSubscription()
     {

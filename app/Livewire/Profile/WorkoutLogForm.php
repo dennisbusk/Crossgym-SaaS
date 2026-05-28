@@ -14,21 +14,35 @@ class WorkoutLogForm extends Component
     use AuthorizesRequests;
 
     public ?WorkoutLog $workoutLog = null;
+
     public bool $isEditing = false;
 
     // Form fields
     public $date;
+
     public $exercise_id = '';
+
     public $new_exercise_name = '';
+
     public $category = 'strength'; // Default
+
     public $weight;
+
     public $reps;
+
     public $sets;
+
     public $distance;
+
     public $duration_minutes;
+
     public $intensity;
+
     public $mood;
+
     public $notes;
+
+    public $prs = [];
 
     protected $rules = [
         'date' => 'required|date',
@@ -73,15 +87,30 @@ class WorkoutLogForm extends Component
             $exercise = Exercise::find($value);
             if ($exercise) {
                 $this->category = $exercise->category;
+
+                // Smart Autofill: Find last log for this exercise
+                $lastLog = WorkoutLog::where('user_id', auth()->id())
+                    ->where('exercise_id', $value)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+
+                if ($lastLog) {
+                    $this->weight = $lastLog->weight;
+                    $this->reps = $lastLog->reps;
+                    $this->sets = $lastLog->sets;
+                    $this->distance = $lastLog->distance;
+                    $this->duration_minutes = $lastLog->duration ? (int) floor($lastLog->duration / 60) : null;
+                    $this->intensity = $lastLog->intensity;
+                }
             }
         }
     }
 
-    public function save()
+    public function save(\App\Services\PRService $prService)
     {
         $this->validate();
 
-        if (!$this->exercise_id && $this->new_exercise_name) {
+        if (! $this->exercise_id && $this->new_exercise_name) {
             // Create new exercise
             $exercise = Exercise::create([
                 'name' => [app()->getLocale() => $this->new_exercise_name],
@@ -108,12 +137,23 @@ class WorkoutLogForm extends Component
 
         if ($this->isEditing) {
             $this->workoutLog->update($data);
+            $log = $this->workoutLog;
             session()->flash('status', __('Workout log updated.'));
         } else {
-            WorkoutLog::create($data);
+            $log = WorkoutLog::create($data);
             session()->flash('status', __('Workout log created.'));
         }
 
+        // Check for PRs to show immediate feedback
+        $this->prs = $prService->evaluatePR($log);
+
+        if (empty($this->prs)) {
+            return redirect()->route('workout-logs.index');
+        }
+
+        // If PRs exist, we might want to stay on the page to show them,
+        // but for now, let's just flash and redirect or show a modal.
+        // For simplicity, we redirect and let the user see them in history or dashboard.
         return redirect()->route('workout-logs.index');
     }
 

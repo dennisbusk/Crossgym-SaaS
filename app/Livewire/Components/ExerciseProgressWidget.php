@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Livewire\Components;
 
 use App\Models\Exercise;
+use App\Models\UserDashboardWidget;
 use App\Models\WorkoutLog;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-use App\Models\UserDashboardWidget;
-
 class ExerciseProgressWidget extends Component
 {
     public ?int $exerciseId = null;
+
     public ?int $widgetId = null;
 
     /** @var array{labels: array<string>, data: array<float>} */
@@ -58,11 +58,11 @@ class ExerciseProgressWidget extends Component
     public function loadData(): void
     {
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             return;
         }
 
-        if (!$this->exerciseId) {
+        if (! $this->exerciseId) {
             $lastLog = WorkoutLog::where('user_id', $user->id)
                 ->latest('date')
                 ->first();
@@ -77,8 +77,8 @@ class ExerciseProgressWidget extends Component
                 ->get();
 
             $this->chartData = [
-                'labels' => $logs->map(fn($log) => $log->date->format('d/m'))->toArray(),
-                'data' => $logs->map(fn($log) => (float) $log->weight)->toArray(),
+                'labels' => $logs->map(fn ($log) => $log->date->format('d/m'))->toArray(),
+                'data' => $logs->map(fn ($log) => (float) $log->weight)->toArray(),
             ];
         } else {
             $this->chartData = ['labels' => [], 'data' => []];

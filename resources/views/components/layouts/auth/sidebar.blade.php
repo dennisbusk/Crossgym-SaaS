@@ -60,6 +60,9 @@
             {{ __('Workout Log') }}
         </flux:navlist.item>
     @endcan
+    <flux:navlist.item icon="trophy" :href="route('challenges.index')" :current="request()->routeIs('challenges.*')" wire:navigate>
+        {{ __('Challenges') }}
+    </flux:navlist.item>
     @can('viewAny', \App\Models\GymClass::class)
         <flux:navlist.item icon="calendar" :href="route('classes.index')" :current="request()->routeIs('classes.index')" wire:navigate>{{__('Classes')}}</flux:navlist.item>
     @endcan
@@ -104,6 +107,12 @@
         @can('viewAny', \App\Models\Retention::class)
             <flux:navlist.item icon="exclamation-triangle" :href="route('retention.index')" :current="request()->routeIs('retention.index')" wire:navigate>
                 {{ __('Retention') }}
+            </flux:navlist.item>
+        @endcan
+
+        @can('viewAny', \App\Models\Achievement::class)
+            <flux:navlist.item icon="star" :href="route('achievements.index')" :current="request()->routeIs('achievements.*')" wire:navigate>
+                {{ __('Achievements') }}
             </flux:navlist.item>
         @endcan
         @can('viewAny', \App\Models\EmailLog::class)

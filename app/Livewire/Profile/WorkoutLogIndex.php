@@ -39,9 +39,9 @@ class WorkoutLogIndex extends Component
             ->with('exercise');
 
         if ($this->search) {
-             $query->whereHas('exercise', function($q) {
-                 $q->where('name->' . app()->getLocale(), 'like', '%' . $this->search . '%');
-             });
+            $query->whereHas('exercise', function ($q) {
+                $q->where('name->'.app()->getLocale(), 'like', '%'.$this->search.'%');
+            });
         }
 
         return Excel::download(new WorkoutLogsExport($query), 'workout-logs.xlsx');
@@ -54,8 +54,8 @@ class WorkoutLogIndex extends Component
             ->with('exercise');
 
         if ($this->search) {
-            $query->whereHas('exercise', function($q) {
-                $q->where('name->' . app()->getLocale(), 'like', '%' . $this->search . '%');
+            $query->whereHas('exercise', function ($q) {
+                $q->where('name->'.app()->getLocale(), 'like', '%'.$this->search.'%');
             });
         }
 

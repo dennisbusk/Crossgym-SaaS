@@ -1,9 +1,9 @@
 <?php
 
 use App\Livewire\Admin\Subscriptions\SubscriptionIndex;
-use App\Models\User;
 use App\Models\Role;
 use App\Models\Subscription;
+use App\Models\User;
 use Livewire\Livewire;
 use Maatwebsite\Excel\Facades\Excel;
 

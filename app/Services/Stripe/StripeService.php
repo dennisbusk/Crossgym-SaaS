@@ -359,6 +359,24 @@ class StripeService
         return $price->toArray();
     }
 
+    public function createPortalSession(string $customerId, string $returnUrl): array
+    {
+        return $this->withRetry(function () use ($customerId, $returnUrl) {
+            $client = $this->tenantClient->client();
+            $opts = $this->tenantClient->options();
+
+            $session = $client->billingPortal->sessions->create([
+                'customer' => $customerId,
+                'return_url' => $returnUrl,
+            ], $opts);
+
+            return [
+                'id' => $session->id,
+                'url' => $session->url,
+            ];
+        }, ['method' => 'createPortalSession', 'customer_id' => $customerId]);
+    }
+
     private function normalizeMetadata(array $metadata): array
     {
         $normalized = [];

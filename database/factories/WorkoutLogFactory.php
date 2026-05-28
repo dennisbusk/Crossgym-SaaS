@@ -7,7 +7,6 @@ namespace Database\Factories;
 use App\Models\Exercise;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Models\WorkoutLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

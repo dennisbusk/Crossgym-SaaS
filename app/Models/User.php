@@ -55,6 +55,13 @@ class User extends Authenticatable implements JWTSubject
         'card_brand',
         'card_last_four',
         'dashboard_settings',
+        'xp',
+        'level',
+        'recovery_score',
+        'last_hrv',
+        'last_rhr',
+        'last_sleep_score',
+        'recovery_updated_at',
     ];
 
     /**
@@ -83,6 +90,13 @@ class User extends Authenticatable implements JWTSubject
             'birthday' => 'date',
             'terms_accepted_at' => 'datetime',
             'dashboard_settings' => 'array',
+            'xp' => 'integer',
+            'level' => 'integer',
+            'recovery_score' => 'integer',
+            'last_hrv' => 'integer',
+            'last_rhr' => 'integer',
+            'last_sleep_score' => 'integer',
+            'recovery_updated_at' => 'datetime',
         ];
     }
 
@@ -107,6 +121,18 @@ class User extends Authenticatable implements JWTSubject
     public function subscription()
     {
         return $this->hasOne(Subscription::class);
+    }
+
+    public function achievements()
+    {
+        return $this->belongsToMany(Achievement::class, 'user_achievements')
+            ->withPivot('completed_at')
+            ->withTimestamps();
+    }
+
+    public function achievementProgress()
+    {
+        return $this->hasMany(UserAchievementProgress::class);
     }
 
     /**
@@ -204,6 +230,23 @@ class User extends Authenticatable implements JWTSubject
     public function dashboardWidgets(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(UserDashboardWidget::class)->orderBy('order');
+    }
+
+    public function healthMetrics(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(HealthMetric::class);
+    }
+
+    public function challenges(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Challenge::class)
+            ->withPivot(['current_value', 'completed_at'])
+            ->withTimestamps();
+    }
+
+    public function fistBumps(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(FistBump::class);
     }
 
     /**

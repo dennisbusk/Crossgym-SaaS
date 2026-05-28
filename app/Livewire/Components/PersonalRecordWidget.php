@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\Components;
 
-use App\Models\WorkoutLog;
 use App\Models\UserDashboardWidget;
+use App\Models\WorkoutLog;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class PersonalRecordWidget extends Component
 {

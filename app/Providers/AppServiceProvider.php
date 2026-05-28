@@ -9,6 +9,7 @@ use App\Events\PaymentFailed;
 use App\Events\RetentionTriggered;
 use App\Events\SubscriptionCreated;
 use App\Events\UserRegistered;
+use App\Listeners\AchievementListener;
 use App\Listeners\SendDynamicEmail;
 use App\Models\Role;
 use App\Models\User;
@@ -58,6 +59,8 @@ class AppServiceProvider extends ServiceProvider
             ],
             SendDynamicEmail::class
         );
+
+        Event::subscribe(AchievementListener::class);
     }
 
     /**

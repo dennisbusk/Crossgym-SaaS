@@ -1,14 +1,13 @@
 <?php
 
-use App\Models\User;
-use App\Models\Tenant;
-use App\Models\Exercise;
-use App\Models\WorkoutLog;
-use App\Models\UserDashboardWidget;
-use Livewire\Livewire;
 use App\Livewire\Admin\Dashboard;
-use App\Livewire\Components\ExerciseProgressWidget;
 use App\Livewire\Components\PersonalRecordWidget;
+use App\Models\Exercise;
+use App\Models\Tenant;
+use App\Models\User;
+use App\Models\UserDashboardWidget;
+use App\Models\WorkoutLog;
+use Livewire\Livewire;
 
 beforeEach(function () {
     $this->tenant = Tenant::factory()->create();

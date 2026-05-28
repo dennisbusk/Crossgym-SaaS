@@ -72,8 +72,8 @@ class ClassTypeSeeder extends Seeder
         ]);
 
         // Create some class types
-//        ClassType::factory()->count(5)->create([
-//            'tenant_id' => $tenant->id,
-//        ]);
+        //        ClassType::factory()->count(5)->create([
+        //            'tenant_id' => $tenant->id,
+        //        ]);
     }
 }

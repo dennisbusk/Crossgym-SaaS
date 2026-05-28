@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
-use App\Models\Tenant;
+use App\Livewire\Profile\WorkoutLogShow;
 use App\Models\Exercise;
+use App\Models\Tenant;
+use App\Models\User;
 use App\Models\WorkoutLog;
 use Livewire\Livewire;
-use App\Livewire\Profile\WorkoutLogShow;
 
 beforeEach(function () {
     $this->tenant = Tenant::factory()->create();

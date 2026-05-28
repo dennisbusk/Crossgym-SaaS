@@ -1,8 +1,8 @@
 <?php
 
 use App\Livewire\Admin\Users\UserIndex;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Livewire\Livewire;
 use Maatwebsite\Excel\Facades\Excel;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Admin\Subscriptions;
 
+use App\Exports\SubscriptionsExport;
 use App\Models\Subscription;
 use App\Traits\WithSorting;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -11,7 +12,6 @@ use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\SubscriptionsExport;
 
 class SubscriptionIndex extends Component
 {

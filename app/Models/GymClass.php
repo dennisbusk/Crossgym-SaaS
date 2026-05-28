@@ -79,4 +79,10 @@ class GymClass extends Model
     {
         return $this->hasMany(GymClassTrial::class);
     }
+
+    public function waitlist(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'gym_class_waitlist', 'gym_class_id', 'user_id')
+            ->withTimestamps();
+    }
 }

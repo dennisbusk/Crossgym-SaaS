@@ -40,6 +40,22 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => now(),
             'terms_accepted_at' => now(),
             'tenant_id' => $tenant->id,
+            'xp' => fake()->numberBetween(0, 1000),
+            'level' => fake()->numberBetween(1, 10),
+            'medlemsnummer' => fake()->unique()->numberBetween(1000, 9999),
+            'address' => fake()->address(),
+            'postal_code' => fake()->postcode(),
+            'city' => fake()->city(),
+            'birthday' => fake()->date(),
+            'phone' => fake()->phoneNumber(),
+            'mobile' => fake()->phoneNumber(),
+            'sex' => fake()->randomElement(['M', 'F', 'Other']),
+            'joined_at' => now(),
+            'recovery_score' => fake()->numberBetween(0, 100),
+            'last_hrv' => fake()->numberBetween(20, 100),
+            'last_rhr' => fake()->numberBetween(40, 100),
+            'last_sleep_score' => fake()->numberBetween(0, 100),
+            'recovery_updated_at' => now(),
         ];
     }
 

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\ClassType;
 use App\Http\Resources\V1\ClassTypeResource;
+use App\Models\ClassType;
 use Illuminate\Http\Request;
 
 class ClassTypeController extends Controller
@@ -12,9 +12,24 @@ class ClassTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $types = ClassType::paginate();
+        $query = ClassType::query();
+
+        if ($request->has('tenant_id')) {
+            $query->where('tenant_id', $request->tenant_id);
+        }
+
+        if ($request->has('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('slug', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        $types = $query->get();
+
         return ClassTypeResource::collection($types);
     }
 
@@ -51,7 +66,7 @@ class ClassTypeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'sometimes|array',
-            'slug' => 'sometimes|string|unique:class_types,slug,' . $classType->id,
+            'slug' => 'sometimes|string|unique:class_types,slug,'.$classType->id,
             'price' => 'sometimes|nullable|integer',
             'description' => 'sometimes|nullable|array',
         ]);

@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
-use App\Models\Tenant;
+use App\Livewire\Components\ExerciseProgressWidget;
 use App\Models\Exercise;
+use App\Models\Tenant;
+use App\Models\User;
 use App\Models\WorkoutLog;
 use Livewire\Livewire;
-use App\Livewire\Components\ExerciseProgressWidget;
 
 beforeEach(function () {
     $this->tenant = Tenant::factory()->create();
@@ -60,7 +60,7 @@ it('loads chart data when logs exist', function () {
 });
 
 it('updates data when exercise is changed', function () {
-     $exercise1 = Exercise::create([
+    $exercise1 = Exercise::create([
         'name' => ['da' => 'Squat'],
         'category' => 'strength',
         'tenant_id' => $this->tenant->id,

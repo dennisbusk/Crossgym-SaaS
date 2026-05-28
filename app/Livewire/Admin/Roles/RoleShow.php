@@ -15,6 +15,7 @@ class RoleShow extends Component
     use WithPagination;
 
     public Role $role;
+
     public ?int $targetUserId = null;
 
     public function mount(Role $role): void

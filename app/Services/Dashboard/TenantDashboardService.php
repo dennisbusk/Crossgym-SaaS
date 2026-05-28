@@ -180,6 +180,95 @@ class TenantDashboardService
     }
 
     /**
+     * Hent data til check-in graf (daglige tjek for perioden).
+     */
+    public function getCheckInsChartData(string $period = 'week'): array
+    {
+        [$start, $end] = $this->getDateRange($period);
+
+        $rows = DB::table('check_ins')
+            ->where('tenant_id', $this->tenantId)
+            ->whereBetween('checked_at', [$start, $end])
+            ->select(DB::raw('DATE(checked_at) as date'), DB::raw('COUNT(*) as count'))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $labels = [];
+        $data = [];
+        $current = $start->copy();
+        while ($current->lte($end)) {
+            $dateStr = $current->toDateString();
+            $labels[] = $current->translatedFormat('D'); // f.eks. Man, Tir
+            $data[] = (int) ($rows->get($dateStr)?->count ?? 0);
+            $current->addDay();
+        }
+
+        return ['labels' => $labels, 'data' => $data];
+    }
+
+    /**
+     * Hent populære hold baseret på bookinger.
+     */
+    public function getPopularClasses(string $period = 'month'): Collection
+    {
+        [$start, $end] = $this->getDateRange($period);
+
+        return GymClass::query()
+            ->where('tenant_id', $this->tenantId)
+            ->whereBetween('class_start', [$start, $end])
+            ->withCount('participants')
+            ->orderByDesc('participants_count')
+            ->limit(5)
+            ->get()
+            ->map(function ($class) {
+                $occupancy = $class->max_participants > 0
+                    ? round(($class->participants_count / $class->max_participants) * 100)
+                    : 0;
+
+                return (object) [
+                    'name' => $class->getTranslation('name', app()->getLocale(), true),
+                    'bookings' => $class->participants_count,
+                    'occupancy' => $occupancy,
+                ];
+            });
+    }
+
+    /**
+     * Hent medlemsstatus fordeling.
+     */
+    public function getMembershipStatusCounts(): array
+    {
+        $stats = Subscription::query()
+            ->where('tenant_id', $this->tenantId)
+            ->select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        return [
+            'active' => ($stats['active'] ?? 0),
+            'frozen' => ($stats['past_due'] ?? 0) + ($stats['unpaid'] ?? 0),
+            'expired' => ($stats['canceled'] ?? 0) + ($stats['incomplete_expired'] ?? 0),
+            'trial' => ($stats['trialing'] ?? 0),
+        ];
+    }
+
+    /**
+     * Hent seneste check-ins med bruger-info.
+     */
+    public function getRecentCheckIns(int $limit = 5): Collection
+    {
+        return \App\Models\CheckIn::query()
+            ->with('user')
+            ->where('tenant_id', $this->tenantId)
+            ->orderByDesc('checked_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * Revenue chart data (daily totals for the period).
      */
     public function getRevenueChartData(string $period = 'month'): array

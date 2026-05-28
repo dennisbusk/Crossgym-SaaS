@@ -22,6 +22,12 @@ class TenantFactory extends Factory
         return [
             'name' => $name,
             'domain' => Str::slug($name).'.example.test',
+            'app_name' => $name,
+            'theme_color' => '#3b82f6',
+            'background_color' => '#ffffff',
+            'terms' => ['da' => fake()->paragraph()],
+            'onboarded_at' => now(),
+            'allow_member_billing_management' => true,
         ];
     }
 }
